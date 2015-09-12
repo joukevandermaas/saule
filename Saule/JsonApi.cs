@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Saule.Serialization;
+using System;
 
 namespace Saule
 {
     internal static class JsonApi
     {
-        public static ApiResponse<T> ToApiResponse<T>(this T obj, Type modelType)
+        public static ApiResponse ToApiResponse(this object obj, Type modelType)
         {
             var model = GetModelFor(modelType);
 
-            return new ApiResponse<T>(obj, model);
+            return new ApiResponse(obj, model);
         }
 
         private static ApiResource GetModelFor(Type modelType)

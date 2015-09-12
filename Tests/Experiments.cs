@@ -10,11 +10,7 @@ namespace Tests
         [Fact]
         public void Run()
         {
-            var person = new Person();
-            var response = person.ToApiResponse(typeof(OtherModel));
-            var json = response.ToJson();
-
-            Assert.True(true);
+            var obj = Activator.CreateInstance(typeof(PersonModel));
         }
     }
 
@@ -32,8 +28,6 @@ namespace Tests
             HasMany("siblings", typeof(PersonModel));
         }
     }
-
-    public class OtherModel : PersonModel { }
 
     public class Person
     {

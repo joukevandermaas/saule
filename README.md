@@ -8,9 +8,9 @@ public class PersonResource : ApiResource
 {
   public PersonResource()
   {
-    Attribute("FirstName");
-    Attribute("LastName");
-    Attribute("Age");
+    WithAttribute("FirstName");
+    WithAttribute("LastName");
+    WithAttribute("Age");
 
     BelongsTo("Job", typeof(CompanyResource));
     HasMany("Friends", typeof(PersonResource));
@@ -20,8 +20,8 @@ public class CompanyResource : ApiResource
 {
   public CompanyResource()
   {
-    Attribute("Name");
-    Attribute("NumberOfEmployees");
+    WithAttribute("Name");
+    WithAttribute("NumberOfEmployees");
   }
 }
 ```
