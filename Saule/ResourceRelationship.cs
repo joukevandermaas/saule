@@ -7,19 +7,20 @@ namespace Saule
     /// </summary>
     public class ResourceRelationship
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name">The name of this relationship.</param>
-        /// <param name="relationshipKind">The kind of this relationship.</param>
-        /// <param name="modelType">They type of the related resource.</param>
-        /// <param name="urlPath">The pathspec of this relationship.</param>
-        public ResourceRelationship(string name, RelationshipKind relationshipKind, Type modelType, string urlPath)
+        internal ResourceRelationship(
+            string name,
+            RelationshipKind relationshipKind,
+            Type resourceType,
+            string urlPath,
+            ApiResource resource)
         {
             Name = name.ToCamelCase();
             RelationshipKind = relationshipKind;
-            ModelType = modelType;
             UrlPath = urlPath.ToDashed();
+
+            RelatedResource = resourceType.Equals(resource.GetType())
+                ? RelatedResource = resource
+                : RelatedResource = (ApiResource)Activator.CreateInstance(resourceType);
         }
 
         /// <summary>
@@ -33,9 +34,9 @@ namespace Saule
         public RelationshipKind RelationshipKind { get; }
 
         /// <summary>
-        /// The type of the related resource.
+        /// The definition of the related resource
         /// </summary>
-        public Type ModelType { get; }
+        public ApiResource RelatedResource { get; }
 
         /// <summary>
         /// The pathspec of this relationship.

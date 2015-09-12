@@ -12,11 +12,11 @@ namespace Tests
     public class JsonApiSerializerTests
     {
         [Fact(DisplayName = "Serializes all found attributes")]
-        public void TestAttributesComplete()
+        public void AttributesComplete()
         {
             var person = new Person();
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonModel)));
+            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
 
             var attributes = result["data"]["attributes"];
             Assert.Equal(person.FirstName, attributes.Value<string>("firstName"));
@@ -25,11 +25,11 @@ namespace Tests
         }
 
         [Fact(DisplayName = "Serializes no extra properties")]
-        public void TestAttributesSufficient()
+        public void AttributesSufficient()
         {
             var person = new Person();
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonModel)));
+            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
 
             var attributes = result["data"]["attributes"];
             Assert.True(attributes["numberOfLegs"] == null);
@@ -37,13 +37,31 @@ namespace Tests
         }
         
         [Fact(DisplayName = "Uses type name from model definition")]
-        public void TestUsesTitle()
+        public void UsesTitle()
         {
             var company = new Company();
             var target = new JsonApiSerializer();
-            var result = target.Serialize(company.ToApiResponse(typeof(CompanyResource)));
+            var result = target.Serialize(company.ToApiResponse(typeof(CompanyResource)), "/api/companies/1");
 
             Assert.Equal("coorporation", result["data"]["type"]);
+        }
+
+        [Fact(DisplayName ="Serializes relationships' links")]
+        public void SerializesRelationshipLinks()
+        {
+            var person = new Person();
+            var target = new JsonApiSerializer();
+            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
+
+            var relationships = result["data"]["relationships"];
+            var job = relationships["job"];
+            var friends = relationships["friends"];
+
+            Assert.Equal("/api/people/1/employer", job["links"]["related"]);
+            Assert.Equal("/api/people/1/relationships/employer", job["links"]["self"]);
+
+            Assert.Equal("/api/people/1/friends", friends["links"]["related"]);
+            Assert.Equal("/api/people/1/relationships/friends", friends["links"]["self"]);
         }
 
         public class Person
@@ -68,7 +86,7 @@ namespace Tests
                 Attribute("LastName");
                 Attribute("Age");
 
-                BelongsTo("Job", typeof(CompanyResource));
+                BelongsTo("Job", typeof(CompanyResource), "/employer");
                 HasMany("Friends", typeof(PersonResource));
             }
         }

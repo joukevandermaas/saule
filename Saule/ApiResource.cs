@@ -78,7 +78,7 @@ namespace Saule
         /// is the name)</param>
         protected void BelongsTo(string name, Type type, string path)
         {
-            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Single, type, path));
+            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Single, type, path, this));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Saule
         /// is the name)</param>
         protected void HasMany(string name, Type type, string path)
         {
-            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Many, type, path));
+            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Many, type, path, this));
         }
     }
 }
