@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Saule
 {
-    public class ApiResponse<T>
+    internal class ApiResponse<T>
     {
         private ApiResource _model;
         private T _object;

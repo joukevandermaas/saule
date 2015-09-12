@@ -2,7 +2,7 @@
 
 namespace Saule
 {
-    public static class JsonApi
+    internal static class JsonApi
     {
         public static ApiResponse<T> ToApiResponse<T>(this T obj, Type modelType)
         {
