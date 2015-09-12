@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tests.SampleModels;
 using Xunit;
 
 namespace Tests
@@ -35,7 +36,7 @@ namespace Tests
             Assert.True(attributes["numberOfLegs"] == null);
             Assert.Equal(3, attributes.Count());
         }
-        
+
         [Fact(DisplayName = "Uses type name from model definition")]
         public void UsesTitle()
         {
@@ -46,7 +47,7 @@ namespace Tests
             Assert.Equal("coorporation", result["data"]["type"]);
         }
 
-        [Fact(DisplayName ="Serializes relationships' links")]
+        [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
             var person = new Person();
@@ -64,40 +65,32 @@ namespace Tests
             Assert.Equal("/api/people/1/relationships/friends", friends["links"]["self"]);
         }
 
-        public class Person
+        [Fact(DisplayName = "Throws exception when Id is missing")]
+        public void ThrowsRightException()
         {
-            public string FirstName => "John";
-            public string LastName => "Smith";
-            public int Age => 34;
-            public int NumberOfLegs => 2;
-            public Company Job => new Company();
-            public IEnumerable<Person> Friends => new List<Person>();
-        }
-        public class Company
-        {
-            public string Name => "Name";
-            public int NumberOfEmployees => 24;
-        }
-        private class PersonResource : ApiResource
-        {
-            public PersonResource()
-            {
-                Attribute("FirstName");
-                Attribute("LastName");
-                Attribute("Age");
+            var person = new PersonWithNoId();
+            var target = new JsonApiSerializer();
 
-                BelongsTo("Job", typeof(CompanyResource), "/employer");
-                HasMany("Friends", typeof(PersonResource));
-            }
-        }
-        private class CompanyResource : ApiResource
-        {
-            public CompanyResource()
+            Assert.Throws<JsonApiException>(() =>
             {
-                WithType("Coorporation");
-                Attribute("Name");
-                Attribute("NumberOfEmployees");
-            }
+                var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
+            });
+        }
+
+        [Fact(DisplayName = "Serializes relationship data only if it exists")]
+        public void SerializesRelationshipData()
+        {
+            var person = new PersonWithNoJob();
+            var target = new JsonApiSerializer();
+
+            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
+
+            var relationships = result["data"]["relationships"];
+            var job = relationships["job"];
+            var friends = relationships["friends"];
+
+            Assert.Null(job["data"]);
+            Assert.NotNull(friends["data"]);
         }
     }
 }
