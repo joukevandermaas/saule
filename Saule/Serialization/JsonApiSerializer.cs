@@ -13,8 +13,12 @@ namespace Saule.Serialization
             var resource = response.Resource;
             var result = new JObject();
 
+            var included = new JArray();
+
             result["data"] = SerializeArrayOrObject(objectJson, 
-                properties => SerializeData(resource, baseUrl, properties));
+                properties => SerializeData(resource, baseUrl, properties, included));
+
+            result["included"] = included;
 
             return result;
         }
@@ -37,12 +41,12 @@ namespace Saule.Serialization
             }
         }
 
-        private JToken SerializeData(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties)
+        private JToken SerializeData(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties, JArray included)
         {
             var data = SerializeMinimalData(resource, properties);
 
             data["attributes"] = SerializeAttributes(resource, properties);
-            data["relationships"] = SerializeRelationships(resource, baseUrl, properties);
+            data["relationships"] = SerializeRelationships(resource, baseUrl, properties, included);
 
             return data;
         }
@@ -70,7 +74,7 @@ namespace Saule.Serialization
             return properties[name.ToPascalCase()];
         }
 
-        private JToken SerializeRelationships(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties)
+        private JToken SerializeRelationships(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties, JArray included)
         {
             var relationships = new JObject();
 
@@ -84,8 +88,16 @@ namespace Saule.Serialization
                 var relationshipValues = GetValue(rel.Name, properties);
                 if (relationshipValues != null)
                 {
-                    relToken["data"] = SerializeArrayOrObject(relationshipValues, 
-                        props => SerializeMinimalData(resource, props));
+                    var data = SerializeArrayOrObject(relationshipValues, 
+                        props => {
+                            var values = SerializeMinimalData(rel.RelatedResource, props);
+                            var includedData = values.DeepClone();
+                            includedData["attributes"] = SerializeAttributes(rel.RelatedResource, props);
+                            included.Add(includedData);
+
+                            return values;
+                        });
+                    relToken["data"] = data;
                 }
                 relationships[rel.Name] = relToken;
             }

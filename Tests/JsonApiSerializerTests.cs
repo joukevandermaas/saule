@@ -1,4 +1,5 @@
-﻿using Saule;
+﻿using Newtonsoft.Json.Linq;
+using Saule;
 using Saule.Serialization;
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,21 @@ namespace Tests
 
             Assert.Null(job["data"]);
             Assert.NotNull(friends["data"]);
+        }
+
+        [Fact(DisplayName = "Serializes relationship data into 'included' key")]
+        public void IncludesRelationshipData()
+        {
+            var person = new Person();
+            var target = new JsonApiSerializer();
+            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/api/people/1");
+
+            var included = result["included"] as JArray;
+            var job = included[0];
+            Assert.Equal(1, included.Count);
+
+            Assert.Equal(person.Job.Id, job["id"]);
+            Assert.NotNull(job["attributes"]);
         }
     }
 }
