@@ -5,11 +5,11 @@ namespace Saule
 {
     public class ApiResponse<T>
     {
-        private ApiModel _model;
+        private ApiResource _model;
         private T _object;
         private JObject _objectJson;
 
-        public ApiResponse(T obj, ApiModel model)
+        public ApiResponse(T obj, ApiResource model)
         {
             _object = obj;
             _objectJson = JObject.FromObject(_object);
@@ -19,7 +19,7 @@ namespace Saule
         public JObject ToJson()
         {
             var data = new JObject();
-            data["type"] = _model.ModelType.ToDashed();
+            data["type"] = _model.ResourceType.ToDashed();
             data["id"] = ResolveAttributeValue("id");
 
             data["attributes"] = GetAttributes();

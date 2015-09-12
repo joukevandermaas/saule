@@ -1,8 +1,8 @@
 ﻿namespace Saule
 {
-    public class ModelAttribute
+    public class ResourceAttribute
     {
-        public ModelAttribute(string name)
+        public ResourceAttribute(string name)
         {
             Name = name.ToCamelCase();
         }

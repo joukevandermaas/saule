@@ -2,9 +2,9 @@
 
 namespace Saule
 {
-    public class ModelRelationship
+    public class ResourceRelationship
     {
-        public ModelRelationship(string name, RelationshipType relationshipType, Type modelType, string urlPath)
+        public ResourceRelationship(string name, RelationshipType relationshipType, Type modelType, string urlPath)
         {
             Name = name.ToCamelCase();
             RelationshipType = RelationshipType;

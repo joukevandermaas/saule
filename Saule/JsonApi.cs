@@ -11,16 +11,16 @@ namespace Saule
             return new ApiResponse<T>(obj, model);
         }
 
-        private static ApiModel GetModelFor(Type modelType)
+        private static ApiResource GetModelFor(Type modelType)
         {
-            if (!modelType.IsSubclassOf(typeof(ApiModel)))
+            if (!modelType.IsSubclassOf(typeof(ApiResource)))
                 throw new ArgumentException("Model must be a subclass of Saule.ApiModel", "modelType");
 
             try
             {
                 var model = Activator.CreateInstance(modelType);
 
-                return (ApiModel)model;
+                return (ApiResource)model;
             }
             catch (MissingMethodException ex)
             {

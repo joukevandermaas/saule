@@ -1,24 +1,24 @@
 # Saule
 Saule is an Json Api (version 1.0) library for ASP.Net Web API 2.
 
-To use Saule, you must define models that contain the information
+To use Saule, you must define resources that contain the information
 about your domain:
 ```c#
-public class PersonModel : ApiModel 
+public class PersonResource : ApiResource 
 {
-  public PersonModel()
+  public PersonResource()
   {
     Attribute("FirstName");
     Attribute("LastName");
     Attribute("Age");
 
-    BelongsTo("Job", typeof(CompanyModel));
-    HasMany("Friends", typeof(PersonModel));
+    BelongsTo("Job", typeof(CompanyResource));
+    HasMany("Friends", typeof(PersonResource));
   }
 }
-public class CompanyModel : ApiModel
+public class CompanyResource : ApiResource
 {
-  public CompanyModel()
+  public CompanyResource()
   {
     Attribute("Name");
     Attribute("NumberOfEmployees");
@@ -26,14 +26,18 @@ public class CompanyModel : ApiModel
 }
 ```
 
-You can then use these to serialize any class into json api:
+You can then use these to serialize any class into json api
+(as long as your class has properties with the same names as
+in your model):
 ```c#
 public class PersonController : ApiController
 {
-  [HttpGet, Route("people/{id}")]
-  public ApiResponse<Person> GetPerson(string id)
+  [HttpGet] 
+  [ApiResource(typeof(PersonResource)]
+  [Route("people/{id}")]
+  public JohnSmith GetPerson(string id)
   {
-    return new Person().ToApiResponse(typeof(PersonModel));
+    return new JohnSmith();
   }
 }
 ```

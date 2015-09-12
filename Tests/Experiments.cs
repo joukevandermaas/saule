@@ -18,13 +18,13 @@ namespace Tests
         }
     }
 
-    public class PersonModel : ApiModel
+    public class PersonModel : ApiResource
     {
         public PersonModel()
         {
-            Attribute("firstName");
-            Attribute("lastName");
-            Attribute("age");
+            WithAttribute("firstName");
+            WithAttribute("lastName");
+            WithAttribute("age");
 
             BelongsTo("father", typeof(PersonModel));
             BelongsTo("mother", typeof(PersonModel));
