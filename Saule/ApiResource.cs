@@ -55,7 +55,7 @@ namespace Saule
         /// Specify an attribute of this resource.
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
-        protected void WithAttribute(string name)
+        protected void Attribute(string name)
         {
             _attributes.Add(new ResourceAttribute(name));
         }

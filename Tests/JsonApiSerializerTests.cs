@@ -64,9 +64,9 @@ namespace Tests
         {
             public PersonResource()
             {
-                WithAttribute("FirstName");
-                WithAttribute("LastName");
-                WithAttribute("Age");
+                Attribute("FirstName");
+                Attribute("LastName");
+                Attribute("Age");
 
                 BelongsTo("Job", typeof(CompanyResource));
                 HasMany("Friends", typeof(PersonResource));
@@ -77,8 +77,8 @@ namespace Tests
             public CompanyResource()
             {
                 WithType("Coorporation");
-                WithAttribute("Name");
-                WithAttribute("NumberOfEmployees");
+                Attribute("Name");
+                Attribute("NumberOfEmployees");
             }
         }
     }

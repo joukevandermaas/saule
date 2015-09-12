@@ -1,28 +1,28 @@
 # Saule
-Saule is an Json Api (version 1.0) library for ASP.Net Web API 2.
+Saule is a Json Api (version 1.0) library for ASP.Net Web API 2.
 
 To use Saule, you must define resources that contain the information
 about your domain:
 ```c#
 public class PersonResource : ApiResource 
 {
-  public PersonResource()
-  {
-    WithAttribute("FirstName");
-    WithAttribute("LastName");
-    WithAttribute("Age");
+    public PersonResource()
+    {
+        Attribute("FirstName");
+        Attribute("LastName");
+        Attribute("Age");
 
-    BelongsTo("Job", typeof(CompanyResource));
-    HasMany("Friends", typeof(PersonResource));
-  }
+        BelongsTo("Job", typeof(CompanyResource));
+        HasMany("Friends", typeof(PersonResource));
+    }
 }
 public class CompanyResource : ApiResource
 {
-  public CompanyResource()
-  {
-    WithAttribute("Name");
-    WithAttribute("NumberOfEmployees");
-  }
+    public CompanyResource()
+    {
+        Attribute("Name");
+        Attribute("NumberOfEmployees");
+    }
 }
 ```
 
@@ -32,13 +32,13 @@ in your model):
 ```c#
 public class PersonController : ApiController
 {
-  [HttpGet] 
-  [ApiResource(typeof(PersonResource)]
-  [Route("people/{id}")]
-  public JohnSmith GetPerson(string id)
-  {
-    return new JohnSmith();
-  }
+    [HttpGet] 
+    [ApiResource(typeof(PersonResource)]
+    [Route("people/{id}")]
+    public JohnSmith GetPerson(string id)
+    {
+        return new JohnSmith();
+    }
 }
 ```
 
@@ -60,7 +60,7 @@ GET people/123
           "self": "people/123/relationships/job",
           "related": "people/123/job"
         },
-        "data" {
+        "data": {
           "type": "company",
           "id": "345"
         }

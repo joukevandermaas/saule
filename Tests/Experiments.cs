@@ -18,9 +18,9 @@ namespace Tests
     {
         public PersonModel()
         {
-            WithAttribute("firstName");
-            WithAttribute("lastName");
-            WithAttribute("age");
+            Attribute("firstName");
+            Attribute("lastName");
+            Attribute("age");
 
             BelongsTo("father", typeof(PersonModel));
             BelongsTo("mother", typeof(PersonModel));
