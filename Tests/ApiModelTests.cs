@@ -15,11 +15,11 @@ namespace Tests
         {
             var model = new TestApiModel();
 
-            Assert.Equal("TestApi", model.ModelType);
+            Assert.Equal("test-api", model.ModelType);
 
             var model2 = new TestApiModel2();
 
-            Assert.Equal("TestApiModel2", model2.ModelType);
+            Assert.Equal("test-api-model2", model2.ModelType);
         }
     }
 }

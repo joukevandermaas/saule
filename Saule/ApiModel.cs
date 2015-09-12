@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Saule
 {
@@ -13,18 +10,23 @@ namespace Saule
 
         public IEnumerable<ModelAttribute> Attributes => _attributes;
         public IEnumerable<ModelRelationship> Relationships => _relationships;
-        public string ModelType { get; }
+        public string ModelType { get; private set; }
 
         protected ApiModel()
         {
             var name = GetType().Name;
             if(name.EndsWith("Model"))
             {
-                ModelType = name.Remove(name.Length - "Model".Length);
+                Type(name.Remove(name.Length - "Model".Length));
             } else
             {
-                ModelType = name;
+                Type(name);
             }
+        }
+
+        protected void Type(string name)
+        {
+            ModelType = name.ToDashed();
         }
 
         protected void Attribute(string name)

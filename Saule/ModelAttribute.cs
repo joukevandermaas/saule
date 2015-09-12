@@ -4,7 +4,7 @@
     {
         public ModelAttribute(string name)
         {
-            Name = name;
+            Name = name.ToCamelCase();
         }
 
         public string Name { get; }

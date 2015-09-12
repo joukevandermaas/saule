@@ -12,6 +12,7 @@ namespace Tests
         {
             var person = new Person();
             var response = person.ToApiResponse(typeof(OtherModel));
+            var json = response.ToJson();
 
             Assert.True(true);
         }

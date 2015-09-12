@@ -6,10 +6,10 @@ namespace Saule
     {
         public ModelRelationship(string name, RelationshipType relationshipType, Type modelType, string urlPath)
         {
-            Name = name;
+            Name = name.ToCamelCase();
             RelationshipType = RelationshipType;
             ModelType = modelType;
-            UrlPath = urlPath;
+            UrlPath = urlPath.ToDashed();
         }
 
         public string Name { get; }
