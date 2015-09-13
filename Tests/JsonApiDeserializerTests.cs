@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Serialization;
-using System.Collections.Generic;
 using System.Linq;
 using Tests.SampleModels;
 using Xunit;

@@ -17,11 +17,11 @@ namespace Saule.Serialization
 
             result["data"] = SerializeArrayOrObject(objectJson,
                 (properties, multiple) => SerializeData(
-                    resource, 
-                    multiple 
-                        ? CombineUris(baseUrl, GetValue("id", properties).ToString()) 
+                    resource,
+                    multiple
+                        ? CombineUris(baseUrl, GetValue("id", properties).ToString())
                         : baseUrl,
-                    properties, 
+                    properties,
                     included));
 
             result["included"] = included;
@@ -33,6 +33,7 @@ namespace Saule.Serialization
         {
             return SerializeArrayOrObject(token, (s, b) => SerializeObj(s));
         }
+
         private JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, bool, JToken> SerializeObj)
         {
             var dataArray = token as JArray;
