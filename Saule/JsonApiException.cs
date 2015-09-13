@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Saule.Serialization
+namespace Saule
 {
     /// <summary>
     /// The exception that is thrown when an the Json Api serializer misses necessary information

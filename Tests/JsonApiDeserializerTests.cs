@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using Saule;
 using Saule.Serialization;
 using System.Linq;
 using Tests.SampleModels;
@@ -29,16 +28,16 @@ namespace Tests
             var serializer = new JsonApiSerializer();
 
             _singleJson = serializer.Serialize(
-                _person.ToApiResponse(typeof(PersonResource)), "/people/1/");
+                new ApiResponse(_person, new PersonResource()), "/people/1/");
             _collectionJson = serializer.Serialize(
-                _people.ToApiResponse(typeof(PersonResource)), "/people/");
+                new ApiResponse(_people, new PersonResource()), "/people/");
         }
 
         [Fact(DisplayName = "Deserializes id and attributes")]
         public void DeserializesAttributes()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_singleJson);
+            var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
 
             Assert.Equal(_person.Id, result.Id);
             Assert.Equal(_person.FirstName, result.FirstName);
@@ -50,7 +49,7 @@ namespace Tests
         public void DeserializesBelongsToRelationships()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_singleJson);
+            var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
             var job = result.Job;
 
             Assert.Equal(_person.Job.Id, job.Id);
@@ -62,7 +61,7 @@ namespace Tests
         public void DeserializesHasManyRelationship()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_singleJson);
+            var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
 
             var expected = _person.Friends.Single();
             var actual = result.Friends.Single();
@@ -79,7 +78,7 @@ namespace Tests
         public void DeserializesEnumerables()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person[]>(_collectionJson);
+            var result = target.Deserialize(_collectionJson, typeof(Person[])) as Person[];
 
             Assert.Equal(_people.Length, result.Length);
             for (var i = 0; i < _people.Length; i++)

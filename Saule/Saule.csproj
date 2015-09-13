@@ -53,17 +53,17 @@
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
     <Compile Include="Serialization\ApiResponse.cs" />
-    <Compile Include="JsonApi.cs" />
     <Compile Include="ResourceAttribute.cs" />
     <Compile Include="ResourceRelationship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelationshipType.cs" />
     <Compile Include="Serialization\JsonApiDeserializer.cs" />
-    <Compile Include="Serialization\JsonApiException.cs" />
+    <Compile Include="JsonApiException.cs" />
     <Compile Include="Serialization\JsonApiSerializer.cs" />
     <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

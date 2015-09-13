@@ -86,7 +86,7 @@ namespace Tests.SampleModels
     {
         public CompanyResource()
         {
-            WithType("Coorporation");
+            OfType("Coorporation");
             Attribute("Name");
             Attribute("NumberOfEmployees");
         }

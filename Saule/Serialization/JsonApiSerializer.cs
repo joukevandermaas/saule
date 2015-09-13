@@ -139,7 +139,10 @@ namespace Saule.Serialization
 
         private string CombineUris(params string[] parts)
         {
-            return "/" + string.Join("/", parts.Select(s => s.Trim('/')).ToArray());
+            var result = string.Join("/", parts.Select(s => s.Trim('/')).ToArray());
+            return Uri.IsWellFormedUriString(parts[0], UriKind.Absolute)
+                ? result
+                : "/" + result;
         }
     }
 }

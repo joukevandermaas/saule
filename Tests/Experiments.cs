@@ -22,7 +22,7 @@ namespace Tests
             var json = new JsonApiSerializer().Serialize(new ApiResponse(person, new PersonResource()), "/");
             var target = new JsonApiDeserializer();
 
-            var result = target.Deserialize<Person>(json);
+            var result = target.Deserialize(json, typeof(Person));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Tests
         {
             var person = new Person(prefill: true);
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var attributes = result["data"]["attributes"];
             Assert.Equal(person.FirstName, attributes.Value<string>("firstName"));
@@ -27,7 +27,7 @@ namespace Tests
         {
             var person = new Person(prefill: true);
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var attributes = result["data"]["attributes"];
             Assert.True(attributes["numberOfLegs"] == null);
@@ -39,7 +39,7 @@ namespace Tests
         {
             var company = new Company(prefill: true);
             var target = new JsonApiSerializer();
-            var result = target.Serialize(company.ToApiResponse(typeof(CompanyResource)), "/companies/1");
+            var result = target.Serialize(new ApiResponse(company, new CompanyResource()), "/companies/1");
 
             Assert.Equal("coorporation", result["data"]["type"]);
         }
@@ -49,7 +49,7 @@ namespace Tests
         {
             var person = new Person(prefill: true);
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
@@ -62,6 +62,19 @@ namespace Tests
             Assert.Equal("/people/1/relationships/friends", friends["links"]["self"]);
         }
 
+        [Fact(DisplayName = "Builds absolute links correctly")]
+        public void BuildsRightLinks()
+        {
+            var person = new Person(prefill: true);
+            var target = new JsonApiSerializer();
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "http://example.com/people/1");
+
+            var job = result["data"]["relationships"]["job"];
+
+            Assert.Equal("http://example.com/people/1/employer", job["links"]["related"]);
+            Assert.Equal("http://example.com/people/1/relationships/employer", job["links"]["self"]);
+        }
+
         [Fact(DisplayName = "Throws exception when Id is missing")]
         public void ThrowsRightException()
         {
@@ -70,7 +83,7 @@ namespace Tests
 
             Assert.Throws<JsonApiException>(() =>
             {
-                var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+                var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
             });
         }
 
@@ -80,7 +93,7 @@ namespace Tests
             var person = new PersonWithNoJob();
             var target = new JsonApiSerializer();
 
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
@@ -95,7 +108,7 @@ namespace Tests
         {
             var person = new Person(prefill: true);
             var target = new JsonApiSerializer();
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var included = result["included"] as JArray;
             var job = included[0];
@@ -111,7 +124,7 @@ namespace Tests
             var person = new Person { Id = "45" };
             var target = new JsonApiSerializer();
 
-            var result = target.Serialize(person.ToApiResponse(typeof(PersonResource)), "/people/1");
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var relationships = result["data"]["relationships"];
             var attributes = result["data"]["attributes"];
@@ -136,7 +149,7 @@ namespace Tests
             };
             var target = new JsonApiSerializer();
 
-            var result = target.Serialize(people.ToApiResponse(typeof(PersonResource)), "/people");
+            var result = target.Serialize(new ApiResponse(people, new PersonResource()), "/people");
 
             var included = result["included"] as JArray;
             var jobLinks = (result["data"] as JArray)[0]["relationships"]["job"]["links"];

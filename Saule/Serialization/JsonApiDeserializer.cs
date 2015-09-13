@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Saule.Serialization
 {
     internal class JsonApiDeserializer
     {
-        public T Deserialize<T>(JToken json)
+        public object Deserialize(JToken json, Type targetType)
         {
-            return ToFlatStructure(json).ToObject<T>();
+            return ToFlatStructure(json).ToObject(targetType);
         }
 
         private JToken ToFlatStructure(JToken json)

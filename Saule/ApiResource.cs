@@ -34,11 +34,11 @@ namespace Saule
             var name = GetType().Name;
             if (name.ToUpperInvariant().EndsWith("RESOURCE"))
             {
-                WithType(name.Remove(name.Length - "RESOURCE".Length));
+                OfType(name.Remove(name.Length - "RESOURCE".Length));
             }
             else
             {
-                WithType(name);
+                OfType(name);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Saule
         /// is the name of the class (without 'Resource', if it exists).
         /// </summary>
         /// <param name="value">The type of the resource.</param>
-        protected void WithType(string value)
+        protected void OfType(string value)
         {
             ResourceType = value.ToDashed();
         }
@@ -58,6 +58,8 @@ namespace Saule
         /// <param name="name">The name of the attribute.</param>
         protected void Attribute(string name)
         {
+            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add an attribute named 'id'.");
+
             _attributes.Add(new ResourceAttribute(name));
         }
 
@@ -80,6 +82,8 @@ namespace Saule
         /// is the name)</param>
         protected void BelongsTo(string name, Type type, string path)
         {
+            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
+
             _relationships.Add(new ResourceRelationship(name, RelationshipKind.Single, type, path, this));
         }
 
@@ -102,6 +106,8 @@ namespace Saule
         /// is the name)</param>
         protected void HasMany(string name, Type type, string path)
         {
+            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
+
             _relationships.Add(new ResourceRelationship(name, RelationshipKind.Many, type, path, this));
         }
     }
