@@ -10,18 +10,18 @@ namespace Saule.Serialization
     public class JsonApiException : Exception
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public JsonApiException() : base("An error occured while serializing or deserializing a Json Api document")
         {
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="message">
         /// A description of the error. The content of message is intended to be understood by humans.
-        /// The caller of this constructor is required to ensure that this string has been localized 
+        /// The caller of this constructor is required to ensure that this string has been localized
         /// for the current system culture.
         /// </param>
         public JsonApiException(string message) : base(message)
@@ -29,11 +29,11 @@ namespace Saule.Serialization
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="message">
         /// A description of the error. The content of message is intended to be understood by humans.
-        /// The caller of this constructor is required to ensure that this string has been localized 
+        /// The caller of this constructor is required to ensure that this string has been localized
         /// for the current system culture.
         /// </param>
         /// <param name="innerException">
@@ -45,7 +45,7 @@ namespace Saule.Serialization
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>

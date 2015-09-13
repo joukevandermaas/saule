@@ -7,6 +7,7 @@ namespace Tests
     {
         private class TestApiResource : ApiResource
         { }
+
         private class TestApiResource2 : ApiResource
         { }
 

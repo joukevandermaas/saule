@@ -1,10 +1,8 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Saule.Serialization
 {
-    class JsonApiDeserializer
+    internal class JsonApiDeserializer
     {
         public T Deserialize<T>(JToken json)
         {
@@ -14,7 +12,7 @@ namespace Saule.Serialization
         private JToken ToFlatStructure(JToken json)
         {
             var array = json["data"] as JArray;
-            if(array != null)
+            if (array != null)
             {
                 var result = new JArray();
 

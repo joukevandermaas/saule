@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -15,6 +14,7 @@ namespace Saule
 
             return string.Join("-", parts.ToArray());
         }
+
         public static string ToPascalCase(this string source)
         {
             // SomeString
@@ -23,6 +23,7 @@ namespace Saule
             return string.Join("", parts.Select(s =>
                 CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s)).ToArray());
         }
+
         public static string ToCamelCase(this string source)
         {
             // someString

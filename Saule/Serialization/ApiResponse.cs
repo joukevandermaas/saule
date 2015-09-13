@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Saule.Serialization
+﻿namespace Saule.Serialization
 {
     internal class ApiResponse
     {

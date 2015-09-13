@@ -27,15 +27,16 @@ namespace Saule
         public string ResourceType { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected ApiResource()
         {
             var name = GetType().Name;
-            if(name.ToUpperInvariant().EndsWith("RESOURCE"))
+            if (name.ToUpperInvariant().EndsWith("RESOURCE"))
             {
                 WithType(name.Remove(name.Length - "RESOURCE".Length));
-            } else
+            }
+            else
             {
                 WithType(name);
             }
@@ -69,6 +70,7 @@ namespace Saule
         {
             BelongsTo(name, type, name);
         }
+
         /// <summary>
         /// Specify a to-one relationship of this resource.
         /// </summary>

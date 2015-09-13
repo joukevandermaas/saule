@@ -6,7 +6,7 @@
     public class ResourceAttribute
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
         public ResourceAttribute(string name)

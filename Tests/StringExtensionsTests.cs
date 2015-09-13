@@ -1,9 +1,5 @@
 ﻿using Saule;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Tests
@@ -16,17 +12,19 @@ namespace Tests
         private static string[] _spaced = { "", "some string", "some", "Some very Long string" };
         private static string[] _traps = { "----", "   some---String    ", "_- some ", "_some_very-longString" };
 
-        [Fact(DisplayName ="Camel case works")]
+        [Fact(DisplayName = "Camel case works")]
         public void TestCamel()
         {
             TestCasing(_camel, StringExtensions.ToCamelCase);
         }
-        [Fact(DisplayName ="Pascal case works")]
+
+        [Fact(DisplayName = "Pascal case works")]
         public void TestPascal()
         {
             TestCasing(_pascal, StringExtensions.ToPascalCase);
         }
-        [Fact(DisplayName ="Dashed works")]
+
+        [Fact(DisplayName = "Dashed works")]
         public void TestDashed()
         {
             TestCasing(_dashed, StringExtensions.ToDashed);
@@ -34,7 +32,7 @@ namespace Tests
 
         private void TestCasing(string[] array, Func<string, string> function)
         {
-            for(int i = 0;i < array.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 Assert.Equal(array[i], function(_camel[i]));
                 Assert.Equal(array[i], function(_pascal[i]));

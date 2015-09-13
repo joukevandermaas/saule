@@ -15,7 +15,7 @@ namespace Saule.Serialization
 
             var included = new JArray();
 
-            result["data"] = SerializeArrayOrObject(objectJson, 
+            result["data"] = SerializeArrayOrObject(objectJson,
                 properties => SerializeData(resource, baseUrl, properties, included));
 
             result["included"] = included;
@@ -51,6 +51,7 @@ namespace Saule.Serialization
 
             return data;
         }
+
         private JToken SerializeMinimalData(ApiResource resource, IDictionary<string, JToken> properties)
         {
             var data = new JObject();
@@ -70,6 +71,7 @@ namespace Saule.Serialization
 
             return attributes;
         }
+
         private JToken GetValue(string name, IDictionary<string, JToken> properties)
         {
             return properties[name.ToPascalCase()];
@@ -89,8 +91,9 @@ namespace Saule.Serialization
                 var relationshipValues = GetValue(rel.Name, properties);
                 if (relationshipValues != null)
                 {
-                    var data = SerializeArrayOrObject(relationshipValues, 
-                        props => {
+                    var data = SerializeArrayOrObject(relationshipValues,
+                        props =>
+                        {
                             var values = SerializeMinimalData(rel.RelatedResource, props);
                             var includedData = values.DeepClone();
                             includedData["attributes"] = SerializeAttributes(rel.RelatedResource, props);

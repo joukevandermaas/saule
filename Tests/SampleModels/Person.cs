@@ -12,6 +12,7 @@ namespace Tests.SampleModels
         public Company Job => new Company();
         public IEnumerable<Person> Friends => new List<Person>();
     }
+
     public class PersonWithNoJob
     {
         public string Id => "123";
@@ -21,6 +22,7 @@ namespace Tests.SampleModels
         public int NumberOfLegs => 2;
         public IEnumerable<Person> Friends => new List<Person>();
     }
+
     public class Person
     {
         public Person(bool prefill = false)
@@ -36,6 +38,7 @@ namespace Tests.SampleModels
                 Friends = new List<Person>();
             }
         }
+
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -44,6 +47,7 @@ namespace Tests.SampleModels
         public Company Job { get; set; }
         public IEnumerable<Person> Friends { get; set; }
     }
+
     public class Company
     {
         public Company(bool prefill = false)
@@ -55,10 +59,12 @@ namespace Tests.SampleModels
                 NumberOfEmployees = 24;
             }
         }
+
         public string Id { get; set; }
         public string Name { get; set; }
         public int NumberOfEmployees { get; set; }
     }
+
     public class PersonResource : ApiResource
     {
         public PersonResource()
@@ -71,6 +77,7 @@ namespace Tests.SampleModels
             HasMany("Friends", typeof(PersonResource));
         }
     }
+
     public class CompanyResource : ApiResource
     {
         public CompanyResource()
