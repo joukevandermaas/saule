@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Experiments.cs" />
+    <Compile Include="JsonApiDeserializerTests.cs" />
     <Compile Include="JsonApiSerializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleModels\Company.cs" />
