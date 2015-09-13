@@ -25,11 +25,11 @@ namespace Tests.SampleModels
 
     public class Person
     {
-        public Person(bool prefill = false)
+        public Person(bool prefill = false, string id = "123")
         {
             if (prefill)
             {
-                Id = "123";
+                Id = id;
                 FirstName = "John";
                 LastName = "Smith";
                 Age = 34;

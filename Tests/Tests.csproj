@@ -71,7 +71,6 @@
     <Compile Include="JsonApiDeserializerTests.cs" />
     <Compile Include="JsonApiSerializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleModels\Company.cs" />
     <Compile Include="SampleModels\Person.cs" />
     <Compile Include="StringExtensionsTests.cs" />
   </ItemGroup>

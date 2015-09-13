@@ -16,7 +16,13 @@ namespace Saule.Serialization
             var included = new JArray();
 
             result["data"] = SerializeArrayOrObject(objectJson,
-                properties => SerializeData(resource, baseUrl, properties, included));
+                (properties, multiple) => SerializeData(
+                    resource, 
+                    multiple 
+                        ? CombineUris(baseUrl, GetValue("id", properties).ToString()) 
+                        : baseUrl,
+                    properties, 
+                    included));
 
             result["included"] = included;
 
@@ -25,6 +31,10 @@ namespace Saule.Serialization
 
         private JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> SerializeObj)
         {
+            return SerializeArrayOrObject(token, (s, b) => SerializeObj(s));
+        }
+        private JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, bool, JToken> SerializeObj)
+        {
             var dataArray = token as JArray;
             if (dataArray != null)
             {
@@ -32,13 +42,13 @@ namespace Saule.Serialization
                 foreach (var obj in dataArray)
                 {
                     if (obj is JObject)
-                        data.Add(SerializeObj(obj as JObject));
+                        data.Add(SerializeObj(obj as JObject, true));
                 }
                 return data;
             }
             else
             {
-                return token is JObject ? SerializeObj(token as JObject) : null;
+                return token is JObject ? SerializeObj(token as JObject, false) : null;
             }
         }
 
@@ -97,7 +107,8 @@ namespace Saule.Serialization
                             var values = SerializeMinimalData(rel.RelatedResource, props);
                             var includedData = values.DeepClone();
                             includedData["attributes"] = SerializeAttributes(rel.RelatedResource, props);
-                            included.Add(includedData);
+                            if (!ContainsResource(included, includedData))
+                                included.Add(includedData);
 
                             return values;
                         });
@@ -108,6 +119,13 @@ namespace Saule.Serialization
             }
 
             return relationships;
+        }
+
+        private bool ContainsResource(JArray included, JToken includedData)
+        {
+            return included.Any(t =>
+                t.Value<string>("type") == t.Value<string>("type") &&
+                t.Value<string>("id") == t.Value<string>("id"));
         }
 
         private JToken EnsureHasId(IDictionary<string, JToken> properties)

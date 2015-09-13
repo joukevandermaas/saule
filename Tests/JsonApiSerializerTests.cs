@@ -123,5 +123,26 @@ namespace Tests
             Assert.Null(relationships["job"]["data"]);
             Assert.Null(relationships["friends"]["data"]);
         }
+
+        [Fact(DisplayName = "Serializes enumerables properly")]
+        public void SerializesEnumerables()
+        {
+            var people = new Person[]
+            {
+                new Person(id: "a", prefill: true),
+                new Person(id: "b", prefill: true),
+                new Person(id: "c", prefill: true),
+                new Person(id: "d", prefill: true)
+            };
+            var target = new JsonApiSerializer();
+
+            var result = target.Serialize(people.ToApiResponse(typeof(PersonResource)), "/people");
+
+            var included = result["included"] as JArray;
+            var jobLinks = (result["data"] as JArray)[0]["relationships"]["job"]["links"];
+
+            Assert.Equal(1, included.Count);
+            Assert.Equal("/people/a/employer", jobLinks.Value<string>("related"));
+        }
     }
 }
