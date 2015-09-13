@@ -58,6 +58,7 @@
     <Compile Include="ResourceRelationship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelationshipType.cs" />
+    <Compile Include="Serialization\JsonApiDeserializer.cs" />
     <Compile Include="Serialization\JsonApiException.cs" />
     <Compile Include="Serialization\JsonApiSerializer.cs" />
     <Compile Include="StringExtensions.cs" />
