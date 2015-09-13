@@ -77,8 +77,8 @@ namespace Tests.SampleModels
             Attribute("LastName");
             Attribute("Age");
 
-            BelongsTo("Job", typeof(CompanyResource), "/employer");
-            HasMany("Friends", typeof(PersonResource));
+            BelongsTo<CompanyResource>("Job", "/employer");
+            HasMany<PersonResource>("Friends");
         }
     }
 

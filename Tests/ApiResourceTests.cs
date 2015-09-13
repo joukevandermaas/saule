@@ -23,7 +23,7 @@ namespace Tests
         {
             public TestApiResource4()
             {
-                HasMany("Id", typeof(TestApiResource));
+                HasMany<TestApiResource>("Id");
             }
         }
 
@@ -31,7 +31,7 @@ namespace Tests
         {
             public TestApiResource5()
             {
-                BelongsTo("Id", typeof(TestApiResource));
+                BelongsTo<TestApiResource>("Id");
             }
         }
 

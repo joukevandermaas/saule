@@ -11,7 +11,7 @@ namespace Website.Controllers
             Attribute("Id");
             Attribute("Name");
 
-            HasMany("Interests", typeof(OtherResource), "/hobbies/");
+            HasMany<OtherResource>("Interests", "/hobbies/");
         }
     }
 

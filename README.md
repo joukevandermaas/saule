@@ -12,8 +12,8 @@ public class PersonResource : ApiResource
         Attribute("LastName");
         Attribute("Age");
 
-        BelongsTo("Job", typeof(CompanyResource));
-        HasMany("Friends", typeof(PersonResource));
+        BelongsTo<CompanyResource>("Job");
+        HasMany<PersonResource>("Friends");
     }
 }
 public class CompanyResource : ApiResource

@@ -68,9 +68,9 @@ namespace Saule
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
         /// <param name="type">The type of the related type.</param>
-        protected void BelongsTo(string name, Type type)
+        protected void BelongsTo<T>(string name) where T : ApiResource, new()
         {
-            BelongsTo(name, type, name);
+            BelongsTo<T>(name, name);
         }
 
         /// <summary>
@@ -80,11 +80,11 @@ namespace Saule
         /// <param name="type">The type of the related type.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        protected void BelongsTo(string name, Type type, string path)
+        protected void BelongsTo<T>(string name, string path) where T : ApiResource, new()
         {
             if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
 
-            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Single, type, path, this));
+            _relationships.Add(new ResourceRelationship<T>(name, RelationshipKind.Single, path, this));
         }
 
         /// <summary>
@@ -92,9 +92,9 @@ namespace Saule
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
         /// <param name="type">The type of the related type.</param>
-        protected void HasMany(string name, Type type)
+        protected void HasMany<T>(string name) where T : ApiResource, new()
         {
-            HasMany(name, type, name);
+            HasMany<T>(name, name);
         }
 
         /// <summary>
@@ -104,11 +104,11 @@ namespace Saule
         /// <param name="type">The type of the related type.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        protected void HasMany(string name, Type type, string path)
+        protected void HasMany<T>(string name, string path) where T : ApiResource, new()
         {
             if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
 
-            _relationships.Add(new ResourceRelationship(name, RelationshipKind.Many, type, path, this));
+            _relationships.Add(new ResourceRelationship<T>(name, RelationshipKind.Many, path, this));
         }
     }
 }

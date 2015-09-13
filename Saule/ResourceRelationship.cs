@@ -2,25 +2,18 @@
 
 namespace Saule
 {
-    /// <summary>
-    /// Represents a related resource (to-one or to-many).
-    /// </summary>
-    public class ResourceRelationship
+    public abstract class ResourceRelationship
     {
         internal ResourceRelationship(
             string name,
             RelationshipKind relationshipKind,
-            Type resourceType,
             string urlPath,
-            ApiResource resource)
+            ApiResource relationshipResource)
         {
             Name = name.ToCamelCase();
             RelationshipKind = relationshipKind;
             UrlPath = urlPath.ToDashed();
-
-            RelatedResource = resourceType.Equals(resource.GetType())
-                ? RelatedResource = resource
-                : RelatedResource = (ApiResource)Activator.CreateInstance(resourceType);
+            RelatedResource = relationshipResource;
         }
 
         /// <summary>
@@ -42,5 +35,26 @@ namespace Saule
         /// The pathspec of this relationship.
         /// </summary>
         public string UrlPath { get; }
+    }
+
+    /// <summary>
+    /// Represents a related resource (to-one or to-many).
+    /// </summary>
+    public class ResourceRelationship<T> : ResourceRelationship where T : ApiResource, new()
+    {
+        internal ResourceRelationship(
+            string name,
+            RelationshipKind relationshipKind,
+            string urlPath,
+            ApiResource relationshipSource)
+            : base(
+              name,
+               relationshipKind,
+               urlPath,
+               typeof(T).Equals(relationshipSource.GetType())
+                   ? relationshipSource
+                   : new T())
+        {
+        }
     }
 }
