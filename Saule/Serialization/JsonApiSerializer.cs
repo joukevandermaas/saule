@@ -23,7 +23,7 @@ namespace Saule.Serialization
             return result;
         }
 
-        public JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> SerializeObj)
+        private JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> SerializeObj)
         {
             var dataArray = token as JArray;
             if (dataArray != null)
@@ -31,13 +31,14 @@ namespace Saule.Serialization
                 var data = new JArray();
                 foreach (var obj in dataArray)
                 {
-                    data.Add(SerializeObj(obj as JObject));
+                    if (obj is JObject)
+                        data.Add(SerializeObj(obj as JObject));
                 }
                 return data;
             }
             else
             {
-                return SerializeObj(token as JObject);
+                return token is JObject ? SerializeObj(token as JObject) : null;
             }
         }
 
@@ -97,7 +98,8 @@ namespace Saule.Serialization
 
                             return values;
                         });
-                    relToken["data"] = data;
+                    if (data != null)
+                        relToken["data"] = data;
                 }
                 relationships[rel.Name] = relToken;
             }
