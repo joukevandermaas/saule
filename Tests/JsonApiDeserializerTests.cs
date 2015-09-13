@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
+using Saule;
 using Saule.Serialization;
+using System.Collections.Generic;
 using System.Linq;
 using Tests.SampleModels;
 using Xunit;
@@ -8,22 +10,36 @@ namespace Tests
 {
     public class JsonApiDeserializerTests
     {
-        private JToken _json;
+        private JToken _singleJson;
+        private JToken _collectionJson;
         private Person _person;
+        private Person[] _people;
 
         public JsonApiDeserializerTests()
         {
             _person = new Person(prefill: true);
             _person.Friends = new[] { new Person(prefill: true) };
-            _json = new JsonApiSerializer().Serialize(
-                new ApiResponse(_person, new PersonResource()), "/people/1/");
+            _people = new Person[]
+            {
+                new Person(id: "a", prefill: true),
+                new Person(id: "b", prefill: true),
+                new Person(id: "c", prefill: true),
+                new Person(id: "d", prefill: true)
+            };
+
+            var serializer = new JsonApiSerializer();
+
+            _singleJson = serializer.Serialize(
+                _person.ToApiResponse(typeof(PersonResource)), "/people/1/");
+            _collectionJson = serializer.Serialize(
+                _people.ToApiResponse(typeof(PersonResource)), "/people/");
         }
 
         [Fact(DisplayName = "Deserializes id and attributes")]
         public void DeserializesAttributes()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_json);
+            var result = target.Deserialize<Person>(_singleJson);
 
             Assert.Equal(_person.Id, result.Id);
             Assert.Equal(_person.FirstName, result.FirstName);
@@ -35,7 +51,7 @@ namespace Tests
         public void DeserializesBelongsToRelationships()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_json);
+            var result = target.Deserialize<Person>(_singleJson);
             var job = result.Job;
 
             Assert.Equal(_person.Job.Id, job.Id);
@@ -47,7 +63,7 @@ namespace Tests
         public void DeserializesHasManyRelationship()
         {
             var target = new JsonApiDeserializer();
-            var result = target.Deserialize<Person>(_json);
+            var result = target.Deserialize<Person>(_singleJson);
 
             var expected = _person.Friends.Single();
             var actual = result.Friends.Single();
@@ -58,6 +74,19 @@ namespace Tests
             Assert.Equal(0, actual.Age);
             Assert.Null(actual.Job);
             Assert.Null(actual.Friends);
+        }
+
+        [Fact(DisplayName = "Deserializes enumerables properly")]
+        public void DeserializesEnumerables()
+        {
+            var target = new JsonApiDeserializer();
+            var result = target.Deserialize<Person[]>(_collectionJson);
+
+            Assert.Equal(_people.Length, result.Length);
+            for (var i = 0; i < _people.Length; i++)
+            {
+                Assert.Equal(_people[i].Id, result[i].Id);
+            }
         }
     }
 }

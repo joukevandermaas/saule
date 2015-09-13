@@ -25,6 +25,7 @@ namespace Tests.SampleModels
 
     public class Person
     {
+        public Person() { }
         public Person(bool prefill = false, string id = "123")
         {
             if (prefill)
