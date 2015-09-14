@@ -99,7 +99,9 @@ namespace Saule.Http
         public override MediaTypeFormatter GetPerRequestFormatterInstance(Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
             var actionDescriptor = (ReflectedHttpActionDescriptor)request.Properties["MS_HttpActionDescriptor"];
-            var attribute = actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
+            var attribute =
+                actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
+                ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
 
             return attribute == null
                 ? new JsonApiMediaTypeFormatter { CanWrite = false }

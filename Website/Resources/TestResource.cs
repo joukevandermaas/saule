@@ -8,7 +8,6 @@ namespace Website.Controllers
         {
             OfType("some very nice type name");
 
-            Attribute("Id");
             Attribute("Name");
 
             HasMany<OtherResource>("Interests", "/hobbies/");
