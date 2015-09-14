@@ -26,6 +26,11 @@ namespace Saule.Serialization
 
             result["included"] = included;
 
+            result["links"] = new JObject
+            {
+                { "self", new JValue(baseUrl) }
+            };
+
             return result;
         }
 
