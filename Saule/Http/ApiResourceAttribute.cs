@@ -5,7 +5,7 @@ namespace Saule.Http
     /// <summary>
     /// Attribute used to specify the api resource related to a controller action.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class ApiResourceAttribute : Attribute
     {
         /// <summary>

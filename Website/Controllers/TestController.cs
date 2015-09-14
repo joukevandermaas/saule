@@ -4,10 +4,10 @@ using Website.Models;
 
 namespace Website.Controllers
 {
+    [ApiResource(typeof(TestResource))]
     public class TestController : ApiController
     {
         [Route("test")]
-        [ApiResource(typeof(TestResource))]
         public TestModel Get()
         {
             return new TestModel
@@ -18,7 +18,6 @@ namespace Website.Controllers
         }
 
         [Route("test")]
-        [ApiResource(typeof(TestResource))]
         public TestModel Post(TestModel model)
         {
             return model;
