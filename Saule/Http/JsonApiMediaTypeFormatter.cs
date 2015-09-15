@@ -21,25 +21,29 @@ namespace Saule.Http
     {
         private Type _resourceType;
         private string _baseUrl;
-        private JsonApiSerializer _serializer;
-        private JsonApiDeserializer _deserializer;
-
-        private bool CanWrite { get; set; } = true;
 
         /// <summary>
-        ///
+        /// Creates a new instance of the JsonApiMediaTypeFormatter class.
         /// </summary>
         public JsonApiMediaTypeFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/vnd.api+json"));
-            _serializer = new JsonApiSerializer();
-            _deserializer = new JsonApiDeserializer();
         }
 
-        private JsonApiMediaTypeFormatter(Type resourceType, string baseUrl) : this()
+        /// <summary>
+        /// Creates a new instance of the JsonApiMediaTypeFormatter class for a particular request.
+        /// </summary>
+        /// <param name="request"></param>
+        public JsonApiMediaTypeFormatter(HttpRequestMessage request) : this()
         {
-            _resourceType = resourceType;
-            _baseUrl = baseUrl;
+            _baseUrl = request.RequestUri.ToString();
+
+            var actionDescriptor = (ReflectedHttpActionDescriptor)request.Properties["MS_HttpActionDescriptor"];
+            var attribute =
+                actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
+                ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
+
+            _resourceType = attribute.ResourceType;
         }
 
         /// <summary>
@@ -55,23 +59,50 @@ namespace Saule.Http
         /// </summary>
         public override bool CanWriteType(Type type)
         {
-            return CanWrite || type == typeof(HttpError);
+            return true;
         }
 
         /// <summary>
         ///
         /// </summary>
-        public async override Task WriteToStreamAsync(
+        public override async Task WriteToStreamAsync(
             Type type,
             object value,
             Stream writeStream,
             HttpContent content,
             TransportContext transportContext)
         {
-            var json = _serializer.Serialize(
+            var json = IsException(type)
+                ? SerializeError(value)
+                : SerializeOther(value);
+
+            await WriteJsonToStream(json, writeStream);
+        }
+
+        private bool IsException(Type type)
+        {
+            return type == typeof(HttpError) || type.IsSubclassOf(typeof(Exception));
+        }
+
+        private JToken SerializeOther(object value)
+        {
+            return new ResourceSerializer().Serialize(
                 new ApiResponse(value, _resourceType.CreateInstance<ApiResource>()),
                 _baseUrl);
-            using (var writer = new StreamWriter(writeStream))
+        }
+
+        private JToken SerializeError(object value)
+        {
+            var httpError = value as HttpError;
+            var serializer = new ErrorSerializer();
+            return httpError != null
+                ? serializer.Serialize(new ApiError(httpError))
+                : serializer.Serialize(new ApiError(value as Exception));
+        }
+
+        private async Task WriteJsonToStream(JToken json, Stream stream)
+        {
+            using (var writer = new StreamWriter(stream))
             {
                 await writer.WriteAsync(json.ToString(Formatting.None));
             }
@@ -89,7 +120,7 @@ namespace Saule.Http
             using (var reader = new StreamReader(readStream))
             {
                 var json = JToken.Parse(await reader.ReadToEndAsync());
-                return _deserializer.Deserialize(json, type);
+                return new ResourceDeserializer().Deserialize(json, type);
             }
         }
 
@@ -98,14 +129,7 @@ namespace Saule.Http
         /// </summary>
         public override MediaTypeFormatter GetPerRequestFormatterInstance(Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            var actionDescriptor = (ReflectedHttpActionDescriptor)request.Properties["MS_HttpActionDescriptor"];
-            var attribute =
-                actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
-                ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
-
-            return attribute == null
-                ? new JsonApiMediaTypeFormatter { CanWrite = false }
-                : new JsonApiMediaTypeFormatter(attribute.ResourceType, request.RequestUri.ToString());
+            return new JsonApiMediaTypeFormatter(request);
         }
     }
 }

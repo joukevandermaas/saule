@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Saule.Serialization
 {
-    internal class JsonApiSerializer
+    internal class ResourceSerializer
     {
         public JObject Serialize(ApiResponse response, string baseUrl)
         {

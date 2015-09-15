@@ -5,15 +5,15 @@ using System.Linq;
 using Tests.SampleModels;
 using Xunit;
 
-namespace Tests
+namespace Tests.Serialization
 {
-    public class JsonApiSerializerTests
+    public class ResourceSerializerTests
     {
         [Fact(DisplayName = "Serializes all found attributes")]
         public void AttributesComplete()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var attributes = result["data"]["attributes"];
@@ -26,7 +26,7 @@ namespace Tests
         public void AttributesSufficient()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var attributes = result["data"]["attributes"];
@@ -38,7 +38,7 @@ namespace Tests
         public void UsesTitle()
         {
             var company = new Company(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(company, new CompanyResource()), "/companies/1");
 
             Assert.Equal("coorporation", result["data"]["type"]);
@@ -48,7 +48,7 @@ namespace Tests
         public void SerializesRelationshipLinks()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var relationships = result["data"]["relationships"];
@@ -66,7 +66,7 @@ namespace Tests
         public void BuildsRightLinks()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "http://example.com/people/1");
 
             var job = result["data"]["relationships"]["job"];
@@ -79,7 +79,7 @@ namespace Tests
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
 
             Assert.Throws<JsonApiException>(() =>
             {
@@ -91,7 +91,7 @@ namespace Tests
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
 
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
@@ -107,7 +107,7 @@ namespace Tests
         public void IncludesRelationshipData()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var included = result["included"] as JArray;
@@ -122,7 +122,7 @@ namespace Tests
         public void HandlesNullValues()
         {
             var person = new Person { Id = "45" };
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
 
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
@@ -147,7 +147,7 @@ namespace Tests
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
 
             var result = target.Serialize(new ApiResponse(people, new PersonResource()), "/people");
 

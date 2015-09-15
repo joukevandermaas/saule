@@ -3,7 +3,7 @@ using System;
 
 namespace Saule.Serialization
 {
-    internal class JsonApiDeserializer
+    internal class ResourceDeserializer
     {
         public object Deserialize(JToken json, Type targetType)
         {
