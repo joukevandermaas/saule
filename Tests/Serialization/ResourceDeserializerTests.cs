@@ -4,16 +4,16 @@ using System.Linq;
 using Tests.SampleModels;
 using Xunit;
 
-namespace Tests
+namespace Tests.Serialization
 {
-    public class JsonApiDeserializerTests
+    public class ResourceDeserializerTests
     {
         private JToken _singleJson;
         private JToken _collectionJson;
         private Person _person;
         private Person[] _people;
 
-        public JsonApiDeserializerTests()
+        public ResourceDeserializerTests()
         {
             _person = new Person(prefill: true);
             _person.Friends = new[] { new Person(prefill: true) };
@@ -25,7 +25,7 @@ namespace Tests
                 new Person(id: "d", prefill: true)
             };
 
-            var serializer = new JsonApiSerializer();
+            var serializer = new ResourceSerializer();
 
             _singleJson = serializer.Serialize(
                 new ApiResponse(_person, new PersonResource()), "/people/1/");
@@ -36,7 +36,7 @@ namespace Tests
         [Fact(DisplayName = "Deserializes id and attributes")]
         public void DeserializesAttributes()
         {
-            var target = new JsonApiDeserializer();
+            var target = new ResourceDeserializer();
             var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
 
             Assert.Equal(_person.Id, result.Id);
@@ -48,7 +48,7 @@ namespace Tests
         [Fact(DisplayName = "Deserializes belongsTo relationships")]
         public void DeserializesBelongsToRelationships()
         {
-            var target = new JsonApiDeserializer();
+            var target = new ResourceDeserializer();
             var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
             var job = result.Job;
 
@@ -60,7 +60,7 @@ namespace Tests
         [Fact(DisplayName = "Deserializes hasMany relationships")]
         public void DeserializesHasManyRelationship()
         {
-            var target = new JsonApiDeserializer();
+            var target = new ResourceDeserializer();
             var result = target.Deserialize(_singleJson, typeof(Person)) as Person;
 
             var expected = _person.Friends.Single();
@@ -77,7 +77,7 @@ namespace Tests
         [Fact(DisplayName = "Deserializes enumerables properly")]
         public void DeserializesEnumerables()
         {
-            var target = new JsonApiDeserializer();
+            var target = new ResourceDeserializer();
             var result = target.Deserialize(_collectionJson, typeof(Person[])) as Person[];
 
             Assert.Equal(_people.Length, result.Length);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Saule
 {
@@ -67,7 +66,6 @@ namespace Saule
         /// Specify a to-one relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="type">The type of the related type.</param>
         protected void BelongsTo<T>(string name) where T : ApiResource, new()
         {
             BelongsTo<T>(name, name);
@@ -77,7 +75,6 @@ namespace Saule
         /// Specify a to-one relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="type">The type of the related type.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
         protected void BelongsTo<T>(string name, string path) where T : ApiResource, new()
@@ -91,7 +88,6 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="type">The type of the related type.</param>
         protected void HasMany<T>(string name) where T : ApiResource, new()
         {
             HasMany<T>(name, name);
@@ -101,7 +97,6 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="type">The type of the related type.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
         protected void HasMany<T>(string name, string path) where T : ApiResource, new()

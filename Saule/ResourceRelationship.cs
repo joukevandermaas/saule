@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace Saule
+﻿namespace Saule
 {
+    /// <summary>
+    /// Represents a related resource (to-one or to-many).
+    /// </summary>
     public abstract class ResourceRelationship
     {
         internal ResourceRelationship(

@@ -19,8 +19,8 @@ namespace Tests
                 Friends = new[] { new Person(prefill: true) },
                 Job = new Company(prefill: true)
             };
-            var json = new JsonApiSerializer().Serialize(new ApiResponse(person, new PersonResource()), "/");
-            var target = new JsonApiDeserializer();
+            var json = new ResourceSerializer().Serialize(new ApiResponse(person, new PersonResource()), "/");
+            var target = new ResourceDeserializer();
 
             var result = target.Deserialize(json, typeof(Person));
         }
