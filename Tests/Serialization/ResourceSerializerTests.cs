@@ -44,6 +44,18 @@ namespace Tests.Serialization
             Assert.Equal("coorporation", result["data"]["type"]);
         }
 
+        [Fact(DisplayName = "Adds top level self link")]
+        public void SelfLink()
+        {
+            var person = new Person(prefill: true);
+            var target = new JsonApiSerializer();
+            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+
+            var selfLink = result["links"]?["self"];
+
+            Assert.Equal("/people/1", selfLink);
+        }
+
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
