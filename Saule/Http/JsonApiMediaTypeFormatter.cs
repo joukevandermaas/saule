@@ -86,9 +86,12 @@ namespace Saule.Http
 
         private JToken SerializeOther(object value)
         {
-            return new ResourceSerializer().Serialize(
-                new ApiResponse(value, _resourceType.CreateInstance<ApiResource>()),
-                _baseUrl);
+            return new ResourceSerializer(
+                value,
+                _resourceType.CreateInstance<ApiResource>(),
+                _baseUrl)
+
+                .Serialize();
         }
 
         private static JToken SerializeError(object value)

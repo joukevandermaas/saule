@@ -15,9 +15,11 @@ namespace Tests.Serialization
 
         public ResourceDeserializerTests()
         {
-            _person = new Person(prefill: true);
-            _person.Friends = new[] { new Person(prefill: true) };
-            _people = new Person[]
+            _person = new Person(prefill: true)
+            {
+                Friends = new[] { new Person(prefill: true) }
+            };
+            _people = new[]
             {
                 new Person(id: "a", prefill: true),
                 new Person(id: "b", prefill: true),
@@ -25,12 +27,11 @@ namespace Tests.Serialization
                 new Person(id: "d", prefill: true)
             };
 
-            var serializer = new ResourceSerializer();
+            var singleSerializer = new ResourceSerializer(_person, new PersonResource(), "/people/");
+            var multiSerializer = new ResourceSerializer(_people, new PersonResource(), "/people/1/");
 
-            _singleJson = serializer.Serialize(
-                new ApiResponse(_person, new PersonResource()), "/people/1/");
-            _collectionJson = serializer.Serialize(
-                new ApiResponse(_people, new PersonResource()), "/people/");
+            _singleJson = singleSerializer.Serialize();
+            _collectionJson = multiSerializer.Serialize();
         }
 
         [Fact(DisplayName = "Deserializes id and attributes")]

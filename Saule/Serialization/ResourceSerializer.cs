@@ -7,67 +7,67 @@ namespace Saule.Serialization
 {
     internal class ResourceSerializer
     {
-        public JObject Serialize(ApiResponse response, string baseUrl)
+        private readonly string _baseUrl;
+        private readonly ApiResource _resource;
+        private readonly object _value;
+        private readonly JArray _includedSection;
+        private bool _isCollection;
+
+        public ResourceSerializer(object value, ApiResource type, string baseUrl)
         {
-            var objectJson = JToken.FromObject(response.Object);
-            var resource = response.Resource;
-            var result = new JObject();
+            _resource = type;
+            _value = value;
+            _baseUrl = baseUrl;
+            _includedSection = new JArray();
+        }
 
-            var included = new JArray();
+        public JObject Serialize()
+        {
+            var objectJson = JToken.FromObject(_value);
+            _isCollection = objectJson is JArray;
 
-            result["data"] = SerializeArrayOrObject(objectJson,
-                (properties, multiple) => SerializeData(
-                    resource,
-                    multiple
-                        ? CombineUris(baseUrl, GetValue("id", properties).ToString())
-                        : baseUrl,
-                    properties,
-                    included));
-
-            result["included"] = included;
-
-            result["links"] = new JObject
+            return new JObject
             {
-                { "self", new JValue(baseUrl) }
+                ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
+                ["included"] = _includedSection,
+                ["links"] = new JObject
+                {
+                    ["self"] = new JValue(GetUrl())
+                }
             };
-
-            return result;
         }
 
-        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> SerializeObj)
-        {
-            return SerializeArrayOrObject(token, (s, b) => SerializeObj(s));
-        }
-
-        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, bool, JToken> SerializeObj)
+        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
         {
             var dataArray = token as JArray;
-            if (dataArray != null)
+
+            // single thing, just serialize it
+            if (dataArray == null) return token is JObject ? serializeObj((JObject)token) : null;
+
+            // serialize each element separately
+            var data = new JArray();
+            foreach (var obj in dataArray.OfType<JObject>())
             {
-                var data = new JArray();
-                foreach (var obj in dataArray.OfType<JObject>())
-                {
-                    data.Add(SerializeObj(obj, true));
-                }
-                return data;
+                data.Add(serializeObj(obj));
             }
-            else
-            {
-                return token is JObject ? SerializeObj((JObject) token, false) : null;
-            }
+            return data;
         }
 
-        private static JToken SerializeData(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties, JArray included)
+        private JToken SerializeData(IDictionary<string, JToken> properties)
         {
-            var data = SerializeMinimalData(resource, properties);
+            var data = SerializeMinimalData(properties);
 
-            data["attributes"] = SerializeAttributes(resource, properties);
-            data["relationships"] = SerializeRelationships(resource, baseUrl, properties, included);
+            data["attributes"] = SerializeAttributes(properties);
+            data["relationships"] = SerializeRelationships(properties);
 
             return data;
         }
 
-        private static JToken SerializeMinimalData(ApiResource resource, IDictionary<string, JToken> properties)
+        private JToken SerializeMinimalData(IDictionary<string, JToken> properties)
+        {
+            return SerializeMinimalData(properties, _resource);
+        }
+        private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
         {
             var data = new JObject
             {
@@ -78,7 +78,11 @@ namespace Saule.Serialization
             return data;
         }
 
-        private static JToken SerializeAttributes(ApiResource resource, IDictionary<string, JToken> properties)
+        private JToken SerializeAttributes(IDictionary<string, JToken> properties)
+        {
+            return SerializeAttributes(properties, _resource);
+        }
+        private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
         {
             var attributes = new JObject();
             foreach (var attr in resource.Attributes)
@@ -89,55 +93,74 @@ namespace Saule.Serialization
             return attributes;
         }
 
-        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
-        {
-            return properties[name.ToPascalCase()];
-        }
-
-        private static JToken SerializeRelationships(ApiResource resource, string baseUrl, IDictionary<string, JToken> properties, JArray included)
+        private JToken SerializeRelationships(IDictionary<string, JToken> properties)
         {
             var relationships = new JObject();
 
-            foreach (var rel in resource.Relationships)
+            foreach (var rel in _resource.Relationships)
             {
-                var relToken = new JObject
-                {
-                    ["links"] = new JObject
-                    {
-                        ["self"] = CombineUris(baseUrl, "relationships", rel.UrlPath),
-                        ["related"] = CombineUris(baseUrl, rel.UrlPath)
-                    }
-                };
-                var relationshipValues = GetValue(rel.Name, properties);
-                if (relationshipValues != null)
-                {
-                    var data = SerializeArrayOrObject(relationshipValues,
-                        props =>
-                        {
-                            var values = SerializeMinimalData(rel.RelatedResource, props);
-                            var includedData = values.DeepClone();
-                            includedData["attributes"] = SerializeAttributes(rel.RelatedResource, props);
-                            if (!ContainsResource(included, includedData))
-                                included.Add(includedData);
-
-                            return values;
-                        });
-                    if (data != null)
-                        relToken["data"] = data;
-                }
-                relationships[rel.Name] = relToken;
+                relationships[rel.Name] = SerializeRelationship(rel, properties);
             }
 
             return relationships;
         }
 
-        private static bool ContainsResource(JArray included, JToken includedData)
+        private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
-            return included.Any(t =>
+            // serialize the links part (so the data can be fetched)
+            var objId = _isCollection
+                ? EnsureHasId(properties).Value<string>()
+                : string.Empty;
+            var relToken = GetMinimumRelationship(objId, relationship.UrlPath);
+            var relationshipValues = GetValue(relationship.Name, properties);
+            if (relationshipValues == null) return relToken;
+
+            // only include data if it exists, otherwise just assume it should be fetched later
+            var data = GetRelationshipData(relationship, relationshipValues);
+            if (data != null)
+                relToken["data"] = data;
+
+            return relToken;
+        }
+
+        private JToken GetRelationshipData(ResourceRelationship relationship, JToken relationshipValues)
+        {
+            var data = SerializeArrayOrObject(relationshipValues,
+                props =>
+                {
+                    var values = SerializeMinimalData(props, relationship.RelatedResource);
+                    var includedData = values.DeepClone();
+                    includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
+                    if (!IsResourceIncluded(includedData))
+                        _includedSection.Add(includedData);
+
+                    return values;
+                });
+            return data;
+        }
+
+        private JToken GetMinimumRelationship(string id, string urlPath)
+        {
+            return new JObject
+            {
+                ["links"] = new JObject
+                {
+                    ["self"] = GetUrl(id, "relationships", urlPath),
+                    ["related"] = GetUrl(id, urlPath)
+                }
+            };
+        }
+
+        private bool IsResourceIncluded(JToken includedData)
+        {
+            return _includedSection.Any(t =>
                 t.Value<string>("type") == includedData.Value<string>("type") &&
                 t.Value<string>("id") == includedData.Value<string>("id"));
         }
-
+        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
+        {
+            return properties[name.ToPascalCase()];
+        }
         private static JToken EnsureHasId(IDictionary<string, JToken> properties)
         {
             var id = GetValue("id", properties);
@@ -145,11 +168,12 @@ namespace Saule.Serialization
 
             return id;
         }
-
-        private static string CombineUris(params string[] parts)
+        private string GetUrl(params string[] parts)
         {
-            var result = string.Join("/", parts.Select(s => s.Trim('/')).ToArray());
-            return Uri.IsWellFormedUriString(parts[0], UriKind.Absolute)
+            var allParts = new[] { _baseUrl }.Concat(parts).Where(s => !string.IsNullOrEmpty(s));
+            var result = string.Join("/", allParts.Select(s => s.Trim('/')).ToArray());
+
+            return Uri.IsWellFormedUriString(_baseUrl, UriKind.Absolute)
                 ? result
                 : "/" + result;
         }
