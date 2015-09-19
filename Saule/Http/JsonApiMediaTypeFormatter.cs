@@ -43,7 +43,7 @@ namespace Saule.Http
                 actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
                 ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
 
-            _resourceType = attribute.ResourceType;
+            _resourceType = attribute?.ResourceType;
         }
 
         /// <summary>

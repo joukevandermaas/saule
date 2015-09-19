@@ -16,7 +16,7 @@
         }
 
         /// <summary>
-        /// The name of this realtionship.
+        /// The name of this relationship.
         /// </summary>
         public string Name { get; }
 

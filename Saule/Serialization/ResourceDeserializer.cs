@@ -40,14 +40,13 @@ namespace Saule.Serialization
 
         private JToken SingleToFlatStructure(JObject child)
         {
-            var result = new JObject();
-            result.Add(child.Property("id"));
+            var result = new JObject { child.Property("id") };
 
             foreach (var attr in child["attributes"] ?? new JArray())
                 result.Add(attr);
 
             foreach (var rel in child["relationships"] ?? new JArray())
-                result.Add((rel as JProperty).Name, ToFlatStructure(rel.First));
+                result.Add(((JProperty) rel).Name, ToFlatStructure(rel.First));
 
             return result;
         }

@@ -50,9 +50,9 @@ namespace Tests
         [Fact(DisplayName = "Can't add attribute or relationship called 'id'")]
         public void CannotAddIdAttributeOrRelationship()
         {
-            Assert.Throws<JsonApiException>(() => { new TestApiResource3(); });
-            Assert.Throws<JsonApiException>(() => { new TestApiResource4(); });
-            Assert.Throws<JsonApiException>(() => { new TestApiResource5(); });
+            Assert.Throws<JsonApiException>(() => new TestApiResource3());
+            Assert.Throws<JsonApiException>(() => new TestApiResource4());
+            Assert.Throws<JsonApiException>(() => new TestApiResource5());
         }
     }
 }

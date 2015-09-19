@@ -1,8 +1,4 @@
-﻿using Saule.Serialization;
-using Tests.SampleModels;
-using Xunit;
-
-namespace Tests
+﻿namespace Tests
 {
     public class Experiments
     {

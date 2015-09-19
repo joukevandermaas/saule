@@ -40,10 +40,10 @@ namespace Tests.Serialization
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
             var result = target.Deserialize() as Person;
 
-            Assert.Equal(_person.Id, result.Id);
-            Assert.Equal(_person.FirstName, result.FirstName);
-            Assert.Equal(_person.LastName, result.LastName);
-            Assert.Equal(_person.Age, result.Age);
+            Assert.Equal(_person.Id, result?.Id);
+            Assert.Equal(_person.FirstName, result?.FirstName);
+            Assert.Equal(_person.LastName, result?.LastName);
+            Assert.Equal(_person.Age, result?.Age);
         }
 
         [Fact(DisplayName = "Deserializes belongsTo relationships")]
@@ -51,11 +51,11 @@ namespace Tests.Serialization
         {
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
             var result = target.Deserialize() as Person;
-            var job = result.Job;
+            var job = result?.Job;
 
-            Assert.Equal(_person.Job.Id, job.Id);
-            Assert.Null(job.Name);
-            Assert.Equal(0, job.NumberOfEmployees);
+            Assert.Equal(_person.Job.Id, job?.Id);
+            Assert.Null(job?.Name);
+            Assert.Equal(0, job?.NumberOfEmployees);
         }
 
         [Fact(DisplayName = "Deserializes hasMany relationships")]
@@ -65,14 +65,14 @@ namespace Tests.Serialization
             var result = target.Deserialize() as Person;
 
             var expected = _person.Friends.Single();
-            var actual = result.Friends.Single();
+            var actual = result?.Friends.Single();
 
-            Assert.Equal(expected.Id, actual.Id);
-            Assert.Null(actual.FirstName);
-            Assert.Null(actual.LastName);
-            Assert.Equal(0, actual.Age);
-            Assert.Null(actual.Job);
-            Assert.Null(actual.Friends);
+            Assert.Equal(expected.Id, actual?.Id);
+            Assert.Null(actual?.FirstName);
+            Assert.Null(actual?.LastName);
+            Assert.Equal(0, actual?.Age);
+            Assert.Null(actual?.Job);
+            Assert.Null(actual?.Friends);
         }
 
         [Fact(DisplayName = "Deserializes enumerables properly")]
@@ -81,10 +81,10 @@ namespace Tests.Serialization
             var target = new ResourceDeserializer(_collectionJson, typeof(Person[]));
             var result = target.Deserialize() as Person[];
 
-            Assert.Equal(_people.Length, result.Length);
+            Assert.Equal(_people.Length, result?.Length);
             for (var i = 0; i < _people.Length; i++)
             {
-                Assert.Equal(_people[i].Id, result[i].Id);
+                Assert.Equal(_people[i].Id, result?[i].Id);
             }
         }
     }

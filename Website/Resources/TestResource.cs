@@ -1,6 +1,6 @@
 ﻿using Saule;
 
-namespace Website.Controllers
+namespace Website.Resources
 {
     internal class TestResource : ApiResource
     {
@@ -16,8 +16,5 @@ namespace Website.Controllers
 
     internal class OtherResource : ApiResource
     {
-        public OtherResource()
-        {
-        }
     }
 }

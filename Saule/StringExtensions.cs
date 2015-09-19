@@ -28,15 +28,11 @@ namespace Saule
         {
             // someString
             var parts = SplitAndLower(source);
-            var firstWord = parts.FirstOrDefault()?.ToLower();
 
             var cased = parts.Select((s, i) =>
-            {
-                if (i == 0)
-                    return s.ToLowerInvariant();
-                else
-                    return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s);
-            });
+                i == 0
+                    ? s.ToLowerInvariant()
+                    : CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s));
 
             return string.Join("", cased.ToArray());
         }

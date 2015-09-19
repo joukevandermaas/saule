@@ -1,10 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using Saule;
-using Saule.Serialization;
+﻿using Saule.Serialization;
 using System;
-using System.Linq;
-using System.Web.Http;
-using Tests.SampleModels;
 using Xunit;
 
 namespace Tests.Serialization
@@ -14,8 +9,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes common Exception properties")]
         public void SerializesProperties()
         {
-            var exception = new InvalidOperationException("Some message");
-            exception.HelpLink = "http://example.com";
+            var exception = new InvalidOperationException("Some message") { HelpLink = "http://example.com" };
             var errors = new ErrorSerializer().Serialize(new ApiError(exception))["errors"][0];
 
             Assert.Equal(exception.Message, errors.Value<string>("title"));
@@ -24,11 +18,11 @@ namespace Tests.Serialization
             Assert.Equal(exception.ToString(), errors.Value<string>("detail"));
         }
 
-        [Fact(DisplayName ="Serializers HttpError properties")]
+        [Fact(DisplayName = "Serializers HttpError properties")]
         public void SerializesHttpError()
         {
             var exception = new InvalidOperationException("Some message");
-            var httpError = new HttpError(exception, true);
+            var httpError = new System.Web.Http.HttpError(exception, true);
 
             var errors = new ErrorSerializer().Serialize(new ApiError(httpError))["errors"][0];
 

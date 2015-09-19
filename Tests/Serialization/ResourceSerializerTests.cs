@@ -122,11 +122,11 @@ namespace Tests.Serialization
             var result = target.Serialize();
 
             var included = result["included"] as JArray;
-            var job = included[0];
-            Assert.Equal(1, included.Count);
+            var job = included?[0];
+            Assert.Equal(1, included?.Count);
 
-            Assert.Equal(person.Job.Id, job["id"]);
-            Assert.NotNull(job["attributes"]);
+            Assert.Equal(person.Job.Id, job?["id"]);
+            Assert.NotNull(job?["attributes"]);
         }
 
         [Fact(DisplayName = "Handles null values correctly")]
@@ -150,7 +150,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes enumerables properly")]
         public void SerializesEnumerables()
         {
-            var people = new Person[]
+            var people = new[]
             {
                 new Person(id: "a", prefill: true),
                 new Person(id: "b", prefill: true),
