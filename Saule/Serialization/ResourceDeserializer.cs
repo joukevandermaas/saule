@@ -5,9 +5,18 @@ namespace Saule.Serialization
 {
     internal class ResourceDeserializer
     {
-        public object Deserialize(JToken json, Type targetType)
+        private readonly JToken _object;
+        private readonly Type _target;
+
+        public ResourceDeserializer(JToken @object, Type target)
         {
-            return ToFlatStructure(json).ToObject(targetType);
+            _object = @object;
+            _target = target;
+        }
+
+        public object Deserialize()
+        {
+            return ToFlatStructure(_object).ToObject(_target);
         }
 
         private JToken ToFlatStructure(JToken json)

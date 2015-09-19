@@ -123,7 +123,7 @@ namespace Saule.Http
             using (var reader = new StreamReader(readStream))
             {
                 var json = JToken.Parse(await reader.ReadToEndAsync());
-                return new ResourceDeserializer().Deserialize(json, type);
+                return new ResourceDeserializer(json, type).Deserialize();
             }
         }
 
