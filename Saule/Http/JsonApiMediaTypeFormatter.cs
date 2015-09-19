@@ -79,7 +79,7 @@ namespace Saule.Http
             await WriteJsonToStream(json, writeStream);
         }
 
-        private bool IsException(Type type)
+        private static bool IsException(Type type)
         {
             return type == typeof(HttpError) || type.IsSubclassOf(typeof(Exception));
         }
@@ -91,7 +91,7 @@ namespace Saule.Http
                 _baseUrl);
         }
 
-        private JToken SerializeError(object value)
+        private static JToken SerializeError(object value)
         {
             var httpError = value as HttpError;
             var serializer = new ErrorSerializer();
@@ -100,7 +100,7 @@ namespace Saule.Http
                 : serializer.Serialize(new ApiError(value as Exception));
         }
 
-        private async Task WriteJsonToStream(JToken json, Stream stream)
+        private static async Task WriteJsonToStream(JToken json, Stream stream)
         {
             using (var writer = new StreamWriter(stream))
             {

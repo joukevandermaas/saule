@@ -11,7 +11,6 @@ namespace Website.Controllers
         [Route("test")]
         public TestModel Get()
         {
-            throw new ArgumentException("Hello", "test");
             return new TestModel
             {
                 Id = "my id",

@@ -48,7 +48,7 @@ namespace Tests.Serialization
         public void SelfLink()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
+            var target = new ResourceSerializer();
             var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
 
             var selfLink = result["links"]?["self"];
@@ -95,7 +95,7 @@ namespace Tests.Serialization
 
             Assert.Throws<JsonApiException>(() =>
             {
-                var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+                target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
             });
         }
 
