@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
 namespace Saule.Http
 {
@@ -6,22 +8,32 @@ namespace Saule.Http
     /// Attribute used to specify the api resource related to a controller action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class ApiResourceAttribute : Attribute
+    public class ReturnsResourceAttribute : ActionFilterAttribute
     {
         /// <summary>
         ///
         /// </summary>
         /// <param name="resourceType">The type of the resource this controller action returns.</param>
-        public ApiResourceAttribute(Type resourceType)
+        public ReturnsResourceAttribute(Type resourceType)
         {
             if (!resourceType.IsSubclassOf(typeof(ApiResource)))
                 throw new ArgumentException("Resource types must inherit from Saule.ApiResource");
-            ResourceType = resourceType;
+            Resource = resourceType.CreateInstance<ApiResource>();
         }
 
         /// <summary>
         /// The type of the resource this controller action returns.
         /// </summary>
-        public Type ResourceType { get; }
+        public ApiResource Resource { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionContext"></param>
+        public override void OnActionExecuting(HttpActionContext actionContext)
+        {
+            actionContext.Request.Properties.Add(Constants.RequestPropertyName, Resource);
+            base.OnActionExecuting(actionContext);
+        }
     }
 }

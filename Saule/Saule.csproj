@@ -11,10 +11,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Saule</RootNamespace>
     <AssemblyName>Saule</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
-    <Compile Include="Http\ApiResourceAttribute.cs" />
+    <Compile Include="Http\Constants.cs" />
+    <Compile Include="Http\ReturnsResourceAttribute.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatter.cs" />
     <Compile Include="Serialization\ApiError.cs" />
     <Compile Include="ResourceAttribute.cs" />

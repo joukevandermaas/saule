@@ -4,7 +4,7 @@ Saule is a Json Api (version 1.0) library for ASP.Net Web API 2.
 To use Saule, you must define resources that contain the information
 about your domain:
 ```c#
-public class PersonResource : ApiResource 
+public class PersonResource : ApiResource
 {
     public PersonResource()
     {
@@ -26,14 +26,14 @@ public class CompanyResource : ApiResource
 }
 ```
 
-You can then use these to serialize any class into json api
+You can then use these to serialize any class into Json Api
 (as long as your class has properties with the same names as
 in your model):
 ```c#
 public class PersonController : ApiController
 {
-    [HttpGet] 
-    [ApiResource(typeof(PersonResource)]
+    [HttpGet]
+    [ReturnsResource(typeof(PersonResource)]
     [Route("people/{id}")]
     public JohnSmith GetPerson(string id)
     {
@@ -43,9 +43,12 @@ public class PersonController : ApiController
 ```
 
 ```json
-GET people/123
+GET /people/123
 
 {
+  "links": {
+    "self": "people/123"
+  },
   "data": {
     "type": "person",
     "id": "123",

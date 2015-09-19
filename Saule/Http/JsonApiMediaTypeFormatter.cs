@@ -3,14 +3,13 @@ using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Controllers;
 
 namespace Saule.Http
 {
@@ -19,7 +18,7 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
-        private readonly Type _resourceType;
+        private readonly ApiResource _resource;
         private readonly string _baseUrl;
 
         /// <summary>
@@ -37,13 +36,10 @@ namespace Saule.Http
         public JsonApiMediaTypeFormatter(HttpRequestMessage request) : this()
         {
             _baseUrl = request.RequestUri.ToString();
-
-            var actionDescriptor = (ReflectedHttpActionDescriptor)request.Properties["MS_HttpActionDescriptor"];
-            var attribute =
-                actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
-                ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
-
-            _resourceType = attribute?.ResourceType;
+            if (request.Properties.ContainsKey(Constants.RequestPropertyName))
+            {
+                _resource = (ApiResource) request.Properties[Constants.RequestPropertyName];
+            }
         }
 
         /// <summary>
@@ -88,7 +84,7 @@ namespace Saule.Http
         {
             return new ResourceSerializer(
                 value,
-                _resourceType.CreateInstance<ApiResource>(),
+                _resource,
                 _baseUrl)
 
                 .Serialize();
@@ -105,7 +101,7 @@ namespace Saule.Http
 
         private static async Task WriteJsonToStream(JToken json, Stream stream)
         {
-            using (var writer = new StreamWriter(stream))
+            using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
             {
                 await writer.WriteAsync(json.ToString(Formatting.None));
             }
@@ -130,7 +126,8 @@ namespace Saule.Http
         /// <summary>
         ///
         /// </summary>
-        public override MediaTypeFormatter GetPerRequestFormatterInstance(Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
+        public override MediaTypeFormatter GetPerRequestFormatterInstance(
+            Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
             return new JsonApiMediaTypeFormatter(request);
         }

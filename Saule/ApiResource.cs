@@ -13,12 +13,12 @@ namespace Saule
         /// <summary>
         /// The attributes of this resource.
         /// </summary>
-        public IEnumerable<ResourceAttribute> Attributes => _attributes;
+        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
 
         /// <summary>
         /// Resources related to this resource.
         /// </summary>
-        public IEnumerable<ResourceRelationship> Relationships => _relationships;
+        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
 
         /// <summary>
         /// The type name of this resource.

@@ -5,7 +5,7 @@ using Website.Resources;
 
 namespace Website.Controllers
 {
-    [ApiResource(typeof(TestResource))]
+    [ReturnsResource(typeof(TestResource))]
     public class TestController : ApiController
     {
         [Route("test")]
