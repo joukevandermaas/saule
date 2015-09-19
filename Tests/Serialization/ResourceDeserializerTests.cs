@@ -8,10 +8,10 @@ namespace Tests.Serialization
 {
     public class ResourceDeserializerTests
     {
-        private JToken _singleJson;
-        private JToken _collectionJson;
-        private Person _person;
-        private Person[] _people;
+        private readonly JToken _singleJson;
+        private readonly JToken _collectionJson;
+        private readonly Person _person;
+        private readonly Person[] _people;
 
         public ResourceDeserializerTests()
         {

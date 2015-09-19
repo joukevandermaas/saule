@@ -19,8 +19,8 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
-        private Type _resourceType;
-        private string _baseUrl;
+        private readonly Type _resourceType;
+        private readonly string _baseUrl;
 
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.

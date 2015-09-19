@@ -7,8 +7,8 @@ namespace Saule
     /// </summary>
     public abstract class ApiResource
     {
-        private List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
-        private List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
+        private readonly List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
+        private readonly List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
 
         /// <summary>
         /// The attributes of this resource.

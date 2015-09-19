@@ -6,11 +6,11 @@ namespace Tests
 {
     public class StringExtensionsTests
     {
-        private static string[] _camel = { "", "someString", "some", "someVeryLongString" };
-        private static string[] _pascal = { "", "SomeString", "Some", "SomeVeryLongString" };
-        private static string[] _dashed = { "", "some-string", "some", "some-very-long-string" };
-        private static string[] _spaced = { "", "some string", "some", "Some very Long string" };
-        private static string[] _traps = { "----", "   some---String    ", "_- some ", "_some_very-longString" };
+        private static readonly string[] _camel = { "", "someString", "some", "someVeryLongString" };
+        private static readonly string[] _pascal = { "", "SomeString", "Some", "SomeVeryLongString" };
+        private static readonly string[] _dashed = { "", "some-string", "some", "some-very-long-string" };
+        private static readonly string[] _spaced = { "", "some string", "some", "Some very Long string" };
+        private static readonly string[] _traps = { "----", "   some---String    ", "_- some ", "_some_very-longString" };
 
         [Fact(DisplayName = "Camel case works")]
         public void TestCamel()
