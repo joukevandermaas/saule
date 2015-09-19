@@ -7,6 +7,12 @@ namespace Saule
 {
     internal static class StringExtensions
     {
+        public static string EnsureEndsWith(this string source, string end)
+        {
+            return source.EndsWith(end)
+                ? source
+                : source + end;
+        }
         public static string ToDashed(this string source)
         {
             // some-string

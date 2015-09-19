@@ -1,7 +1,7 @@
 ﻿using Saule;
 using System.Collections.Generic;
 
-namespace Tests.SampleModels
+namespace Tests.Helpers
 {
     public class PersonWithNoId
     {
