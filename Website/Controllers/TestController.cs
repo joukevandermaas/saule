@@ -1,7 +1,7 @@
 ﻿using Saule.Http;
-using System;
 using System.Web.Http;
 using Website.Models;
+using Website.Resources;
 
 namespace Website.Controllers
 {
@@ -11,7 +11,6 @@ namespace Website.Controllers
         [Route("test")]
         public TestModel Get()
         {
-            throw new ArgumentException("Hello", "test");
             return new TestModel
             {
                 Id = "my id",

@@ -28,15 +28,11 @@ namespace Saule
         {
             // someString
             var parts = SplitAndLower(source);
-            var firstWord = parts.FirstOrDefault()?.ToLower();
 
             var cased = parts.Select((s, i) =>
-            {
-                if (i == 0)
-                    return s.ToLowerInvariant();
-                else
-                    return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s);
-            });
+                i == 0
+                    ? s.ToLowerInvariant()
+                    : CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s));
 
             return string.Join("", cased.ToArray());
         }
@@ -46,22 +42,22 @@ namespace Saule
             var strings = new List<string>();
             var builder = new StringBuilder();
 
-            for (int i = 0; i < source.Length; i++)
+            foreach (var character in source)
             {
-                if (IsSeparator(source[i]))
+                if (IsSeparator(character))
                 {
                     if (builder.Length > 0)
                         strings.Add(builder.ToString());
                     builder.Clear();
                     continue;
                 }
-                else if (char.IsUpper(source[i]) && builder.Length > 0)
+                else if (char.IsUpper(character) && builder.Length > 0)
                 {
                     strings.Add(builder.ToString());
                     builder.Clear();
                 }
 
-                builder.Append(char.ToLowerInvariant(source[i]));
+                builder.Append(char.ToLowerInvariant(character));
             }
 
             if (builder.Length > 0)

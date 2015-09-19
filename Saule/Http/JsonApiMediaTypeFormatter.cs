@@ -19,8 +19,8 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
-        private Type _resourceType;
-        private string _baseUrl;
+        private readonly Type _resourceType;
+        private readonly string _baseUrl;
 
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.
@@ -43,7 +43,7 @@ namespace Saule.Http
                 actionDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault()
                 ?? actionDescriptor.ControllerDescriptor.GetCustomAttributes<ApiResourceAttribute>().SingleOrDefault();
 
-            _resourceType = attribute.ResourceType;
+            _resourceType = attribute?.ResourceType;
         }
 
         /// <summary>
@@ -79,19 +79,22 @@ namespace Saule.Http
             await WriteJsonToStream(json, writeStream);
         }
 
-        private bool IsException(Type type)
+        private static bool IsException(Type type)
         {
             return type == typeof(HttpError) || type.IsSubclassOf(typeof(Exception));
         }
 
         private JToken SerializeOther(object value)
         {
-            return new ResourceSerializer().Serialize(
-                new ApiResponse(value, _resourceType.CreateInstance<ApiResource>()),
-                _baseUrl);
+            return new ResourceSerializer(
+                value,
+                _resourceType.CreateInstance<ApiResource>(),
+                _baseUrl)
+
+                .Serialize();
         }
 
-        private JToken SerializeError(object value)
+        private static JToken SerializeError(object value)
         {
             var httpError = value as HttpError;
             var serializer = new ErrorSerializer();
@@ -100,7 +103,7 @@ namespace Saule.Http
                 : serializer.Serialize(new ApiError(value as Exception));
         }
 
-        private async Task WriteJsonToStream(JToken json, Stream stream)
+        private static async Task WriteJsonToStream(JToken json, Stream stream)
         {
             using (var writer = new StreamWriter(stream))
             {
@@ -120,7 +123,7 @@ namespace Saule.Http
             using (var reader = new StreamReader(readStream))
             {
                 var json = JToken.Parse(await reader.ReadToEndAsync());
-                return new ResourceDeserializer().Deserialize(json, type);
+                return new ResourceDeserializer(json, type).Deserialize();
             }
         }
 

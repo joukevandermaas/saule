@@ -5,9 +5,18 @@ namespace Saule.Serialization
 {
     internal class ResourceDeserializer
     {
-        public object Deserialize(JToken json, Type targetType)
+        private readonly JToken _object;
+        private readonly Type _target;
+
+        public ResourceDeserializer(JToken @object, Type target)
         {
-            return ToFlatStructure(json).ToObject(targetType);
+            _object = @object;
+            _target = target;
+        }
+
+        public object Deserialize()
+        {
+            return ToFlatStructure(_object).ToObject(_target);
         }
 
         private JToken ToFlatStructure(JToken json)
@@ -31,14 +40,13 @@ namespace Saule.Serialization
 
         private JToken SingleToFlatStructure(JObject child)
         {
-            var result = new JObject();
-            result.Add(child.Property("id"));
+            var result = new JObject { child.Property("id") };
 
             foreach (var attr in child["attributes"] ?? new JArray())
                 result.Add(attr);
 
             foreach (var rel in child["relationships"] ?? new JArray())
-                result.Add((rel as JProperty).Name, ToFlatStructure(rel.First));
+                result.Add(((JProperty) rel).Name, ToFlatStructure(rel.First));
 
             return result;
         }

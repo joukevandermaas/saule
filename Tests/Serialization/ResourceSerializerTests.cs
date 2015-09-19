@@ -13,8 +13,8 @@ namespace Tests.Serialization
         public void AttributesComplete()
         {
             var person = new Person(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var attributes = result["data"]["attributes"];
             Assert.Equal(person.FirstName, attributes.Value<string>("firstName"));
@@ -26,8 +26,8 @@ namespace Tests.Serialization
         public void AttributesSufficient()
         {
             var person = new Person(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var attributes = result["data"]["attributes"];
             Assert.True(attributes["numberOfLegs"] == null);
@@ -38,8 +38,8 @@ namespace Tests.Serialization
         public void UsesTitle()
         {
             var company = new Company(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(company, new CompanyResource()), "/companies/1");
+            var target = new ResourceSerializer(company, new CompanyResource(), "/companies/1/");
+            var result = target.Serialize();
 
             Assert.Equal("coorporation", result["data"]["type"]);
         }
@@ -48,8 +48,8 @@ namespace Tests.Serialization
         public void SelfLink()
         {
             var person = new Person(prefill: true);
-            var target = new JsonApiSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var selfLink = result["links"]?["self"];
 
@@ -60,42 +60,42 @@ namespace Tests.Serialization
         public void SerializesRelationshipLinks()
         {
             var person = new Person(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Equal("/people/1/employer", job["links"]["related"]);
-            Assert.Equal("/people/1/relationships/employer", job["links"]["self"]);
+            Assert.Equal("/people/1/employer", job["links"].Value<string>("related"));
+            Assert.Equal("/people/1/relationships/employer", job["links"].Value<string>("self"));
 
-            Assert.Equal("/people/1/friends", friends["links"]["related"]);
-            Assert.Equal("/people/1/relationships/friends", friends["links"]["self"]);
+            Assert.Equal("/people/1/friends", friends["links"].Value<string>("related"));
+            Assert.Equal("/people/1/relationships/friends", friends["links"].Value<string>("self"));
         }
 
         [Fact(DisplayName = "Builds absolute links correctly")]
         public void BuildsRightLinks()
         {
             var person = new Person(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "http://example.com/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "http://example.com/people/1/");
+            var result = target.Serialize();
 
             var job = result["data"]["relationships"]["job"];
 
-            Assert.Equal("http://example.com/people/1/employer", job["links"]["related"]);
-            Assert.Equal("http://example.com/people/1/relationships/employer", job["links"]["self"]);
+            Assert.Equal("http://example.com/people/1/employer", job["links"].Value<string>("related"));
+            Assert.Equal("http://example.com/people/1/relationships/employer", job["links"].Value<string>("self"));
         }
 
         [Fact(DisplayName = "Throws exception when Id is missing")]
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new ResourceSerializer();
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
 
             Assert.Throws<JsonApiException>(() =>
             {
-                var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+                target.Serialize();
             });
         }
 
@@ -103,9 +103,8 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer();
-
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
@@ -119,24 +118,23 @@ namespace Tests.Serialization
         public void IncludesRelationshipData()
         {
             var person = new Person(prefill: true);
-            var target = new ResourceSerializer();
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var included = result["included"] as JArray;
-            var job = included[0];
-            Assert.Equal(1, included.Count);
+            var job = included?[0];
+            Assert.Equal(1, included?.Count);
 
-            Assert.Equal(person.Job.Id, job["id"]);
-            Assert.NotNull(job["attributes"]);
+            Assert.Equal(person.Job.Id, job?["id"]);
+            Assert.NotNull(job?["attributes"]);
         }
 
         [Fact(DisplayName = "Handles null values correctly")]
         public void HandlesNullValues()
         {
             var person = new Person { Id = "45" };
-            var target = new ResourceSerializer();
-
-            var result = target.Serialize(new ApiResponse(person, new PersonResource()), "/people/1");
+            var target = new ResourceSerializer(person, new PersonResource(), "/people/1/");
+            var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
             var attributes = result["data"]["attributes"];
@@ -152,22 +150,21 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes enumerables properly")]
         public void SerializesEnumerables()
         {
-            var people = new Person[]
+            var people = new[]
             {
                 new Person(id: "a", prefill: true),
                 new Person(id: "b", prefill: true),
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new ResourceSerializer();
-
-            var result = target.Serialize(new ApiResponse(people, new PersonResource()), "/people");
+            var target = new ResourceSerializer(people, new PersonResource(), "/people/");
+            var result = target.Serialize();
 
             var included = result["included"] as JArray;
-            var jobLinks = (result["data"] as JArray)[0]["relationships"]["job"]["links"];
+            var jobLinks = (result["data"] as JArray)?[0]["relationships"]["job"]["links"];
 
-            Assert.Equal(1, included.Count);
-            Assert.Equal("/people/a/employer", jobLinks.Value<string>("related"));
+            Assert.Equal(1, included?.Count);
+            Assert.Equal("/people/a/employer", jobLinks?.Value<string>("related"));
         }
     }
 }

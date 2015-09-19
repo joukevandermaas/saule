@@ -6,39 +6,39 @@ namespace Tests
 {
     public class StringExtensionsTests
     {
-        private static string[] _camel = { "", "someString", "some", "someVeryLongString" };
-        private static string[] _pascal = { "", "SomeString", "Some", "SomeVeryLongString" };
-        private static string[] _dashed = { "", "some-string", "some", "some-very-long-string" };
-        private static string[] _spaced = { "", "some string", "some", "Some very Long string" };
-        private static string[] _traps = { "----", "   some---String    ", "_- some ", "_some_very-longString" };
+        private static readonly string[] Camel = { "", "someString", "some", "someVeryLongString" };
+        private static readonly string[] Pascal = { "", "SomeString", "Some", "SomeVeryLongString" };
+        private static readonly string[] Dashed = { "", "some-string", "some", "some-very-long-string" };
+        private static readonly string[] Spaced = { "", "some string", "some", "Some very Long string" };
+        private static readonly string[] Traps = { "----", "   some---String    ", "_- some ", "_some_very-longString" };
 
         [Fact(DisplayName = "Camel case works")]
         public void TestCamel()
         {
-            TestCasing(_camel, StringExtensions.ToCamelCase);
+            TestCasing(Camel, StringExtensions.ToCamelCase);
         }
 
         [Fact(DisplayName = "Pascal case works")]
         public void TestPascal()
         {
-            TestCasing(_pascal, StringExtensions.ToPascalCase);
+            TestCasing(Pascal, StringExtensions.ToPascalCase);
         }
 
         [Fact(DisplayName = "Dashed works")]
         public void TestDashed()
         {
-            TestCasing(_dashed, StringExtensions.ToDashed);
+            TestCasing(Dashed, StringExtensions.ToDashed);
         }
 
         private void TestCasing(string[] array, Func<string, string> function)
         {
             for (int i = 0; i < array.Length; i++)
             {
-                Assert.Equal(array[i], function(_camel[i]));
-                Assert.Equal(array[i], function(_pascal[i]));
-                Assert.Equal(array[i], function(_dashed[i]));
-                Assert.Equal(array[i], function(_spaced[i]));
-                Assert.Equal(array[i], function(_traps[i]));
+                Assert.Equal(array[i], function(Camel[i]));
+                Assert.Equal(array[i], function(Pascal[i]));
+                Assert.Equal(array[i], function(Dashed[i]));
+                Assert.Equal(array[i], function(Spaced[i]));
+                Assert.Equal(array[i], function(Traps[i]));
             }
         }
     }

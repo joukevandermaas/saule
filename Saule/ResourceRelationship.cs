@@ -7,25 +7,18 @@
     {
         internal ResourceRelationship(
             string name,
-            RelationshipKind relationshipKind,
             string urlPath,
             ApiResource relationshipResource)
         {
             Name = name.ToCamelCase();
-            RelationshipKind = relationshipKind;
             UrlPath = urlPath.ToDashed();
             RelatedResource = relationshipResource;
         }
 
         /// <summary>
-        /// The name of this realtionship.
+        /// The name of this relationship.
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// The kind of this relationship.
-        /// </summary>
-        public RelationshipKind RelationshipKind { get; }
 
         /// <summary>
         /// The definition of the related resource
@@ -45,14 +38,12 @@
     {
         internal ResourceRelationship(
             string name,
-            RelationshipKind relationshipKind,
             string urlPath,
             ApiResource relationshipSource)
             : base(
               name,
-               relationshipKind,
                urlPath,
-               typeof(T).Equals(relationshipSource.GetType())
+               typeof(T) == relationshipSource.GetType()
                    ? relationshipSource
                    : new T())
         {
