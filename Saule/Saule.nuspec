@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>saule</id>
+    <version>1.0.0</version>
+    <title>Saule for Json Api</title>
+    <authors>Jouke van der Maas</authors>
+    <owners>Jouke van der Maas</owners>
     <licenseUrl>https://github.com/joukevandermaas/saule/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/joukevandermaas/saule/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>Json api library for ASP.Net Web API 2</description>
     <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>web api serialization media formatter json api jsonapi ember data</tags>
