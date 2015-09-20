@@ -57,8 +57,8 @@ GET http://example.com/people/123
     "relationships": {
       "job": {
         "links": {
-          "self": "http://example.com/people/relationships/job/",
-          "related": "http://example.com/people/job/"
+          "self": "http://example.com/people/123/relationships/job/",
+          "related": "http://example.com/people/123/job/"
         },
         "data": {
           "type": "company",
@@ -67,8 +67,8 @@ GET http://example.com/people/123
       },
       "friends": {
         "links": {
-          "self": "http://example.com/people/relationships/friends/",
-          "related": "http://example.com/people/friends/"
+          "self": "http://example.com/people/123/relationships/friends/",
+          "related": "http://example.com/people/123/friends/"
         },
         "data": [
           {
