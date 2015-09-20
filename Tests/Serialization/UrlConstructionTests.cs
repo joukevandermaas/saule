@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Tests.Serialization
 {
-    public class LinkCreationTests
+    public class UrlConstructionTests
     {
         [Fact(DisplayName = "Handles query parameters correctly")]
         public void HandlesQueryParams()
