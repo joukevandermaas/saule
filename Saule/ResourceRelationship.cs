@@ -10,7 +10,7 @@
             string urlPath,
             ApiResource relationshipResource)
         {
-            Name = name.ToCamelCase();
+            Name = name.ToDashed();
             UrlPath = urlPath.ToDashed();
             RelatedResource = relationshipResource;
         }

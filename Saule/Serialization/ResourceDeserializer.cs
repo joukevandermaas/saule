@@ -22,20 +22,15 @@ namespace Saule.Serialization
         private JToken ToFlatStructure(JToken json)
         {
             var array = json["data"] as JArray;
-            if (array != null)
-            {
-                var result = new JArray();
 
-                foreach (var child in array)
-                {
-                    result.Add(SingleToFlatStructure(child as JObject));
-                }
-                return result;
-            }
-            else
+            if (array == null) return SingleToFlatStructure(json["data"] as JObject);
+
+            var result = new JArray();
+            foreach (var child in array)
             {
-                return SingleToFlatStructure(json["data"] as JObject);
+                result.Add(SingleToFlatStructure(child as JObject));
             }
+            return result;
         }
 
         private JToken SingleToFlatStructure(JObject child)
@@ -43,10 +38,16 @@ namespace Saule.Serialization
             var result = new JObject { child.Property("id") };
 
             foreach (var attr in child["attributes"] ?? new JArray())
-                result.Add(attr);
+            {
+                var prop = attr as JProperty;
+                result.Add(prop?.Name.ToPascalCase(), prop?.Value);
+            }
 
             foreach (var rel in child["relationships"] ?? new JArray())
-                result.Add(((JProperty) rel).Name, ToFlatStructure(rel.First));
+            {
+                var prop = rel as JProperty;
+                result.Add(prop?.Name, ToFlatStructure(prop?.Value));
+            }
 
             return result;
         }

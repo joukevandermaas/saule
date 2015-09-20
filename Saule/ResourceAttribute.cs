@@ -11,7 +11,7 @@
         /// <param name="name">The name of the attribute.</param>
         public ResourceAttribute(string name)
         {
-            Name = name.ToCamelCase();
+            Name = name.ToDashed();
         }
 
         /// <summary>
