@@ -43,49 +43,64 @@ public class PersonController : ApiController
 ```
 
 ```json
-GET /people/123
+GET http://example.com/people/123
 
 {
-  "links": {
-    "self": "/people/123"
-  },
   "data": {
     "type": "person",
     "id": "123",
     "attributes": {
       "first-name": "John",
       "last-name": "Smith",
-      "age": 45
+      "age": 34
     },
     "relationships": {
       "job": {
         "links": {
-          "self": "/people/123/relationships/job",
-          "related": "/people/123/job"
+          "self": "http://example.com/people/relationships/job/",
+          "related": "http://example.com/people/job/"
         },
         "data": {
           "type": "company",
-          "id": "345"
+          "id": "456"
         }
       },
       "friends": {
         "links": {
-          "self": "/people/123/relationships/friends",
-          "related": "/people/123/friends"
-        }
+          "self": "http://example.com/people/relationships/friends/",
+          "related": "http://example.com/people/friends/"
+        },
+        "data": [
+          {
+            "type": "person",
+            "id": "789"
+          }
+        ]
       }
     }
   },
   "included": [
     {
       "type": "company",
-      "id": "345",
+      "id": "456",
       "attributes": {
-        "name": "Awesome Company",
-        "number-of-employees": 33
+        "name": "Awesome, Inc.",
+        "number-of-employees": 24
+      }
+    },
+    {
+      "type": "person",
+      "id": "789",
+      "attributes": {
+        "first-name": "Sara",
+        "last-name": "Jones",
+        "age": 38
       }
     }
-  ]
+  ],
+  "links": {
+    "self": "http://example.com/people/123"
+  }
 }
 ```
 

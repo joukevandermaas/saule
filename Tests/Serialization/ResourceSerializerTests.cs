@@ -26,8 +26,8 @@ namespace Tests.Serialization
             var result = _target.Serialize();
 
             var attributes = result["data"]["attributes"];
-            Assert.Equal(_person.FirstName, attributes.Value<string>("firstName"));
-            Assert.Equal(_person.LastName, attributes.Value<string>("lastName"));
+            Assert.Equal(_person.FirstName, attributes.Value<string>("first-name"));
+            Assert.Equal(_person.LastName, attributes.Value<string>("last-name"));
             Assert.Equal(_person.Age, attributes.Value<int>("age"));
         }
 
@@ -103,8 +103,8 @@ namespace Tests.Serialization
             var relationships = result["data"]["relationships"];
             var attributes = result["data"]["attributes"];
 
-            Assert.NotNull(attributes["firstName"]);
-            Assert.NotNull(attributes["lastName"]);
+            Assert.NotNull(attributes["first-name"]);
+            Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
             Assert.Null(relationships["job"]["data"]);

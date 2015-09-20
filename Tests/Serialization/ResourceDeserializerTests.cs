@@ -16,9 +16,14 @@ namespace Tests.Serialization
 
         public ResourceDeserializerTests()
         {
-            _person = new Person(prefill: true)
+            _person = new Person(prefill: true, id: "123")
             {
-                Friends = new[] { new Person(prefill: true) }
+                Friends = new[] { new Person(prefill: true, id: "456")
+                {
+                    FirstName = "Sara",
+                    LastName =  "Jones",
+                    Age = 38
+                } }
             };
             _people = new[]
             {
