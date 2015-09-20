@@ -1,5 +1,7 @@
 # Saule
 Saule is a Json Api (version 1.0) library for ASP.Net Web API 2.
+See the [Wiki](https://github.com/joukevandermaas/saule/wiki) for documentation
+and some samples.
 
 To use Saule, you must define resources that contain the information
 about your domain:
