@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Saule")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Json api library for ASP.Net Web API 2")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Jouke van der Maas")]
 [assembly: AssemblyProduct("Saule")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
