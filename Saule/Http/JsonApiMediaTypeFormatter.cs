@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -20,6 +21,7 @@ namespace Saule.Http
     {
         private readonly ApiResource _resource;
         private readonly Uri _baseUrl;
+        private readonly JsonSerializer _jsonSerializer;
 
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.
@@ -30,12 +32,24 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// Creates a new instance of the JsonApiMediaTypeFormatter class for a particular request.
+        /// Creates a new instance of the JsonApiMediaTypeFormatter class.
         /// </summary>
-        /// <param name="request"></param>
-        public JsonApiMediaTypeFormatter(HttpRequestMessage request) : this()
+        /// <param name="converters">Json converters to manipulate the serialization process.</param>
+        public JsonApiMediaTypeFormatter(params JsonConverter[] converters)
+            : this()
+        {
+            _jsonSerializer = new JsonSerializer();
+            foreach (var converter in converters)
+            {
+                _jsonSerializer.Converters.Add(converter);
+            }
+        }
+
+        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, JsonSerializer serializer)
+            : this()
         {
             _baseUrl = request.RequestUri;
+            _jsonSerializer = serializer;
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))
             {
                 _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
@@ -87,7 +101,7 @@ namespace Saule.Http
                 _resource,
                 _baseUrl)
 
-                .Serialize();
+                .Serialize(_jsonSerializer);
         }
 
         private static JToken SerializeError(object value)
@@ -99,11 +113,11 @@ namespace Saule.Http
                 : serializer.Serialize(new ApiError(value as Exception));
         }
 
-        private static async Task WriteJsonToStream(JToken json, Stream stream)
+        private async Task WriteJsonToStream(JToken json, Stream stream)
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
             {
-                await writer.WriteAsync(json.ToString(Formatting.None));
+                await writer.WriteAsync(json.ToString(Formatting.None, _jsonSerializer.Converters.ToArray()));
             }
         }
 
@@ -129,7 +143,7 @@ namespace Saule.Http
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            return new JsonApiMediaTypeFormatter(request);
+            return new JsonApiMediaTypeFormatter(request, _jsonSerializer);
         }
     }
 }

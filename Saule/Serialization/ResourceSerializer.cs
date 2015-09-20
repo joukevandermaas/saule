@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Saule.Serialization
 {
@@ -23,7 +24,12 @@ namespace Saule.Serialization
 
         public JObject Serialize()
         {
-            var objectJson = JToken.FromObject(_value);
+            return Serialize(new JsonSerializer());
+        }
+
+        public JObject Serialize(JsonSerializer serializer)
+        {
+            var objectJson = JToken.FromObject(_value, serializer);
             _isCollection = objectJson is JArray;
 
             return new JObject
