@@ -80,7 +80,7 @@
     <Compile Include="Experiments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\Person.cs" />
-    <Compile Include="Serialization\LinkCreationTests.cs" />
+    <Compile Include="Serialization\UrlConstructionTests.cs" />
     <Compile Include="Serialization\ResourceDeserializerTests.cs" />
     <Compile Include="Serialization\ErrorSerializerTests.cs" />
     <Compile Include="Serialization\ResourceSerializerTests.cs" />
