@@ -33,7 +33,7 @@ in your model):
 public class PersonController : ApiController
 {
     [HttpGet]
-    [ReturnsResource(typeof(PersonResource)]
+    [ReturnsResource(typeof(PersonResource))]
     [Route("people/{id}")]
     public JohnSmith GetPerson(string id)
     {
@@ -47,7 +47,7 @@ GET /people/123
 
 {
   "links": {
-    "self": "people/123"
+    "self": "/people/123"
   },
   "data": {
     "type": "person",
@@ -60,8 +60,8 @@ GET /people/123
     "relationships": {
       "job": {
         "links": {
-          "self": "people/123/relationships/job",
-          "related": "people/123/job"
+          "self": "/people/123/relationships/job",
+          "related": "/people/123/job"
         },
         "data": {
           "type": "company",
@@ -70,8 +70,8 @@ GET /people/123
       },
       "friends": {
         "links": {
-          "self": "people/123/relationships/friends",
-          "related": "people/123/friends"
+          "self": "/people/123/relationships/friends",
+          "related": "/people/123/friends"
         }
       }
     }
