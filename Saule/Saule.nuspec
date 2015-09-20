@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>saule</id>
-    <version>1.0.0</version>
+    <version>$version$</version>
     <title>Saule for Json Api</title>
     <authors>Jouke van der Maas</authors>
     <owners>Jouke van der Maas</owners>
