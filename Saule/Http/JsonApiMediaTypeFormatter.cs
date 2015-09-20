@@ -19,7 +19,7 @@ namespace Saule.Http
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
         private readonly ApiResource _resource;
-        private readonly string _baseUrl;
+        private readonly Uri _baseUrl;
 
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.
@@ -35,10 +35,10 @@ namespace Saule.Http
         /// <param name="request"></param>
         public JsonApiMediaTypeFormatter(HttpRequestMessage request) : this()
         {
-            _baseUrl = request.RequestUri.ToString();
+            _baseUrl = request.RequestUri;
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))
             {
-                _resource = (ApiResource) request.Properties[Constants.RequestPropertyName];
+                _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
             }
         }
 

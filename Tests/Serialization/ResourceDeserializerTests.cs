@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System.Linq;
-using Tests.SampleModels;
+using Tests.Helpers;
 using Xunit;
 
 namespace Tests.Serialization
@@ -27,8 +28,10 @@ namespace Tests.Serialization
                 new Person(id: "d", prefill: true)
             };
 
-            var singleSerializer = new ResourceSerializer(_person, new PersonResource(), "/people/");
-            var multiSerializer = new ResourceSerializer(_people, new PersonResource(), "/people/1/");
+            var singleSerializer = new ResourceSerializer(
+                _person, new PersonResource(), new Uri("http://example.com/people/"));
+            var multiSerializer = new ResourceSerializer(
+                _people, new PersonResource(), new Uri("http://example.com/people/1/"));
 
             _singleJson = singleSerializer.Serialize();
             _collectionJson = multiSerializer.Serialize();

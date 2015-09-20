@@ -7,13 +7,13 @@ namespace Saule.Serialization
 {
     internal class ResourceSerializer
     {
-        private readonly string _baseUrl;
+        private readonly Uri _baseUrl;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly JArray _includedSection;
         private bool _isCollection;
 
-        public ResourceSerializer(object value, ApiResource type, string baseUrl)
+        public ResourceSerializer(object value, ApiResource type, Uri baseUrl)
         {
             _resource = type;
             _value = value;
@@ -32,7 +32,7 @@ namespace Saule.Serialization
                 ["included"] = _includedSection,
                 ["links"] = new JObject
                 {
-                    ["self"] = new JValue(GetUrl())
+                    ["self"] = new JValue(_baseUrl)
                 }
             };
         }
@@ -59,6 +59,14 @@ namespace Saule.Serialization
 
             data["attributes"] = SerializeAttributes(properties);
             data["relationships"] = SerializeRelationships(properties);
+
+            if (_isCollection)
+            {
+                data["links"] = new JObject
+                {
+                    ["self"] = GetUrl(EnsureHasId(properties).Value<string>())
+                };
+            }
 
             return data;
         }
@@ -108,7 +116,7 @@ namespace Saule.Serialization
         private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
             // serialize the links part (so the data can be fetched)
-            var objId = _isCollection
+            var objId = _isCollection 
                 ? EnsureHasId(properties).Value<string>()
                 : string.Empty;
             var relToken = GetMinimumRelationship(objId, relationship.UrlPath);
@@ -168,14 +176,14 @@ namespace Saule.Serialization
 
             return id;
         }
-        private string GetUrl(params string[] parts)
+        private Uri GetUrl(params string[] parts)
         {
-            var allParts = new[] { _baseUrl }.Concat(parts).Where(s => !string.IsNullOrEmpty(s));
-            var result = string.Join("/", allParts.Select(s => s.Trim('/')).ToArray());
+            var path = new Uri(_baseUrl.GetLeftPart(UriPartial.Path).EnsureEndsWith("/"));
 
-            return Uri.IsWellFormedUriString(_baseUrl, UriKind.Absolute)
-                ? result
-                : "/" + result;
+            var goodParts = parts.Where(s => !string.IsNullOrEmpty(s));
+            var result = string.Join("/", goodParts.Select(s => s.Trim('/')).ToArray()) + "/";
+
+            return new Uri(path, result);
         }
     }
 }
