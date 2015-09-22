@@ -1,5 +1,7 @@
 ﻿using Saule.Http;
 using System.Web.Http;
+using Saule;
+using Saule.Serialization;
 
 namespace Website
 {
@@ -7,13 +9,21 @@ namespace Website
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
+            var formatter = new JsonApiMediaTypeFormatter(
+                new DefaultUrlPathBuilder("api/"));
 
             // Web API routes
             config.MapHttpAttributeRoutes();
 
             config.Formatters.Clear();
-            config.Formatters.Add(new JsonApiMediaTypeFormatter());
+            config.Formatters.Add(formatter);
         }
+    }
+
+    // todo: test with Guid for id
+    //todo: test resource relationship hasmany generation
+    public class TestUrlBuilder : CanonicalUrlPathBuilder
+    {
+
     }
 }

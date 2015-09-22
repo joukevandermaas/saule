@@ -231,7 +231,27 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
+
+            Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
+        }
+
+        [Fact(DisplayName = "Supports multiple url builders")]
+        public void SerializeDifferentBuilder()
+        {
+            var target = new ResourceSerializer(
+                new Person(prefill: true), new PersonResource(), 
+                new Uri("http://example.com/people/123"),
+                new CanonicalUrlPathBuilder(), null);
+            var result = target.Serialize();
+
+            var relationships = result["data"]["relationships"];
+            var job = relationships["job"];
+            var friends = relationships["friends"];
+
+            Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/coorporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
 
             Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
             Assert.Equal(null, friends["links"]["self"]);
@@ -273,7 +293,7 @@ namespace Tests.Serialization
                 job["links"]["self"]);
         }
 
-        private IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
+        private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
         {
             yield return new KeyValuePair<string, string>(key, value);
         }
@@ -295,7 +315,8 @@ namespace Tests.Serialization
                 return string.Empty;
             }
 
-            public string BuildRelationshipSelfPath(ApiResource resource, string id, ResourceRelationship relationship, string relatedResourceId)
+            public string BuildRelationshipPath(ApiResource resource, string id, ResourceRelationship relationship,
+                string relatedResourceId)
             {
                 return string.Empty;
             }

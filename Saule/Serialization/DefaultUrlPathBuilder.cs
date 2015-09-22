@@ -1,5 +1,3 @@
-using Humanizer;
-
 namespace Saule.Serialization
 {
     /// <summary>
@@ -7,13 +5,24 @@ namespace Saule.Serialization
     /// </summary>
     public class DefaultUrlPathBuilder : IUrlPathBuilder
     {
+        private readonly string _prefix;
+
+        public DefaultUrlPathBuilder()
+            : this(string.Empty)
+        { 
+        }
+        public DefaultUrlPathBuilder(string prefix)
+        {
+            _prefix = prefix;
+        }
+
         /// <summary>
         /// Returns the UrlPath of the resource, ensuring it starts and ends with '/'
         /// </summary>
         /// <param name="resource">The resource this path refers to.</param>
         public virtual string BuildCanonicalPath(ApiResource resource)
         {
-            return resource.UrlPath.EnsureEndsWith("/");
+            return '/'.TrimJoin(_prefix, resource.UrlPath.EnsureEndsWith("/"));
         }
 
         /// <summary>
@@ -50,7 +59,7 @@ namespace Saule.Serialization
         /// <param name="id">The unique id of the resource.</param>
         /// <param name="relationship">The relationship this path refers to.</param>
         /// <param name="relatedResourceId">The id of the related resource.</param>
-        public virtual string BuildRelationshipSelfPath(
+        public virtual string BuildRelationshipPath(
             ApiResource resource,
             string id,
             ResourceRelationship relationship,

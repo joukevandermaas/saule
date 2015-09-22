@@ -16,7 +16,6 @@ namespace Saule.Serialization
         private readonly JArray _includedSection;
         private bool _isCollection;
         private readonly IUrlPathBuilder _urlBuilder;
-        private readonly string _commonPathSpec;
 
         public ResourceSerializer(
             object value,
@@ -31,24 +30,6 @@ namespace Saule.Serialization
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includedSection = new JArray();
-
-            var firstPart = _urlBuilder.BuildCanonicalPath(_resource)
-                .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-            if (firstPart != null)
-            {
-                var existingPath = _baseUrl.AbsolutePath;
-                var startIndex = existingPath.IndexOf(firstPart, StringComparison.InvariantCulture);
-                var genericPart = startIndex > -1
-                    ? existingPath.Substring(0, startIndex)
-                    : existingPath;
-
-                _commonPathSpec = genericPart;
-            }
-            else
-            {
-                _commonPathSpec = "/";
-            }
         }
 
         public JObject Serialize()
@@ -223,7 +204,7 @@ namespace Saule.Serialization
         private JToken GetMinimumRelationship(string id, ResourceRelationship relationship, string relationshipId)
         {
             var links = new JObject();
-            AddUrl(links, "self", _urlBuilder.BuildRelationshipSelfPath(_resource, id, relationship, relationshipId));
+            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(_resource, id, relationship, relationshipId));
             AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(_resource, id, relationship));
 
             return new JObject
@@ -255,13 +236,7 @@ namespace Saule.Serialization
             if (string.IsNullOrEmpty(path)) return @object;
 
             var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
-            string combined;
-            if (!string.IsNullOrEmpty(path) && path[0] == '/')
-                combined = path.EnsureEndsWith("/");
-            else
-                combined = '/'.TrimJoin(_commonPathSpec, path).EnsureEndsWith("/");
-
-            @object.Add(name, new Uri(start, combined));
+            @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));
 
             return @object;
         }

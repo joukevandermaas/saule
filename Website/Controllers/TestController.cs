@@ -16,7 +16,7 @@ namespace Website.Controllers
         {
             return new TestModel
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Name = "my name"
             };
         }
@@ -41,7 +41,7 @@ namespace Website.Controllers
             {
                 yield return new TestModel
                 {
-                    Id = $"test{i}",
+                    Id = Guid.NewGuid(),
                     Name = $"I'm test {i}"
                 };
                 i++;

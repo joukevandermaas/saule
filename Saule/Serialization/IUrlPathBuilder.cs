@@ -33,6 +33,6 @@
         /// <param name="id">The id of the resource.</param>
         /// <param name="relationship">The relationship this path refers to.</param>
         /// <param name="relatedResourceId">The id of the related resource.</param>
-        string BuildRelationshipSelfPath(ApiResource resource, string id, ResourceRelationship relationship, string relatedResourceId);
+        string BuildRelationshipPath(ApiResource resource, string id, ResourceRelationship relationship, string relatedResourceId);
     }
 }
