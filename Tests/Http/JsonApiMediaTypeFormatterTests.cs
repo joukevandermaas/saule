@@ -17,6 +17,7 @@ namespace Tests.Http
         {
             var target = new JsonApiMediaTypeFormatter();
             Assert.NotNull(target.JsonSerializer);
+            Assert.NotNull(target.UrlPathBuilder);
         }
 
         //[Fact(DisplayName = "Constructor with JsonSerializer must use that instance")]

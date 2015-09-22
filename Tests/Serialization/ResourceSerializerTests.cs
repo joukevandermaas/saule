@@ -17,7 +17,8 @@ namespace Tests.Serialization
         {
             _person = new Person(prefill: true);
             _target = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
+                _person, new PersonResource(), new Uri("http://example.com/people/123/"), 
+                new DefaultUrlPathBuilder(), null);
         }
 
         [Fact(DisplayName = "Serializes all found attributes")]
@@ -46,7 +47,8 @@ namespace Tests.Serialization
         {
             var company = new Company(prefill: true);
             var target = new ResourceSerializer(company,
-                new CompanyResource(), new Uri("http://example.com/companies/1/"), null);
+                new CompanyResource(), new Uri("http://example.com/companies/1/"), 
+                new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
 
             Assert.Equal("coorporation", result["data"]["type"]);
@@ -56,7 +58,9 @@ namespace Tests.Serialization
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
+            var target = new ResourceSerializer(person, new PersonResource(), 
+                new Uri("http://example.com/people/1/"),
+                new DefaultUrlPathBuilder(), null);
 
             Assert.Throws<JsonApiException>(() =>
             {
@@ -68,7 +72,9 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/123"), null);
+            var target = new ResourceSerializer(person, new PersonResource(), 
+                new Uri("http://example.com/people/123"),
+                new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
@@ -87,6 +93,7 @@ namespace Tests.Serialization
             var included = result["included"] as JArray;
             var job = included?[0];
             Assert.Equal(1, included?.Count);
+            Assert.Equal("http://example.com/coorporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
 
             Assert.Equal(_person.Job.Id, job?["id"]);
             Assert.NotNull(job?["attributes"]);
@@ -97,7 +104,9 @@ namespace Tests.Serialization
         {
             var person = new Person { Id = "45" };
             var target = new ResourceSerializer(
-                person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
+                person, new PersonResource(), 
+                new Uri("http://example.com/people/1/"),
+                new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
@@ -121,7 +130,10 @@ namespace Tests.Serialization
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new ResourceSerializer(people, new PersonResource(), new Uri("http://example.com/people/"), null);
+            var target = new ResourceSerializer(people, 
+                new PersonResource(),
+                new Uri("http://example.com/people/"),
+                new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
 
             var included = result["included"] as JArray;
@@ -131,10 +143,35 @@ namespace Tests.Serialization
             Assert.Equal("/people/a/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
         }
 
+        [Fact(DisplayName = "Document MUST contain at least one: data, errors, meta")]
+        public void DocumentMustContainAtLeastOneDataOrErrorOrMeta()
+        {
+            var people = new Person[] { };
+            var target = new ResourceSerializer(people, new PersonResource(),
+                new Uri("http://example.com/people/"), new DefaultUrlPathBuilder(), null);
+            var result = target.Serialize();
+
+            Assert.NotNull(result["data"]);
+        }
+
+        [Fact(DisplayName = "If a document does not contain a top-level data key, the included member MUST NOT be present either.")]
+        public void DocumentMustNotContainIncludedForEmptySet()
+        {
+            var people = new Person[] { };
+            var target = new ResourceSerializer(people, new PersonResource(),
+                new Uri("http://example.com/people/"),
+                new DefaultUrlPathBuilder(), null);
+            var result = target.Serialize();
+
+            Assert.Null(result["included"]);
+        }
+
         [Fact(DisplayName = "Handles null objects correctly")]
         public void HandlesNullResources()
         {
-            var target = new ResourceSerializer(null, new PersonResource(), new Uri("http://example.com/people"), null);
+            var target = new ResourceSerializer(null, 
+                new PersonResource(), new Uri("http://example.com/people"),
+                new DefaultUrlPathBuilder(),  null);
             var result = target.Serialize();
 
             Assert.Equal(JTokenType.Null, result["data"].Type);

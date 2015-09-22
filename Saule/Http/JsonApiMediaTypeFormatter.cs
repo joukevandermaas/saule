@@ -23,17 +23,28 @@ namespace Saule.Http
         private readonly ApiResource _resource;
         private readonly PaginationContext _paginationContext;
         private readonly Uri _baseUrl;
-        private readonly JsonSerializer _jsonSerializer;
 
-        internal JsonSerializer JsonSerializer => _jsonSerializer;
+        internal JsonSerializer JsonSerializer { get; }
+        internal IUrlPathBuilder UrlPathBuilder { get; }
 
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.
         /// </summary>
         public JsonApiMediaTypeFormatter()
         {
-            _jsonSerializer = new JsonSerializer();
+            UrlPathBuilder = new DefaultUrlPathBuilder();
+            JsonSerializer = new JsonSerializer();
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
+        }
+
+        /// <summary>
+        /// Creates a new instance of the JstonApiMediaTypeFormatter class.
+        /// </summary>
+        /// <param name="urlBuilder">Determines how to generate urls for links.</param>
+        public JsonApiMediaTypeFormatter(IUrlPathBuilder urlBuilder)
+            : this()
+        {
+            UrlPathBuilder = urlBuilder;
         }
 
         /// <summary>
@@ -41,19 +52,30 @@ namespace Saule.Http
         /// </summary>
         /// <param name="converters">Json converters to manipulate the serialization process.</param>
         public JsonApiMediaTypeFormatter(params JsonConverter[] converters)
-            : this()
+            : this(new DefaultUrlPathBuilder(), converters)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of the JstonApiMediaTypeFormatter class.
+        /// </summary>
+        /// <param name="urlBuilder">Determines how to generate urls for links.</param>
+        /// <param name="converters">Json converters to manipulate the serialization process.</param>
+        public JsonApiMediaTypeFormatter(IUrlPathBuilder urlBuilder, params JsonConverter[] converters)
+            : this(urlBuilder)
         {
             foreach (var converter in converters)
             {
-                _jsonSerializer.Converters.Add(converter);
+                JsonSerializer.Converters.Add(converter);
             }
         }
 
-        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, JsonSerializer serializer)
+        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, JsonSerializer serializer, IUrlPathBuilder urlBuilder)
             : this()
         {
             _baseUrl = request.RequestUri;
-            _jsonSerializer = serializer;
+            UrlPathBuilder = urlBuilder;
+            JsonSerializer = serializer;
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))
             {
                 _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
@@ -91,8 +113,8 @@ namespace Saule.Http
             HttpContent content,
             TransportContext transportContext)
         {
-            var json = IsException(type) 
-                ? SerializeError(value) 
+            var json = IsException(type)
+                ? SerializeError(value)
                 : SerializeOther(value);
 
             await WriteJsonToStream(json, writeStream);
@@ -108,10 +130,11 @@ namespace Saule.Http
             return new ResourceSerializer(
                 value,
                 _resource,
-                _baseUrl,
+                _baseUrl, 
+                UrlPathBuilder,
                 _paginationContext)
 
-                .Serialize(_jsonSerializer);
+                .Serialize(JsonSerializer);
         }
 
         private static JToken SerializeError(object value)
@@ -127,7 +150,7 @@ namespace Saule.Http
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
             {
-                await writer.WriteAsync(json.ToString(Formatting.None, _jsonSerializer.Converters.ToArray()));
+                await writer.WriteAsync(json.ToString(Formatting.None, JsonSerializer.Converters.ToArray()));
             }
         }
 
@@ -153,7 +176,7 @@ namespace Saule.Http
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            return new JsonApiMediaTypeFormatter(request, _jsonSerializer);
+            return new JsonApiMediaTypeFormatter(request, JsonSerializer, UrlPathBuilder);
         }
     }
 }

@@ -15,14 +15,40 @@ namespace Saule.Serialization
         private readonly object _value;
         private readonly JArray _includedSection;
         private bool _isCollection;
+        private readonly IUrlPathBuilder _urlBuilder;
+        private readonly string _commonPathSpec;
 
-        public ResourceSerializer(object value, ApiResource type, Uri baseUrl, PaginationContext paginationContext)
+        public ResourceSerializer(
+            object value,
+            ApiResource type,
+            Uri baseUrl,
+            IUrlPathBuilder urlBuilder,
+            PaginationContext paginationContext)
         {
+            _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includedSection = new JArray();
+
+            var firstPart = _urlBuilder.BuildCanonicalPath(_resource)
+                .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            if (firstPart != null)
+            {
+                var existingPath = _baseUrl.AbsolutePath;
+                var startIndex = existingPath.IndexOf(firstPart, StringComparison.InvariantCulture);
+                var genericPart = startIndex > -1
+                    ? existingPath.Substring(0, startIndex)
+                    : existingPath;
+
+                _commonPathSpec = genericPart;
+            }
+            else
+            {
+                _commonPathSpec = "/";
+            }
         }
 
         public JObject Serialize()
@@ -36,12 +62,19 @@ namespace Saule.Serialization
             var objectJson = JToken.FromObject(_value, serializer);
             _isCollection = objectJson is JArray;
 
-            return new JObject
+            var result = new JObject
             {
                 ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
-                ["included"] = _includedSection,
+                ["links"] = new JObject
+                {
+                    ["self"] = new JValue(_baseUrl)
+                }
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
+
+            if (_includedSection.Count > 0) result["included"] = _includedSection;
+
+            return result;
         }
 
         private JObject SerializeNull(JsonSerializer serializer)
@@ -101,10 +134,8 @@ namespace Saule.Serialization
 
             if (_isCollection)
             {
-                data["links"] = new JObject
-                {
-                    ["self"] = GetUrl(EnsureHasId(properties).Value<string>())
-                };
+                data["links"] = AddUrl(new JObject(), "self",
+                    _urlBuilder.BuildCanonicalPath(_resource, EnsureHasId(properties).Value<string>()));
             }
 
             return data;
@@ -154,12 +185,13 @@ namespace Saule.Serialization
 
         private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
-            // serialize the links part (so the data can be fetched)
-            var objId = _isCollection
-                ? EnsureHasId(properties).Value<string>()
-                : string.Empty;
-            var relToken = GetMinimumRelationship(objId, relationship.UrlPath);
             var relationshipValues = GetValue(relationship.Name, properties);
+            var relationshipProperties = relationshipValues as JObject;
+
+            // serialize the links part (so the data can be fetched)
+            var objId = EnsureHasId(properties).Value<string>();
+            var relToken = GetMinimumRelationship(objId, relationship, 
+                relationshipProperties != null ? GetValue("id", relationshipProperties).Value<string>() : null);
             if (relationshipValues == null) return relToken;
 
             // only include data if it exists, otherwise just assume it should be fetched later
@@ -178,6 +210,8 @@ namespace Saule.Serialization
                     var values = SerializeMinimalData(props, relationship.RelatedResource);
                     var includedData = values.DeepClone();
                     includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
+                    includedData["links"] = AddUrl(new JObject(), "self",
+                        _urlBuilder.BuildCanonicalPath(relationship.RelatedResource, EnsureHasId(props).Value<string>()));
                     if (!IsResourceIncluded(includedData))
                         _includedSection.Add(includedData);
 
@@ -186,15 +220,15 @@ namespace Saule.Serialization
             return data;
         }
 
-        private JToken GetMinimumRelationship(string id, string urlPath)
+        private JToken GetMinimumRelationship(string id, ResourceRelationship relationship, string relationshipId)
         {
+            var links = new JObject();
+            AddUrl(links, "self", _urlBuilder.BuildRelationshipSelfPath(_resource, id, relationship, relationshipId));
+            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(_resource, id, relationship));
+
             return new JObject
             {
-                ["links"] = new JObject
-                {
-                    ["self"] = GetUrl(id, "relationships", urlPath),
-                    ["related"] = GetUrl(id, urlPath)
-                }
+                ["links"] = links
             };
         }
 
@@ -215,14 +249,17 @@ namespace Saule.Serialization
 
             return id;
         }
-        private Uri GetUrl(params string[] parts)
+
+        private JObject AddUrl(JObject @object, string name, string path)
         {
-            var path = new Uri(_baseUrl.GetLeftPart(UriPartial.Path).EnsureEndsWith("/"));
+            if (string.IsNullOrEmpty(path)) return @object;
 
-            var goodParts = parts.Where(s => !string.IsNullOrEmpty(s));
-            var result = string.Join("/", goodParts.Select(s => s.Trim('/')).ToArray()) + "/";
+            var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
+            var combined = '/'.TrimJoin(_commonPathSpec, path).EnsureEndsWith("/");
 
-            return new Uri(path, result);
+            @object.Add(name, new Uri(start, combined));
+
+            return @object;
         }
     }
 }

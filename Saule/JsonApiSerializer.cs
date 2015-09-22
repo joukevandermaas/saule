@@ -37,7 +37,7 @@ namespace Saule
                 dataObject = PaginationInterpreter.ApplyPaginationIfApplicable(context, dataObject);
             }
 
-            var serializer = new ResourceSerializer(dataObject, new T(), requestUri, context);
+            var serializer = new ResourceSerializer(dataObject, new T(), requestUri, new DefaultUrlPathBuilder(),  context);
             var jsonSerializer = GetJsonSerializer();
             return serializer.Serialize(jsonSerializer);
         }

@@ -5,14 +5,26 @@
     /// </summary>
     public abstract class ResourceRelationship
     {
-        internal ResourceRelationship(
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">The name of the reference on the resource that defines the relationship.</param>
+        /// <param name="urlPath">
+        /// The url path of this relationship relative to the resource url that holds
+        /// the relationship.
+        /// </param>
+        /// <param name="kind">The kind of relationship.</param>
+        /// <param name="relationshipResource">The specification of the related resource.</param>
+        public ResourceRelationship(
             string name,
             string urlPath,
+            RelationshipKind kind,
             ApiResource relationshipResource)
         {
             Name = name.ToDashed();
             UrlPath = urlPath.ToDashed();
             RelatedResource = relationshipResource;
+            Kind = kind;
         }
 
         /// <summary>
@@ -29,15 +41,20 @@
         /// The pathspec of this relationship.
         /// </summary>
         public string UrlPath { get; }
+
+        /// <summary>
+        /// The kind of relationship.
+        /// </summary>
+        public RelationshipKind Kind { get; }
     }
 
     /// <summary>
     /// Represents a related resource (to-one or to-many).
     /// </summary>
-    public class ResourceRelationship<T> : ResourceRelationship where T : ApiResource, new()
+    internal class ResourceRelationship<T> : ResourceRelationship where T : ApiResource, new()
     {
-        internal ResourceRelationship(string name, string urlPath, T resource)
-            : base(name, urlPath, resource)
+        internal ResourceRelationship(string name, string urlPath, RelationshipKind kind, T resource)
+            : base(name, urlPath, kind, resource)
         {
         }
     }
