@@ -23,12 +23,15 @@ namespace Saule.Http
         private readonly Uri _baseUrl;
         private readonly JsonSerializer _jsonSerializer;
 
+        internal JsonSerializer JsonSerializer => _jsonSerializer;
+
         /// <summary>
         /// Creates a new instance of the JsonApiMediaTypeFormatter class.
         /// </summary>
         public JsonApiMediaTypeFormatter()
         {
-            SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/vnd.api+json"));
+            _jsonSerializer = new JsonSerializer();
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
         }
 
         /// <summary>
@@ -38,7 +41,6 @@ namespace Saule.Http
         public JsonApiMediaTypeFormatter(params JsonConverter[] converters)
             : this()
         {
-            _jsonSerializer = new JsonSerializer();
             foreach (var converter in converters)
             {
                 _jsonSerializer.Converters.Add(converter);
