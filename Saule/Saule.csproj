@@ -62,8 +62,11 @@
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
     <Compile Include="Http\Constants.cs" />
+    <Compile Include="Http\PaginatedAttribute.cs" />
     <Compile Include="Http\ReturnsResourceAttribute.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatter.cs" />
+    <Compile Include="Queries\PaginationInterpreter.cs" />
+    <Compile Include="Queries\QueryMethods.cs" />
     <Compile Include="Serialization\ApiError.cs" />
     <Compile Include="ResourceAttribute.cs" />
     <Compile Include="ResourceRelationship.cs" />

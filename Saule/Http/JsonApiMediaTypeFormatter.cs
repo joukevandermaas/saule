@@ -84,8 +84,8 @@ namespace Saule.Http
             HttpContent content,
             TransportContext transportContext)
         {
-            var json = IsException(type)
-                ? SerializeError(value)
+            var json = IsException(type) 
+                ? SerializeError(value) 
                 : SerializeOther(value);
 
             await WriteJsonToStream(json, writeStream);

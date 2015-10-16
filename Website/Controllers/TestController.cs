@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Saule.Http;
 using System.Web.Http;
 using Website.Models;
@@ -10,7 +11,7 @@ namespace Website.Controllers
     [ReturnsResource(typeof(TestResource))]
     public class TestController : ApiController
     {
-        [Route("api/test/{id}")]
+        [Route("api/tests/{id}")]
         public TestModel Get(string id)
         {
             return new TestModel
@@ -20,20 +21,31 @@ namespace Website.Controllers
             };
         }
 
-        [Route("tests")]
-        public IEnumerable<TestModel> GetAll()
+        [Route("api/tests")]
+        [Paginated(perPage: 2)]
+        public IQueryable<TestModel> GetAll()
         {
-            yield return new TestModel
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "my name"
-            };
+            return GetModel().Take(100).AsQueryable();
         }
 
-        [Route("test")]
+        [Route("api/tests")]
         public TestModel Post(TestModel model)
         {
             return model;
+        }
+
+        private IEnumerable<TestModel> GetModel()
+        {
+            var i = 0;
+            while (true)
+            {
+                yield return new TestModel
+                {
+                    Id = $"test{i}",
+                    Name = $"I'm test {i}"
+                };
+                i++;
+            }
         }
     }
 }
