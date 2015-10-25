@@ -23,9 +23,9 @@ namespace Website.Controllers
 
         [Route("api/tests")]
         [Paginated(PerPage = 10)]
-        public IQueryable<TestModel> GetAll()
+        public IEnumerable<TestModel> GetAll()
         {
-            return GetModel().Take(100).AsQueryable();
+            return GetModel().Take(105);
         }
 
         [Route("api/tests")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Controllers;
@@ -50,13 +51,21 @@ namespace Saule.Http
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             var content = actionExecutedContext.Response.Content as ObjectContent;
-            var queryable = content?.Value as IQueryable;
             var context = actionExecutedContext.Request.Properties[Constants.PaginationContextPropertyName]
                 as PaginationContext;
 
+            var queryable = content?.Value as IQueryable;
             if (queryable != null)
             {
                 content.Value = new PaginationInterpreter(context).Apply(queryable);
+            }
+            else
+            { // all queryables are enumerable
+                var enumerable = content?.Value as IEnumerable;
+                if (enumerable != null)
+                {
+                    content.Value = new PaginationInterpreter(context).Apply(enumerable);
+                }
             }
 
             base.OnActionExecuted(actionExecutedContext);

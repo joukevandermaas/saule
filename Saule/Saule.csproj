@@ -67,7 +67,8 @@
     <Compile Include="Http\JsonApiMediaTypeFormatter.cs" />
     <Compile Include="Queries\PaginationContext.cs" />
     <Compile Include="Queries\PaginationInterpreter.cs" />
-    <Compile Include="Queries\QueryMethods.cs" />
+    <Compile Include="Queries\QueryableExtensions.cs" />
+    <Compile Include="Queries\QueryMethod.cs" />
     <Compile Include="Queries\PaginationQuery.cs" />
     <Compile Include="Serialization\ApiError.cs" />
     <Compile Include="ResourceAttribute.cs" />

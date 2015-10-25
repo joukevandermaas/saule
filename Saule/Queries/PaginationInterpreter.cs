@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 
 namespace Saule.Queries
 {
@@ -13,9 +14,15 @@ namespace Saule.Queries
 
         public IQueryable Apply(IQueryable queryable)
         {
-            var filtered = queryable.ApplyQuery(QueryMethods.Skip, Context.Page * Context.PerPage) as IQueryable;
+            var filtered = queryable.ApplyQuery(QueryMethod.Skip, Context.Page * Context.PerPage) as IQueryable;
+            filtered = filtered.ApplyQuery(QueryMethod.Take, Context.PerPage) as IQueryable;
 
-            filtered = filtered.ApplyQuery(QueryMethods.Take, Context.PerPage) as IQueryable;
+            return filtered;
+        }
+        public IEnumerable Apply(IEnumerable queryable)
+        {
+            var filtered = queryable.ApplyQuery(QueryMethod.Skip, Context.Page * Context.PerPage) as IEnumerable;
+            filtered = filtered.ApplyQuery(QueryMethod.Take, Context.PerPage) as IEnumerable;
 
             return filtered;
         }
