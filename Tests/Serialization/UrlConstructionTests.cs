@@ -96,8 +96,8 @@ namespace Tests.Serialization
                 new PaginationContext(GetQuery("page.number", "2"), perPage:4));
             result = target.Serialize();
 
-            var nextLink = result["links"].Value<Uri>("next").Query;
-            Assert.Equal("?page%5Bnumber%5D=3", nextLink);
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
+            Assert.Equal("?page[number]=3", nextLink);
         }
 
         [Fact(DisplayName = "Adds previous link only if needed")]
@@ -122,8 +122,8 @@ namespace Tests.Serialization
                 new PaginationContext(GetQuery("page.number", "1"), perPage:10));
             result = target.Serialize();
 
-            var nextLink = result["links"].Value<Uri>("prev").Query;
-            Assert.Equal("?page%5Bnumber%5D=0", nextLink);
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);
+            Assert.Equal("?page[number]=0", nextLink);
         }
 
         [Fact(DisplayName = "Keeps other query parameters when paginating")]
@@ -142,8 +142,8 @@ namespace Tests.Serialization
 
             var result = target.Serialize();
 
-            var nextLink = result["links"].Value<Uri>("next").Query;
-            Assert.Equal("?q=a&page%5Bnumber%5D=1", nextLink);
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
+            Assert.Equal("?q=a&page[number]=1", nextLink);
         }
 
         [Fact(DisplayName = "Adds first link if paginating")]
@@ -162,8 +162,8 @@ namespace Tests.Serialization
 
             var result = target.Serialize();
 
-            var nextLink = result["links"].Value<Uri>("first").Query;
-            Assert.Equal("?page%5Bnumber%5D=0", nextLink);
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("first").Query);
+            Assert.Equal("?page[number]=0", nextLink);
         }
 
         [Fact(DisplayName = "Serializes relationships' links")]

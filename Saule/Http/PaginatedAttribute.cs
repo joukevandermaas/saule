@@ -11,7 +11,7 @@ namespace Saule.Http
     /// Indicates that the returned queryable must be paginated. Only works if the action
     /// method returns <see cref="IQueryable{T}"/>.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Method)]
     public sealed class PaginatedAttribute : ActionFilterAttribute
     {
         private int _perPage = 10;
