@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Saule.Queries;
 
 namespace Saule.Http
 {
@@ -20,6 +21,7 @@ namespace Saule.Http
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
         private readonly ApiResource _resource;
+        private readonly PaginationContext _paginationContext;
         private readonly Uri _baseUrl;
         private readonly JsonSerializer _jsonSerializer;
 
@@ -55,6 +57,11 @@ namespace Saule.Http
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))
             {
                 _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
+            }
+
+            if (request.Properties.ContainsKey(Constants.PaginationContextPropertyName))
+            {
+                _paginationContext = (PaginationContext) request.Properties[Constants.PaginationContextPropertyName];
             }
         }
 
@@ -101,7 +108,8 @@ namespace Saule.Http
             return new ResourceSerializer(
                 value,
                 _resource,
-                _baseUrl)
+                _baseUrl,
+                _paginationContext)
 
                 .Serialize(_jsonSerializer);
         }

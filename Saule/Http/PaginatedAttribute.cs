@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Saule.Queries;
 
@@ -21,17 +22,25 @@ namespace Saule.Http
 
         public int PerPage { get; }
 
+        public override void OnActionExecuting(HttpActionContext actionContext)
+        {
+            var context = new PaginationContext(
+                actionContext.Request.GetQueryNameValuePairs(),
+                PerPage);
+            actionContext.Request.Properties.Add(Constants.PaginationContextPropertyName, context);
+            base.OnActionExecuting(actionContext);
+        }
+
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             var content = actionExecutedContext.Response.Content as ObjectContent;
             var queryable = content?.Value as IQueryable;
+            var context = actionExecutedContext.Request.Properties[Constants.PaginationContextPropertyName]
+                as PaginationContext;
 
             if (queryable != null)
             {
-                var filters = actionExecutedContext.Request.GetQueryNameValuePairs();
-                var context = new PaginationInterpreter(queryable, filters, PerPage).Apply();
-                content.Value = context.Result;
-                actionExecutedContext.Request.Properties.Add(Constants.QueryContextName, context);
+                content.Value = new PaginationInterpreter(context).Apply(queryable);
             }
 
             base.OnActionExecuted(actionExecutedContext);
