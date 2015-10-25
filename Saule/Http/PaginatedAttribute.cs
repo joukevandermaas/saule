@@ -14,24 +14,21 @@ namespace Saule.Http
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public sealed class PaginatedAttribute : ActionFilterAttribute
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="perPage">The number of items to return per response.</param>
-        public PaginatedAttribute(int perPage)
-        {
-            if (perPage < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(perPage), perPage, "Must have at least one item per page.");
-            }
-
-            PerPage = perPage;
-        }
+        private int _perPage = 10;
 
         /// <summary>
         /// The number of items to return per response.
         /// </summary>
-        public int PerPage { get; }
+        public int PerPage
+        {
+            get { return _perPage; }
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Must have at least one item per page.");
+                _perPage = value;
+            }
+        }
 
         /// <summary>
         /// 
