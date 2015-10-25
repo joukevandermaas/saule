@@ -8,7 +8,7 @@ namespace Saule.Http
     /// Attribute used to specify the api resource related to a controller action.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class ReturnsResourceAttribute : ActionFilterAttribute
+    public sealed class ReturnsResourceAttribute : ActionFilterAttribute
     {
         /// <summary>
         ///

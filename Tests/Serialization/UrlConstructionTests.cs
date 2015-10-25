@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Saule.Queries;
 using Saule.Serialization;
 using Tests.Helpers;
 using Xunit;
@@ -11,7 +14,7 @@ namespace Tests.Serialization
         public void HandlesQueryParams()
         {
             var url = new Uri("http://example.com/api/people/123?a=b&c=d");
-            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(), url);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(), url, null);
             var result = target.Serialize();
 
             var jobLinks = result["data"]?["relationships"]?["job"]?["links"];
@@ -36,7 +39,7 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "4")
             };
             var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"));
+                people, new PersonResource(), new Uri("http://example.com/people/"), null);
             var result = target.Serialize();
 
             foreach (var elem in result["data"])
@@ -51,7 +54,7 @@ namespace Tests.Serialization
         public void NoSelfLinksInObject()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"));
+                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"), null);
             var result = target.Serialize();
 
             var links = result["data"]?["links"];
@@ -63,7 +66,7 @@ namespace Tests.Serialization
         public void SelfLink()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"));
+                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"), null);
             var result = target.Serialize();
 
             var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
@@ -71,11 +74,103 @@ namespace Tests.Serialization
             Assert.Equal("/people/1", selfLink);
         }
 
+        [Fact(DisplayName = "Adds next link only if needed")]
+        public void NextLink()
+        {
+            var people = new[]
+            {
+                new Person(prefill: true, id: "1"),
+                new Person(prefill: true, id: "2"),
+                new Person(prefill: true, id: "3"),
+                new Person(prefill: true, id: "4")
+            };
+            var target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/"),
+                new PaginationContext(GetQuery("page.number", "2"), perPage:10));
+            var result = target.Serialize();
+
+            Assert.Equal(null, result["links"]["next"]);
+
+            target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/"),
+                new PaginationContext(GetQuery("page.number", "2"), perPage:4));
+            result = target.Serialize();
+
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
+            Assert.Equal("?page[number]=3", nextLink);
+        }
+
+        [Fact(DisplayName = "Adds previous link only if needed")]
+        public void PreviousLink()
+        {
+            var people = new[]
+            {
+                new Person(prefill: true, id: "1"),
+                new Person(prefill: true, id: "2"),
+                new Person(prefill: true, id: "3"),
+                new Person(prefill: true, id: "4")
+            };
+            var target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/"),
+                new PaginationContext(GetQuery("page.number", "0"), perPage:10));
+            var result = target.Serialize();
+
+            Assert.Equal(null, result["links"]["prev"]);
+
+            target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/"),
+                new PaginationContext(GetQuery("page.number", "1"), perPage:10));
+            result = target.Serialize();
+
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);
+            Assert.Equal("?page[number]=0", nextLink);
+        }
+
+        [Fact(DisplayName = "Keeps other query parameters when paginating")]
+        public void PaginationQueryParams()
+        {
+            var people = new[]
+            {
+                new Person(prefill: true, id: "1"),
+                new Person(prefill: true, id: "2"),
+                new Person(prefill: true, id: "3"),
+                new Person(prefill: true, id: "4")
+            };
+            var target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/?q=a"),
+                new PaginationContext(GetQuery("q", "a"), perPage:4));
+
+            var result = target.Serialize();
+
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
+            Assert.Equal("?q=a&page[number]=1", nextLink);
+        }
+
+        [Fact(DisplayName = "Adds first link if paginating")]
+        public void FirstLink()
+        {
+            var people = new[]
+            {
+                new Person(prefill: true, id: "1"),
+                new Person(prefill: true, id: "2"),
+                new Person(prefill: true, id: "3"),
+                new Person(prefill: true, id: "4")
+            };
+            var target = new ResourceSerializer(
+                people, new PersonResource(), new Uri("http://example.com/people/"),
+                new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), perPage:4));
+
+            var result = target.Serialize();
+
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("first").Query);
+            Assert.Equal("?page[number]=0", nextLink);
+        }
+
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"));
+                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/people/1"), null);
             var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
@@ -93,7 +188,7 @@ namespace Tests.Serialization
         public void BuildsRightLinks()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/api/people/1"));
+                new Person(prefill: true), new PersonResource(), new Uri("http://example.com/api/people/1"), null);
             var result = target.Serialize();
 
             var job = result["data"]["relationships"]["job"];
@@ -104,5 +199,10 @@ namespace Tests.Serialization
                 job["links"].Value<Uri>("self").ToString());
         }
 
+
+        private IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
+        {
+            yield return new KeyValuePair<string, string>(key, value);
+        }
     }
 }

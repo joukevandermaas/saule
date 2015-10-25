@@ -34,9 +34,9 @@ namespace Tests.Serialization
             };
 
             var singleSerializer = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/1"));
+                _person, new PersonResource(), new Uri("http://example.com/people/1"), null);
             var multiSerializer = new ResourceSerializer(
-                _people, new PersonResource(), new Uri("http://example.com/people/"));
+                _people, new PersonResource(), new Uri("http://example.com/people/"), null);
 
             _singleJson = singleSerializer.Serialize();
             _collectionJson = multiSerializer.Serialize();

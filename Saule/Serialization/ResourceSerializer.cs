@@ -3,22 +3,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Saule.Queries;
 
 namespace Saule.Serialization
 {
     internal class ResourceSerializer
     {
         private readonly Uri _baseUrl;
+        private readonly PaginationContext _paginationContext;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly JArray _includedSection;
         private bool _isCollection;
 
-        public ResourceSerializer(object value, ApiResource type, Uri baseUrl)
+        public ResourceSerializer(object value, ApiResource type, Uri baseUrl, PaginationContext paginationContext)
         {
             _resource = type;
             _value = value;
             _baseUrl = baseUrl;
+            _paginationContext = paginationContext;
             _includedSection = new JArray();
         }
 
@@ -36,11 +39,31 @@ namespace Saule.Serialization
             {
                 ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
                 ["included"] = _includedSection,
-                ["links"] = new JObject
-                {
-                    ["self"] = new JValue(_baseUrl)
-                }
+                ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
+        }
+
+        private JToken CreateTopLevelLinks(int count)
+        {
+            var result = new JObject
+            {
+                ["self"] = _baseUrl
+            };
+
+            var queryStrings = new PaginationQuery(_paginationContext);
+
+            var left = _baseUrl.GetLeftPart(UriPartial.Path);
+
+            if (queryStrings.FirstPage != null)
+                result["first"] = new Uri(left + queryStrings.FirstPage);
+
+            if (queryStrings.NextPage != null && count >= _paginationContext.PerPage)
+                result["next"] = new Uri(left + queryStrings.NextPage);
+
+            if (queryStrings.PreviousPage != null)
+                result["prev"] = new Uri(left + queryStrings.PreviousPage);
+
+            return result;
         }
 
         private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
@@ -122,7 +145,7 @@ namespace Saule.Serialization
         private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
             // serialize the links part (so the data can be fetched)
-            var objId = _isCollection 
+            var objId = _isCollection
                 ? EnsureHasId(properties).Value<string>()
                 : string.Empty;
             var relToken = GetMinimumRelationship(objId, relationship.UrlPath);

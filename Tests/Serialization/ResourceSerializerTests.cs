@@ -17,7 +17,7 @@ namespace Tests.Serialization
         {
             _person = new Person(prefill: true);
             _target = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/1/"));
+                _person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
         }
 
         [Fact(DisplayName = "Serializes all found attributes")]
@@ -46,7 +46,7 @@ namespace Tests.Serialization
         {
             var company = new Company(prefill: true);
             var target = new ResourceSerializer(company,
-                new CompanyResource(), new Uri("http://example.com/companies/1/"));
+                new CompanyResource(), new Uri("http://example.com/companies/1/"), null);
             var result = target.Serialize();
 
             Assert.Equal("coorporation", result["data"]["type"]);
@@ -56,7 +56,7 @@ namespace Tests.Serialization
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/1/"));
+            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
 
             Assert.Throws<JsonApiException>(() =>
             {
@@ -68,7 +68,7 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/123"));
+            var target = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/123"), null);
             var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
@@ -97,7 +97,7 @@ namespace Tests.Serialization
         {
             var person = new Person { Id = "45" };
             var target = new ResourceSerializer(
-                person, new PersonResource(), new Uri("http://example.com/people/1/"));
+                person, new PersonResource(), new Uri("http://example.com/people/1/"), null);
             var result = target.Serialize();
 
             var relationships = result["data"]["relationships"];
@@ -121,7 +121,7 @@ namespace Tests.Serialization
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new ResourceSerializer(people, new PersonResource(), new Uri("http://example.com/people/"));
+            var target = new ResourceSerializer(people, new PersonResource(), new Uri("http://example.com/people/"), null);
             var result = target.Serialize();
 
             var included = result["included"] as JArray;
