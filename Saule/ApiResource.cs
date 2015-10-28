@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Saule
 {
@@ -7,6 +8,7 @@ namespace Saule
     /// </summary>
     public abstract class ApiResource
     {
+        private static readonly Dictionary<Type, ApiResource> Resources = new Dictionary<Type, ApiResource>();
         private readonly List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
         private readonly List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
 
@@ -30,6 +32,9 @@ namespace Saule
         /// </summary>
         protected ApiResource()
         {
+            var type = GetType();
+            if (!Resources.ContainsKey(type)) Resources.Add(type, this);
+
             var name = GetType().Name;
             OfType(name.ToUpperInvariant().EndsWith("RESOURCE") 
                 ? name.Remove(name.Length - "RESOURCE".Length) 
@@ -80,7 +85,8 @@ namespace Saule
         {
             if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
 
-            var result = new ResourceRelationship<T>(name, path, this);
+            var resource = GetUniqueResource<T>();
+            var result = new ResourceRelationship<T>(name, path, resource);
 
             _relationships.Add(result);
 
@@ -106,11 +112,21 @@ namespace Saule
         {
             if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
 
-            var result = new ResourceRelationship<T>(name, path, this);
+            var resource = GetUniqueResource<T>();
+            var result = new ResourceRelationship<T>(name, path, resource);
 
             _relationships.Add(result);
 
             return result;
+        }
+
+        private static T GetUniqueResource<T>() where T : ApiResource, new()
+        {
+            var type = typeof (T);
+            var resource = Resources.ContainsKey(type)
+                ? Resources[type] as T
+                : new T();
+            return resource;
         }
     }
 }
