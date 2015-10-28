@@ -36,16 +36,8 @@
     /// </summary>
     public class ResourceRelationship<T> : ResourceRelationship where T : ApiResource, new()
     {
-        internal ResourceRelationship(
-            string name,
-            string urlPath,
-            ApiResource relationshipSource)
-            : base(
-              name,
-               urlPath,
-               typeof(T) == relationshipSource.GetType()
-                   ? relationshipSource
-                   : new T())
+        internal ResourceRelationship(string name, string urlPath, T resource)
+            : base(name, urlPath, resource)
         {
         }
     }

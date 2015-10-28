@@ -16,5 +16,9 @@ namespace Website.Resources
 
     internal class OtherResource : ApiResource
     {
+        public OtherResource()
+        {
+            HasMany<TestResource>("Tests");
+        }
     }
 }
