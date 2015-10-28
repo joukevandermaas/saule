@@ -54,18 +54,9 @@ namespace Saule.Http
             var context = actionExecutedContext.Request.Properties[Constants.PaginationContextPropertyName]
                 as PaginationContext;
 
-            var queryable = content?.Value as IQueryable;
-            if (queryable != null)
+            if (content != null)
             {
-                content.Value = new PaginationInterpreter(context).Apply(queryable);
-            }
-            else
-            { // all queryables are enumerable
-                var enumerable = content?.Value as IEnumerable;
-                if (enumerable != null)
-                {
-                    content.Value = new PaginationInterpreter(context).Apply(enumerable);
-                }
+                content.Value = PaginationInterpreter.ApplyPaginationIfApplicable(context, content.Value);
             }
 
             base.OnActionExecuted(actionExecutedContext);

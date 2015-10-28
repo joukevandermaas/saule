@@ -92,7 +92,7 @@ namespace Tests.Serialization
             Assert.NotNull(job?["attributes"]);
         }
 
-        [Fact(DisplayName = "Handles null values correctly")]
+        [Fact(DisplayName = "Handles null relationships and attributes correctly")]
         public void HandlesNullValues()
         {
             var person = new Person { Id = "45" };
@@ -129,6 +129,15 @@ namespace Tests.Serialization
 
             Assert.Equal(1, included?.Count);
             Assert.Equal("/people/a/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
+        }
+
+        [Fact(DisplayName = "Handles null objects correctly")]
+        public void HandlesNullResources()
+        {
+            var target = new ResourceSerializer(null, new PersonResource(), new Uri("http://example.com/people"), null);
+            var result = target.Serialize();
+
+            Assert.Equal(JTokenType.Null, result["data"].Type);
         }
     }
 }

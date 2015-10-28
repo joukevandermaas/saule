@@ -9,6 +9,27 @@ namespace Saule.Queries
 {
     internal class PaginationInterpreter
     {
+        public static object ApplyPaginationIfApplicable(PaginationContext context, object data)
+        {
+            var queryable = data as IQueryable;
+            var enumerable = data as IEnumerable;
+
+            if (queryable != null)
+            {
+                return new PaginationInterpreter(context).Apply(queryable);
+            }
+            else if (enumerable != null)
+            {
+                // all queryables are enumerable, so this needs to be after
+                // the queryable case
+                return new PaginationInterpreter(context).Apply(enumerable);
+            }
+            else
+            {
+                return data;
+            }
+        }
+
         public PaginationInterpreter(PaginationContext context)
         {
             Context = context;

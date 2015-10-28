@@ -79,6 +79,7 @@
     <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Experiments.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
+    <Compile Include="JsonApiSerializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\Person.cs" />
     <Compile Include="Queries\PaginationQueryTests.cs" />

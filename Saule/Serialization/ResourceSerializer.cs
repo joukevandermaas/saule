@@ -32,6 +32,7 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
+            if (_value == null) return SerializeNull(serializer);
             var objectJson = JToken.FromObject(_value, serializer);
             _isCollection = objectJson is JArray;
 
@@ -40,6 +41,15 @@ namespace Saule.Serialization
                 ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
                 ["included"] = _includedSection,
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
+            };
+        }
+
+        private JObject SerializeNull(JsonSerializer serializer)
+        {
+            return new JObject
+            {
+                ["data"] = null,
+                ["links"] = CreateTopLevelLinks(0)
             };
         }
 
