@@ -42,8 +42,18 @@ namespace Saule.Queries
 
         protected virtual object ApplyToInternal(MethodInfo method, object[] arguments)
         {
-            var typed = method.MakeGenericMethod(arguments[0].GetType().GenericTypeArguments);
+            var typeArguments = GetTypeArguments(arguments[0]);
+            var typed = method.MakeGenericMethod(typeArguments);
             return typed.Invoke(null, arguments);
+        }
+
+        protected static Type[] GetTypeArguments(object o)
+        {
+            var enumerable = o // IQueryable<> extends IEnumerable<>
+                .GetType()
+                .GetInterfaces()
+                .First(i => typeof (IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
+            return enumerable.GetGenericArguments();
         }
 
         private static MethodInfo GetGenericMethodInfo<TReturn>(Expression<Func<object, TReturn>> expression)
