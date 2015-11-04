@@ -213,7 +213,7 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/coorporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
 
             Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
             Assert.Equal(null, friends["links"]["self"]);

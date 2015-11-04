@@ -51,7 +51,7 @@ namespace Tests.Serialization
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
 
-            Assert.Equal("coorporation", result["data"]["type"]);
+            Assert.Equal("corporation", result["data"]["type"]);
         }
 
         [Fact(DisplayName = "Throws exception when Id is missing")]
@@ -93,7 +93,7 @@ namespace Tests.Serialization
             var included = result["included"] as JArray;
             var job = included?[0];
             Assert.Equal(1, included?.Count);
-            Assert.Equal("http://example.com/coorporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
+            Assert.Equal("http://example.com/corporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
 
             Assert.Equal(_person.Job.Id, job?["id"]);
             Assert.NotNull(job?["attributes"]);
