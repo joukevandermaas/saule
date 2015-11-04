@@ -255,7 +255,11 @@ namespace Saule.Serialization
             if (string.IsNullOrEmpty(path)) return @object;
 
             var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
-            var combined = '/'.TrimJoin(_commonPathSpec, path).EnsureEndsWith("/");
+            string combined;
+            if (!string.IsNullOrEmpty(path) && path[0] == '/')
+                combined = path.EnsureEndsWith("/");
+            else
+                combined = '/'.TrimJoin(_commonPathSpec, path).EnsureEndsWith("/");
 
             @object.Add(name, new Uri(start, combined));
 

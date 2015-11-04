@@ -6,11 +6,19 @@ using Saule;
 using Saule.Serialization;
 using Tests.Helpers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tests.Serialization
 {
     public class UrlConstructionTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public UrlConstructionTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact(DisplayName = "Handles query parameters correctly")]
         public void HandlesQueryParams()
         {
@@ -18,6 +26,7 @@ namespace Tests.Serialization
             var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(), url, 
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var jobLinks = result["data"]?["relationships"]?["job"]?["links"];
 
@@ -44,6 +53,7 @@ namespace Tests.Serialization
                 people, new PersonResource(), new Uri("http://example.com/people/"), 
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             foreach (var elem in result["data"])
             {
@@ -61,6 +71,7 @@ namespace Tests.Serialization
                 new Uri("http://example.com/people/1"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var links = result["data"]?["links"];
 
@@ -75,6 +86,7 @@ namespace Tests.Serialization
                 new Uri("http://example.com/people/1"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
 
@@ -96,6 +108,7 @@ namespace Tests.Serialization
                 new DefaultUrlPathBuilder(),
                 new PaginationContext(GetQuery("page.number", "2"), perPage:10));
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             Assert.Equal(null, result["links"]["next"]);
 
@@ -124,6 +137,7 @@ namespace Tests.Serialization
                 new DefaultUrlPathBuilder(),
                 new PaginationContext(GetQuery("page.number", "0"), perPage:10));
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             Assert.Equal(null, result["links"]["prev"]);
 
@@ -153,6 +167,7 @@ namespace Tests.Serialization
                 new PaginationContext(GetQuery("q", "a"), perPage:4));
 
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
             Assert.Equal("?q=a&page[number]=1", nextLink);
@@ -174,6 +189,7 @@ namespace Tests.Serialization
                 new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), perPage:4));
 
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("first").Query);
             Assert.Equal("?page[number]=0", nextLink);
@@ -187,6 +203,7 @@ namespace Tests.Serialization
                 new Uri("http://example.com/people/123"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
@@ -207,13 +224,14 @@ namespace Tests.Serialization
                 new Uri("http://example.com/people/123"),
                 new CanonicalUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
             var friends = relationships["friends"];
 
             Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/coorporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
 
             Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
             Assert.Equal(null, friends["links"]["self"]);
@@ -227,6 +245,7 @@ namespace Tests.Serialization
                 new Uri("http://example.com/api/people/123"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var job = result["data"]["relationships"]["job"];
 
@@ -244,6 +263,7 @@ namespace Tests.Serialization
                 new Uri("http://example.com/api/people/123"), 
                 new EmptyUrlBuilder(), null);
             var result = target.Serialize();
+            _output.WriteLine(result.ToString());
 
             var job = result["data"]["relationships"]["job"];
 
