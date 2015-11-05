@@ -221,20 +221,25 @@ namespace Tests.Serialization
         {
             var target = new ResourceSerializer(
                 new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/123"),
-                new CanonicalUrlPathBuilder(), null);
+                new Uri("http://example.com/some/crazy/deep/path/people/123?foo=bar"),
+                new CanonicalUrlPathBuilder("/api"), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
             var friends = relationships["friends"];
+            var included = result["included"];
 
-            Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
 
-            Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal(null, friends["links"]["self"]);
+            Assert.Equal("/api/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
+
+            Assert.Equal("/some/crazy/deep/path/people/123?foo=bar", result["links"].Value<Uri>("self").PathAndQuery);
+
+            Assert.Equal("/api/corporations/456/", included[0]["links"].Value<Uri>("self").AbsolutePath);
         }
 
         [Fact(DisplayName = "Builds absolute links correctly")]
