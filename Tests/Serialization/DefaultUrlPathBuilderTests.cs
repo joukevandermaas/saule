@@ -18,7 +18,7 @@ namespace Tests.Serialization
         public void UseUrlPath()
         {
             var target = new DefaultUrlPathBuilder();
-            var result =target.BuildCanonicalPath(new PersonResource());
+            var result = target.BuildCanonicalPath(new PersonResource());
             _output.WriteLine(result);
 
             Assert.Equal("/people/", result);

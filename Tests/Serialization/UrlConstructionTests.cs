@@ -24,7 +24,7 @@ namespace Tests.Serialization
         {
             var url = new Uri("http://example.com/api/people/123?a=b&c=d");
             var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(), url, 
-                new DefaultUrlPathBuilder(), null);
+                new DefaultUrlPathBuilder("/api"), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -231,30 +231,10 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
 
             Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
-        }
-
-        [Fact(DisplayName = "Supports multiple url builders")]
-        public void SerializeDifferentBuilder()
-        {
-            var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/123"),
-                new CanonicalUrlPathBuilder(), null);
-            var result = target.Serialize();
-
-            var relationships = result["data"]["relationships"];
-            var job = relationships["job"];
-            var friends = relationships["friends"];
-
-            Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/coorporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
-
-            Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal(null, friends["links"]["self"]);
+            Assert.Null(friends["links"]["self"]);
         }
 
         [Fact(DisplayName = "Builds absolute links correctly")]
@@ -263,7 +243,7 @@ namespace Tests.Serialization
             var target = new ResourceSerializer(
                 new Person(prefill: true), new PersonResource(), 
                 new Uri("http://example.com/api/people/123"),
-                new DefaultUrlPathBuilder(), null);
+                new DefaultUrlPathBuilder("api"), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
