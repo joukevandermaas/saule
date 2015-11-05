@@ -200,7 +200,7 @@ namespace Tests.Serialization
         {
             var target = new ResourceSerializer(
                 new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/123"),
+                new Uri("http://example.com/people/123?foo=bar"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -221,7 +221,11 @@ namespace Tests.Serialization
         {
             var target = new ResourceSerializer(
                 new Person(prefill: true), new PersonResource(), 
+<<<<<<< HEAD
                 new Uri("http://example.com/some/crazy/deep/path/people/123?foo=bar"),
+=======
+                new Uri("http://example.com/some/crazy/deep/path/people/123"),
+>>>>>>> 05d36b6931b353544bcfaa7f2726a2e7b0c6b4ee
                 new CanonicalUrlPathBuilder("/api"), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -237,7 +241,11 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
             Assert.Equal("/api/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
 
+<<<<<<< HEAD
             Assert.Equal("/some/crazy/deep/path/people/123?foo=bar", result["links"].Value<Uri>("self").PathAndQuery);
+=======
+            Assert.Equal("/some/crazy/deep/path/people/123", result["links"].Value<Uri>("self").AbsolutePath);
+>>>>>>> 05d36b6931b353544bcfaa7f2726a2e7b0c6b4ee
 
             Assert.Equal("/api/corporations/456/", included[0]["links"].Value<Uri>("self").AbsolutePath);
         }
