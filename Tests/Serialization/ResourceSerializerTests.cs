@@ -20,7 +20,7 @@ namespace Tests.Serialization
             _output = output;
             _person = new Person(prefill: true);
             _target = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/123/"), 
+                _person, new PersonResource(), new Uri("http://example.com/people/123/"),
                 new DefaultUrlPathBuilder(), null);
         }
 
@@ -52,7 +52,7 @@ namespace Tests.Serialization
         {
             var company = new Company(prefill: true);
             var target = new ResourceSerializer(company,
-                new CompanyResource(), new Uri("http://example.com/companies/1/"), 
+                new CompanyResource(), new Uri("http://example.com/companies/1/"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -64,7 +64,7 @@ namespace Tests.Serialization
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new ResourceSerializer(person, new PersonResource(), 
+            var target = new ResourceSerializer(person, new PersonResource(),
                 new Uri("http://example.com/people/1/"),
                 new DefaultUrlPathBuilder(), null);
 
@@ -78,7 +78,7 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, new PersonResource(), 
+            var target = new ResourceSerializer(person, new PersonResource(),
                 new Uri("http://example.com/people/123"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
@@ -112,7 +112,7 @@ namespace Tests.Serialization
         {
             var person = new Person { Id = "45" };
             var target = new ResourceSerializer(
-                person, new PersonResource(), 
+                person, new PersonResource(),
                 new Uri("http://example.com/people/1/"),
                 new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
@@ -139,7 +139,7 @@ namespace Tests.Serialization
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new ResourceSerializer(people, 
+            var target = new ResourceSerializer(people,
                 new PersonResource(),
                 new Uri("http://example.com/people/"),
                 new DefaultUrlPathBuilder(), null);
@@ -181,13 +181,27 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles null objects correctly")]
         public void HandlesNullResources()
         {
-            var target = new ResourceSerializer(null, 
+            var target = new ResourceSerializer(null,
                 new PersonResource(), new Uri("http://example.com/people"),
-                new DefaultUrlPathBuilder(),  null);
+                new DefaultUrlPathBuilder(), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             Assert.Equal(JTokenType.Null, result["data"].Type);
+        }
+
+        [Fact(DisplayName = "Supports Guids for ids")]
+        public void SupportsGuidIds()
+        {
+            var guid = new GuidAsId();
+            var serializer = new ResourceSerializer(guid, new PersonResource(), new Uri("http://example.com/people/1"),
+                new DefaultUrlPathBuilder(), null);
+
+            var guidResult = serializer.Serialize();
+            _output.WriteLine(guidResult.ToString());
+
+            Assert.NotNull(guidResult["data"]["id"]);
+            Assert.Equal(guid.Id, guidResult["data"].Value<Guid>("id"));
         }
     }
 }
