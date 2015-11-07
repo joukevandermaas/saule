@@ -203,5 +203,20 @@ namespace Tests.Serialization
             Assert.NotNull(guidResult["data"]["id"]);
             Assert.Equal(guid.Id, guidResult["data"].Value<Guid>("id"));
         }
+
+        [Fact(DisplayName = "Does not serialize attributes that are not found")]
+        public void SerializeOnlyWhatYouHave()
+        {
+            var person = new GuidAsId();
+            var serializer = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/1"),
+                new DefaultUrlPathBuilder(), null);
+
+            var result = serializer.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Null(result["data"]["attributes"]["first-name"]);
+            Assert.Null(result["data"]["attributes"]["last-name"]);
+            Assert.Null(result["data"]["attributes"]["age"]);
+        }
     }
 }

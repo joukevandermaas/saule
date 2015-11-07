@@ -146,7 +146,9 @@ namespace Saule.Serialization
             var attributes = new JObject();
             foreach (var attr in resource.Attributes)
             {
-                attributes.Add(attr.Name, GetValue(attr.Name, properties));
+                var value = GetValue(attr.Name, properties);
+                if (value != null)
+                    attributes.Add(attr.Name, value);
             }
 
             return attributes;
