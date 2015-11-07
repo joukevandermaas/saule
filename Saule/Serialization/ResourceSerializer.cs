@@ -146,7 +146,9 @@ namespace Saule.Serialization
             var attributes = new JObject();
             foreach (var attr in resource.Attributes)
             {
-                attributes.Add(attr.Name, GetValue(attr.Name, properties));
+                var value = GetValue(attr.Name, properties);
+                if (value != null)
+                    attributes.Add(attr.Name, value);
             }
 
             return attributes;
@@ -170,8 +172,8 @@ namespace Saule.Serialization
             var relationshipProperties = relationshipValues as JObject;
 
             // serialize the links part (so the data can be fetched)
-            var objId = EnsureHasId(properties).Value<string>();
-            var relToken = GetMinimumRelationship(objId, relationship, 
+            var objId = EnsureHasId(properties);
+            var relToken = GetMinimumRelationship(objId.ToString(), relationship, 
                 relationshipProperties != null ? GetValue("id", relationshipProperties).Value<string>() : null);
             if (relationshipValues == null) return relToken;
 
