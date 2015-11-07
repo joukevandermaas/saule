@@ -1,37 +1,38 @@
-﻿using Saule;
+﻿using System.Threading;
+using Saule;
 using Xunit;
 
 namespace Tests
 {
     public class ApiResourceTests
     {
-        private class TestApiResource : ApiResource
+        private class TestNamingResource : ApiResource
         { }
 
-        private class TestApiResource2 : ApiResource
+        private class TestNamingResource2 : ApiResource
         { }
 
-        private class TestApiResource3 : ApiResource
+        private class DisallowIdAttr : ApiResource
         {
-            public TestApiResource3()
+            public DisallowIdAttr()
             {
                 Attribute("Id");
             }
         }
 
-        private class TestApiResource4 : ApiResource
+        private class DisallowIdHasMany : ApiResource
         {
-            public TestApiResource4()
+            public DisallowIdHasMany()
             {
-                HasMany<TestApiResource>("Id");
+                HasMany<TestNamingResource>("Id");
             }
         }
 
-        private class TestApiResource5 : ApiResource
+        private class DisallowIdBelongsTo : ApiResource
         {
-            public TestApiResource5()
+            public DisallowIdBelongsTo()
             {
-                BelongsTo<TestApiResource>("Id");
+                BelongsTo<TestNamingResource>("Id");
             }
         }
 
@@ -60,24 +61,52 @@ namespace Tests
             } 
         }
 
+        private class DisallowLinksAttr : ApiResource
+        {
+            public DisallowLinksAttr()
+            {
+                Attribute("links");
+            }
+        }
+
+        private class DisallowRelationshipsAttr : ApiResource
+        {
+            public DisallowRelationshipsAttr()
+            {
+                Attribute("relationships");
+            }
+        }
+
         [Fact(DisplayName = "Model name defaults to class name")]
         public void UsesClassName()
         {
-            var model = new TestApiResource();
+            var model = new TestNamingResource();
 
-            Assert.Equal("test-api", model.ResourceType);
+            Assert.Equal("test-naming", model.ResourceType);
 
-            var model2 = new TestApiResource2();
+            var model2 = new TestNamingResource2();
 
-            Assert.Equal("test-api-resource2", model2.ResourceType);
+            Assert.Equal("test-naming-resource2", model2.ResourceType);
         }
 
         [Fact(DisplayName = "Can't add attribute or relationship called 'id'")]
         public void CannotAddIdAttributeOrRelationship()
         {
-            Assert.Throws<JsonApiException>(() => new TestApiResource3());
-            Assert.Throws<JsonApiException>(() => new TestApiResource4());
-            Assert.Throws<JsonApiException>(() => new TestApiResource5());
+            Assert.Throws<JsonApiException>(() => new DisallowIdAttr());
+            Assert.Throws<JsonApiException>(() => new DisallowIdHasMany());
+            Assert.Throws<JsonApiException>(() => new DisallowIdBelongsTo());
+        }
+
+        [Fact(DisplayName = "Can't add attribute named 'relationships'")]
+        public void DisallowAttributeNamedRelationships()
+        {
+            Assert.Throws<JsonApiException>(() => new DisallowRelationshipsAttr());
+        }
+
+        [Fact(DisplayName = "Can't add attribute named 'links'")]
+        public void DisallowAttributeNamedLinks()
+        {
+            Assert.Throws<JsonApiException>(() => new DisallowLinksAttr());
         }
 
         [Fact(DisplayName = "Handles cyclic relationships properly")]

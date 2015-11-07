@@ -72,13 +72,27 @@ namespace Saule
         /// <param name="name">The name of the attribute.</param>
         protected ResourceAttribute Attribute(string name)
         {
-            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add an attribute named 'id'.");
+            VerifyPropertyName(name);
 
             var result = new ResourceAttribute(name);
 
             _attributes.Add(result);
 
             return result;
+        }
+
+        private static void VerifyPropertyName(string name)
+        {
+            var dashed = name.ToDashed();
+            switch (dashed)
+            {
+                case "id":
+                    throw new JsonApiException("You cannot add an attribute named 'id'.");
+                case "links":
+                    throw new JsonApiException("You cannot add an attribute named 'links'.");
+                case "relationships":
+                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
+            }
         }
 
         /// <summary>
@@ -98,7 +112,7 @@ namespace Saule
         /// is the name)</param>
         protected ResourceRelationship BelongsTo<T>(string name, string path) where T : ApiResource, new()
         {
-            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
+            VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
             var result = new ResourceRelationship<T>(name, path, RelationshipKind.BelongsTo, resource);
@@ -125,7 +139,7 @@ namespace Saule
         /// is the name)</param>
         protected ResourceRelationship HasMany<T>(string name, string path) where T : ApiResource, new()
         {
-            if (name.ToDashed() == "id") throw new JsonApiException("You cannot add a relationship named 'id'.");
+            VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
             var result = new ResourceRelationship<T>(name, path, RelationshipKind.HasMany, resource);
