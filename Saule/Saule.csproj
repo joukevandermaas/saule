@@ -39,6 +39,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Humanizer, Version=1.37.7.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.1.37.7\lib\portable-win+net40+sl50+wp8+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Humanizer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -64,9 +68,13 @@
     <Compile Include="ApiResource.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Http\Constants.cs" />
+    <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
+    <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />
+    <Compile Include="Serialization\IUrlPathBuilder.cs" />
     <Compile Include="Http\PaginatedAttribute.cs" />
     <Compile Include="Http\ReturnsResourceAttribute.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatter.cs" />
+    <Compile Include="RelationshipKind.cs" />
     <Compile Include="Queries\PaginationContext.cs" />
     <Compile Include="Queries\PaginationInterpreter.cs" />
     <Compile Include="Queries\QueryableExtensions.cs" />

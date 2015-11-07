@@ -13,6 +13,19 @@ namespace Saule
                 ? source
                 : source + end;
         }
+
+        public static string EnsureStartsWith(this string source, string start)
+        {
+            return source.StartsWith(start)
+                ? source
+                : start + source;
+        }
+
+        public static string TrimJoin(this char separator, params string[] parts)
+        {
+            return string.Join(separator.ToString(), parts.Select(p => p.Trim(separator)));
+        }
+
         public static string ToDashed(this string source)
         {
             // some-string

@@ -86,7 +86,7 @@ namespace Tests.Helpers
     {
         public CompanyResource()
         {
-            OfType("Coorporation");
+            OfType("Corporation");
             Attribute("Name");
             Attribute("NumberOfEmployees");
         }

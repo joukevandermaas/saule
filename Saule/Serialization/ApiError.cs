@@ -15,7 +15,7 @@ namespace Saule.Serialization
         }
         internal ApiError(HttpError ex)
         {
-            Title = ex.ExceptionMessage;
+            Title = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
             Detail = ex.StackTrace;
             Code = ex.ExceptionType;
         }
