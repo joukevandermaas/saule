@@ -47,7 +47,7 @@ namespace Saule.Serialization
         }
 
         /// <summary>
-        /// Returns a path in the form `/resource.UrlPath/id/relationship.UrlPath/`.
+        /// Returns a path in the form `/resource.UrlPath/id/relationships/relationship.UrlPath/`.
         /// </summary>
         /// <param name="resource">The resource this path is related to.</param>
         /// <param name="id">The unique id of the resource.</param>
@@ -56,12 +56,12 @@ namespace Saule.Serialization
         public virtual string BuildRelationshipPath(ApiResource resource, string id, ResourceRelationship relationship)
         {
             return '/'.TrimJoin(
-                BuildCanonicalPath(resource, id), relationship.UrlPath)
+                BuildCanonicalPath(resource, id), "relationships", relationship.UrlPath)
                 .EnsureEndsWith("/");
         }
 
         /// <summary>
-        /// Returns a path in the form `/resource.UrlPath/id/relationships/relationship.UrlPath/`.
+        /// Returns a path in the form `/resource.UrlPath/id/relationship.UrlPath/`.
         /// </summary>
         /// <param name="resource">The resource this path is related to.</param>
         /// <param name="id">The unique id of the resource.</param>
@@ -74,7 +74,7 @@ namespace Saule.Serialization
             string relatedResourceId)
         {
             return '/'.TrimJoin(
-                BuildCanonicalPath(resource, id), "relationships", relationship.UrlPath)
+                BuildCanonicalPath(resource, id), relationship.UrlPath)
                 .EnsureEndsWith("/");
         }
     }
