@@ -104,7 +104,7 @@ namespace Tests.Serialization
             };
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery("page.number", "2"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -112,7 +112,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery("page.number", "2"), perPage: 4));
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 4));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
@@ -131,7 +131,7 @@ namespace Tests.Serialization
             };
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery("page.number", "0"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "0"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -139,7 +139,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery("page.number", "1"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "1"), perPage: 10));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);

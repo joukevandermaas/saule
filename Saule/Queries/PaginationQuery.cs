@@ -10,15 +10,15 @@ namespace Saule.Queries
         {
             if (context == null) return;
 
-            if (!context.ClientFilters.ContainsKey("page.number"))
-                context.ClientFilters.Add("page.number", null);
+            if (!context.ClientFilters.ContainsKey(Constants.PageNumberQueryName))
+                context.ClientFilters.Add(Constants.PageNumberQueryName, null);
 
             int page;
-            var isNumber = int.TryParse(context.ClientFilters["page.number"] ?? string.Empty, out page);
+            var isNumber = int.TryParse(context.ClientFilters[Constants.PageNumberQueryName] ?? string.Empty, out page);
 
             FirstPage = CreateQueryString(context.ClientFilters, 0);
             NextPage = CreateQueryString(context.ClientFilters, isNumber ? page + 1 : 1);
-            PreviousPage = isNumber && page > 0 
+            PreviousPage = isNumber && page > 0
                 ? CreateQueryString(context.ClientFilters, page - 1)
                 : null;
         }
@@ -37,7 +37,7 @@ namespace Saule.Queries
             var queries = clientFilters.Select(kv =>
             {
                 var key = kv.Key;
-                var value = kv.Key == "page.number" ? page.ToString() : kv.Value;
+                var value = kv.Key == Constants.PageNumberQueryName ? page.ToString() : kv.Value;
 
                 if (string.IsNullOrEmpty(value)) return null;
 

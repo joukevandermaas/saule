@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Saule;
 using Saule.Queries;
 using Tests.Helpers;
 using Xunit;
@@ -79,7 +80,7 @@ namespace Tests.Queries
 
         private static IEnumerable<KeyValuePair<string, string>> GetQueryForPage(int number)
         {
-            yield return new KeyValuePair<string, string>("page.number", number.ToString());
+            yield return new KeyValuePair<string, string>(Constants.PageNumberQueryName, number.ToString());
         }
 
         private static IEnumerable<Person> GetPeople()
