@@ -82,7 +82,12 @@
   <ItemGroup>
     <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Experiments.cs" />
+    <Compile Include="Helpers\Company.cs" />
+    <Compile Include="Helpers\CompanyResource.cs" />
     <Compile Include="Helpers\GuidAsId.cs" />
+    <Compile Include="Helpers\PersonResource.cs" />
+    <Compile Include="Helpers\PersonWithNoId.cs" />
+    <Compile Include="Helpers\PersonWithNoJob.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="JsonApiSerializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

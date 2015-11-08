@@ -16,7 +16,7 @@ namespace Tests.Serialization
 
         public ResourceDeserializerTests()
         {
-            _person = new Person(prefill: true, id: "123")
+            _person = new Person(prefill: true)
             {
                 Friends = new[] { new Person(prefill: true, id: "456")
                 {

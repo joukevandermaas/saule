@@ -1,5 +1,6 @@
 ﻿using Saule;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Tests
@@ -30,9 +31,9 @@ namespace Tests
             TestCasing(Dashed, StringExtensions.ToDashed);
         }
 
-        private void TestCasing(string[] array, Func<string, string> function)
+        private static void TestCasing(IReadOnlyList<string> array, Func<string, string> function)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (var i = 0; i < array.Count; i++)
             {
                 Assert.Equal(array[i], function(Camel[i]));
                 Assert.Equal(array[i], function(Pascal[i]));
