@@ -1,6 +1,5 @@
 ﻿using Saule.Http;
 using System.Web.Http;
-using Saule;
 using Saule.Serialization;
 
 namespace Website

@@ -17,10 +17,10 @@ namespace Saule.Queries
 
         private int GetNumber()
         {
-            if (!ClientFilters.ContainsKey("page.number")) return 0;
+            if (!ClientFilters.ContainsKey(Constants.PageNumberQueryName)) return 0;
 
             int result;
-            var isNumber = int.TryParse(ClientFilters["page.number"], out result);
+            var isNumber = int.TryParse(ClientFilters[Constants.PageNumberQueryName], out result);
 
             return isNumber ? result : 0;
         }

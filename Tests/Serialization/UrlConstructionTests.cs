@@ -14,6 +14,9 @@ namespace Tests.Serialization
     {
         private readonly ITestOutputHelper _output;
 
+        private static Uri DefaultUrl => new Uri("http://example.com/");
+        private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
+
         public UrlConstructionTests(ITestOutputHelper output)
         {
             _output = output;
@@ -22,9 +25,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles query parameters correctly")]
         public void HandlesQueryParams()
         {
-            var url = new Uri("http://example.com/api/people/123?a=b&c=d");
-            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(), url, 
-                new DefaultUrlPathBuilder("/api"), null);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(),
+                GetUri("123", "a=b&c=d"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -49,9 +51,8 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "3"),
                 new Person(prefill: true, id: "4")
             };
-            var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"), 
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -59,7 +60,7 @@ namespace Tests.Serialization
             {
                 var links = elem["links"];
                 Assert.NotNull(links);
-                Assert.Equal("/people/" + elem.Value<string>("id") + "/", links.Value<Uri>("self").AbsolutePath);
+                Assert.Equal("/api/people/" + elem.Value<string>("id") + "/", links.Value<Uri>("self").AbsolutePath);
             }
         }
 
@@ -67,9 +68,8 @@ namespace Tests.Serialization
         public void NoSelfLinksInObject()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/1"),
-                new DefaultUrlPathBuilder(), null);
+                new Person(prefill: true), new PersonResource(),
+                GetUri("123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -82,15 +82,14 @@ namespace Tests.Serialization
         public void SelfLink()
         {
             var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/1"),
-                new DefaultUrlPathBuilder(), null);
+                new Person(prefill: true), new PersonResource(),
+                GetUri("123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
 
-            Assert.Equal("/people/1", selfLink);
+            Assert.Equal("/api/people/123", selfLink);
         }
 
         [Fact(DisplayName = "Adds next link only if needed")]
@@ -103,19 +102,17 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "3"),
                 new Person(prefill: true, id: "4")
             };
-            var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(GetQuery("page.number", "2"), perPage:10));
+            var target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             Assert.Equal(null, result["links"]["next"]);
 
-            target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(GetQuery("page.number", "2"), perPage:4));
+            target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 4));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
@@ -132,19 +129,17 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "3"),
                 new Person(prefill: true, id: "4")
             };
-            var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(GetQuery("page.number", "0"), perPage:10));
+            var target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "0"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             Assert.Equal(null, result["links"]["prev"]);
 
-            target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(GetQuery("page.number", "1"), perPage:10));
+            target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "1"), perPage: 10));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);
@@ -161,10 +156,9 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "3"),
                 new Person(prefill: true, id: "4")
             };
-            var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/?q=a"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(GetQuery("q", "a"), perPage:4));
+            var target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(query: "q=a"), DefaultPathBuilder,
+                new PaginationContext(GetQuery("q", "a"), perPage: 4));
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -183,10 +177,9 @@ namespace Tests.Serialization
                 new Person(prefill: true, id: "3"),
                 new Person(prefill: true, id: "4")
             };
-            var target = new ResourceSerializer(
-                people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(),
-                new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), perPage:4));
+            var target = new ResourceSerializer(people, new PersonResource(),
+               GetUri(), DefaultPathBuilder,
+                new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), perPage: 4));
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -198,10 +191,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
-            var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/123"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(),
+                GetUri("123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -209,20 +200,18 @@ namespace Tests.Serialization
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
 
-            Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
         }
 
         [Fact(DisplayName = "Supports multiple url builders")]
         public void SerializeDifferentBuilder()
         {
-            var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/people/123"),
-                new CanonicalUrlPathBuilder(), null);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(),
+                GetUri("123"), new CanonicalUrlPathBuilder(), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -240,10 +229,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Builds absolute links correctly")]
         public void BuildsRightLinks()
         {
-            var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/api/people/123"),
-                new DefaultUrlPathBuilder("api"), null);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(),
+                GetUri("123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -258,10 +245,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Does not generate links when url builder returns nothing")]
         public void UrlBuilder()
         {
-            var target = new ResourceSerializer(
-                new Person(prefill: true), new PersonResource(), 
-                new Uri("http://example.com/api/people/123"), 
-                new EmptyUrlBuilder(), null);
+            var target = new ResourceSerializer(new Person(prefill: true), new PersonResource(),
+                GetUri("123"), new EmptyUrlBuilder(), null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -276,6 +261,15 @@ namespace Tests.Serialization
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
         {
             yield return new KeyValuePair<string, string>(key, value);
+        }
+
+        private static Uri GetUri(string id = null, string query = null)
+        {
+            var path = "/api/people/";
+            if (id != null) path += id;
+            if (query != null) path += "?" + query;
+
+            return new Uri(DefaultUrl, path);
         }
 
         private class EmptyUrlBuilder : IUrlPathBuilder

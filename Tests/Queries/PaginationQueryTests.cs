@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Saule;
 using Saule.Queries;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "PreviousPage is null when on first page")]
         public void NoPrevious()
         {
-            var context = new PaginationContext(GetQuery("page.number", "0"), 10);
+            var context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "0"), 10);
             var target = new PaginationQuery(context);
 
             Assert.Null(target.PreviousPage);
@@ -43,12 +44,12 @@ namespace Tests.Queries
 
             Assert.Equal("?page[number]=0", target.FirstPage);
 
-            context = new PaginationContext(GetQuery("page.number", "0"), 10);
+            context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "0"), 10);
             target = new PaginationQuery(context);
 
             Assert.Equal("?page[number]=0", target.FirstPage);
 
-            context = new PaginationContext(GetQuery("page.number", "4"), 10);
+            context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "4"), 10);
             target = new PaginationQuery(context);
 
             Assert.Equal("?page[number]=0", target.FirstPage);
@@ -57,7 +58,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not change other query parameters")]
         public void SupportsOtherQueryParams()
         {
-            var context = new PaginationContext(GetQuery("page.number", "3").Concat(GetQuery("something", "hello")), 10);
+            var context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "3").Concat(GetQuery("something", "hello")), 10);
             var target = new PaginationQuery(context);
 
             Assert.Equal("?page[number]=4&something=hello", target.NextPage);
@@ -68,7 +69,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "PreviousPage is current - 1 when appropriate")]
         public void PreviousPageWorks()
         {
-            var context = new PaginationContext(GetQuery("page.number", "4"), 10);
+            var context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "4"), 10);
             var target = new PaginationQuery(context);
 
             Assert.Equal("?page[number]=3", target.PreviousPage);
@@ -77,7 +78,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "NextPage is current + 1 when appropriate")]
         public void NextPageWorks()
         {
-            var context = new PaginationContext(GetQuery("page.number", "4"), 10);
+            var context = new PaginationContext(GetQuery(Constants.PageNumberQueryName, "4"), 10);
             var target = new PaginationQuery(context);
 
             Assert.Equal("?page[number]=5", target.NextPage);

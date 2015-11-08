@@ -12,34 +12,37 @@ namespace Tests.Serialization
     public class ResourceSerializerTests
     {
         private readonly ITestOutputHelper _output;
-        private readonly ResourceSerializer _target;
-        private readonly Person _person;
+
+        private static Person DefaultObject => new Person(prefill: true);
+        private static ApiResource DefaultResource => new PersonResource();
+        private static Uri DefaultUrl => new Uri("http://example.com/");
+        private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
 
         public ResourceSerializerTests(ITestOutputHelper output)
         {
             _output = output;
-            _person = new Person(prefill: true);
-            _target = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/123/"),
-                new DefaultUrlPathBuilder(), null);
         }
 
         [Fact(DisplayName = "Serializes all found attributes")]
         public void AttributesComplete()
         {
-            var result = _target.Serialize();
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
+            var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var attributes = result["data"]["attributes"];
-            Assert.Equal(_person.FirstName, attributes.Value<string>("first-name"));
-            Assert.Equal(_person.LastName, attributes.Value<string>("last-name"));
-            Assert.Equal(_person.Age, attributes.Value<int>("age"));
+            Assert.Equal(DefaultObject.FirstName, attributes.Value<string>("first-name"));
+            Assert.Equal(DefaultObject.LastName, attributes.Value<string>("last-name"));
+            Assert.Equal(DefaultObject.Age, attributes.Value<int>("age"));
         }
 
         [Fact(DisplayName = "Serializes no extra properties")]
         public void AttributesSufficient()
         {
-            var result = _target.Serialize();
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
+            var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var attributes = result["data"]["attributes"];
@@ -51,9 +54,9 @@ namespace Tests.Serialization
         public void UsesTitle()
         {
             var company = new Company(prefill: true);
-            var target = new ResourceSerializer(company,
-                new CompanyResource(), new Uri("http://example.com/companies/1/"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(company, new CompanyResource(),
+                GetUri("/corporations", "456"),
+                DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -64,9 +67,8 @@ namespace Tests.Serialization
         public void ThrowsRightException()
         {
             var person = new PersonWithNoId();
-            var target = new ResourceSerializer(person, new PersonResource(),
-                new Uri("http://example.com/people/1/"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
 
             Assert.Throws<JsonApiException>(() =>
             {
@@ -78,9 +80,8 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, new PersonResource(),
-                new Uri("http://example.com/people/123"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -95,15 +96,17 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes relationship data into 'included' key")]
         public void IncludesRelationshipData()
         {
-            var result = _target.Serialize();
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
+            var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var included = result["included"] as JArray;
             var job = included?[0];
             Assert.Equal(1, included?.Count);
-            Assert.Equal("http://example.com/corporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
+            Assert.Equal("http://example.com/api/corporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
 
-            Assert.Equal(_person.Job.Id, job?["id"]);
+            Assert.Equal(DefaultObject.Job.Id, job?["id"]);
             Assert.NotNull(job?["attributes"]);
         }
 
@@ -111,10 +114,8 @@ namespace Tests.Serialization
         public void HandlesNullValues()
         {
             var person = new Person { Id = "45" };
-            var target = new ResourceSerializer(
-                person, new PersonResource(),
-                new Uri("http://example.com/people/1/"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -139,10 +140,8 @@ namespace Tests.Serialization
                 new Person(id: "c", prefill: true),
                 new Person(id: "d", prefill: true)
             };
-            var target = new ResourceSerializer(people,
-                new PersonResource(),
-                new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(people, DefaultResource,
+                GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -150,15 +149,15 @@ namespace Tests.Serialization
             var jobLinks = (result["data"] as JArray)?[0]["relationships"]["job"]["links"];
 
             Assert.Equal(1, included?.Count);
-            Assert.Equal("/people/a/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/a/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
         }
 
         [Fact(DisplayName = "Document MUST contain at least one: data, errors, meta")]
         public void DocumentMustContainAtLeastOneDataOrErrorOrMeta()
         {
             var people = new Person[] { };
-            var target = new ResourceSerializer(people, new PersonResource(),
-                new Uri("http://example.com/people/"), new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(people, DefaultResource,
+                GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -168,10 +167,9 @@ namespace Tests.Serialization
         [Fact(DisplayName = "If a document does not contain a top-level data key, the included member MUST NOT be present either.")]
         public void DocumentMustNotContainIncludedForEmptySet()
         {
-            var people = new Person[] { };
-            var target = new ResourceSerializer(people, new PersonResource(),
-                new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(), null);
+            var people = new Person[0];
+            var target = new ResourceSerializer(people, DefaultResource,
+                GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -181,9 +179,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles null objects correctly")]
         public void HandlesNullResources()
         {
-            var target = new ResourceSerializer(null,
-                new PersonResource(), new Uri("http://example.com/people"),
-                new DefaultUrlPathBuilder(), null);
+            var target = new ResourceSerializer(null, DefaultResource,
+                GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -194,8 +191,8 @@ namespace Tests.Serialization
         public void SupportsGuidIds()
         {
             var guid = new GuidAsId();
-            var serializer = new ResourceSerializer(guid, new PersonResource(), new Uri("http://example.com/people/1"),
-                new DefaultUrlPathBuilder(), null);
+            var serializer = new ResourceSerializer(guid, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
 
             var guidResult = serializer.Serialize();
             _output.WriteLine(guidResult.ToString());
@@ -208,8 +205,8 @@ namespace Tests.Serialization
         public void SerializeOnlyWhatYouHave()
         {
             var person = new GuidAsId();
-            var serializer = new ResourceSerializer(person, new PersonResource(), new Uri("http://example.com/people/1"),
-                new DefaultUrlPathBuilder(), null);
+            var serializer = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null);
 
             var result = serializer.Serialize();
             _output.WriteLine(result.ToString());
@@ -217,6 +214,15 @@ namespace Tests.Serialization
             Assert.Null(result["data"]["attributes"]["first-name"]);
             Assert.Null(result["data"]["attributes"]["last-name"]);
             Assert.Null(result["data"]["attributes"]["age"]);
+        }
+
+        private static Uri GetUri(string path = "/people", string id = null, string query = null)
+        {
+            var combined = "/api" + path;
+            if (id != null) combined += id;
+            if (query != null) combined += "?" + query;
+
+            return new Uri(DefaultUrl, combined);
         }
     }
 }
