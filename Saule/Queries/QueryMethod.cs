@@ -52,6 +52,7 @@ namespace Saule.Queries
             var enumerable = o // IQueryable<> extends IEnumerable<>
                 .GetType()
                 .GetInterfaces()
+                .Where(i => i.IsGenericType)
                 .First(i => typeof (IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
             return enumerable.GetGenericArguments();
         }

@@ -12,22 +12,20 @@ namespace Saule.Queries
         public static object ApplyPaginationIfApplicable(PaginationContext context, object data)
         {
             var queryable = data as IQueryable;
-            var enumerable = data as IEnumerable;
-
             if (queryable != null)
             {
                 return new PaginationInterpreter(context).Apply(queryable);
             }
-            else if (enumerable != null)
+
+            var enumerable = data as IEnumerable;
+            if (enumerable != null)
             {
                 // all queryables are enumerable, so this needs to be after
                 // the queryable case
                 return new PaginationInterpreter(context).Apply(enumerable);
             }
-            else
-            {
-                return data;
-            }
+
+            return data;
         }
 
         public PaginationInterpreter(PaginationContext context)
@@ -42,9 +40,11 @@ namespace Saule.Queries
             // Skip does not work on queryables by default, because it makes
             // no sense if the order is not determined. This means we have to
             // order the queryable first, before we can apply pagination.
-            var ordered = typeof(IOrderedQueryable<>).IsAssignableFrom(queryable.Expression.Type)
-                ? OrderById(queryable)
-                : queryable;
+            var isOrdered = queryable.GetType().GetInterfaces()
+                .Where(i => i.IsGenericType)
+                .Any(i => i.GetGenericTypeDefinition() == typeof (IOrderedQueryable<>));
+
+            var ordered = isOrdered ? queryable : OrderById(queryable);
 
             var filtered = ordered.ApplyQuery(QueryMethod.Skip, Context.Page * Context.PerPage) as IQueryable;
             filtered = filtered.ApplyQuery(QueryMethod.Take, Context.PerPage) as IQueryable;
