@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Saule;
+﻿using Saule;
 using Xunit;
 
 namespace Tests
