@@ -230,11 +230,11 @@ namespace Tests.Serialization
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Equal("/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/corporations/456/", job["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
 
-            Assert.Equal("/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Null(friends["links"]["self"]);
+            Assert.Equal("/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Null(friends["links"]["relationships"]);
         }
 
         [Fact(DisplayName = "Builds absolute links correctly")]

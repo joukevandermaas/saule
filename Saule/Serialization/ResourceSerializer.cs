@@ -206,8 +206,8 @@ namespace Saule.Serialization
         private JToken GetMinimumRelationship(string id, ResourceRelationship relationship, string relationshipId)
         {
             var links = new JObject();
-            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(_resource, id, relationship, relationshipId));
-            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(_resource, id, relationship));
+            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(_resource, id, relationship));
+            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(_resource, id, relationship, relationshipId));
 
             return new JObject
             {
