@@ -4,6 +4,7 @@ using Saule;
 using Saule.Serialization;
 using System.Linq;
 using Tests.Helpers;
+using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 

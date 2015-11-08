@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
@@ -32,6 +35,20 @@ namespace Saule.Http
         /// <param name="actionContext"></param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
+            var accept = actionContext.Request.Headers.Accept
+                .Where(a => a.MediaType == Constants.MediaType);
+            if (accept.All(a => a.Parameters.Any()))
+            {
+                // no json api media type without parameters
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.NotAcceptable);
+            }
+            var contentType = actionContext.Request.Content?.Headers?.ContentType;
+            if (contentType != null && contentType.Parameters.Any())
+            {
+                // client is sending json api media type with parameters
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.UnsupportedMediaType);
+            }
+
             actionContext.Request.Properties.Add(Constants.RequestPropertyName, Resource);
             base.OnActionExecuting(actionContext);
         }

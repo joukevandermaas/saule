@@ -1,4 +1,4 @@
-﻿namespace Tests.Helpers
+﻿namespace Tests.Models
 {
     public class Company
     {

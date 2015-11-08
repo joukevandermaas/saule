@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -127,7 +128,7 @@ namespace Saule.Http
         /// <summary>
         ///
         /// </summary>
-        public async override Task<object> ReadFromStreamAsync(
+        public override async Task<object> ReadFromStreamAsync(
             Type type,
             Stream readStream,
             HttpContent content,
@@ -148,5 +149,6 @@ namespace Saule.Http
         {
             return new JsonApiMediaTypeFormatter(request, _urlBuilder);
         }
+
     }
 }

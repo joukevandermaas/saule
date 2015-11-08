@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tests.Helpers
+namespace Tests.Models
 {
     internal class GuidAsId
     {

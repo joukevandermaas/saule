@@ -35,7 +35,9 @@ namespace Saule.Serialization
 
         private JToken SingleToFlatStructure(JObject child)
         {
-            var result = new JObject { child.Property("id") };
+            var result = new JObject();
+            if (child["id"] != null)
+                result["id"] = child["id"];
 
             foreach (var attr in child["attributes"] ?? new JArray())
             {
