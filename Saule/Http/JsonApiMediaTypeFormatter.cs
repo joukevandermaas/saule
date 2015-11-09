@@ -29,6 +29,7 @@ namespace Saule.Http
         /// </summary>
         public JsonApiMediaTypeFormatter()
         {
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
             _converters = new JsonConverter[0];
             _urlBuilder = new DefaultUrlPathBuilder();
         }
