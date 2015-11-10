@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using Saule;
 using Saule.Queries;
 using Tests.Helpers;
+using Tests.Models;
 using Xunit;
 
 namespace Tests.Queries

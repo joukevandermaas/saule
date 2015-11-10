@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System.Linq;
 using Tests.Helpers;
+using Tests.Models;
 using Xunit;
 
 namespace Tests.Serialization
@@ -51,6 +52,19 @@ namespace Tests.Serialization
             var result = target.Deserialize() as Person;
 
             Assert.Equal(_person.Id, result?.Id);
+            Assert.Equal(_person.FirstName, result?.FirstName);
+            Assert.Equal(_person.LastName, result?.LastName);
+            Assert.Equal(_person.Age, result?.Age);
+        }
+
+        [Fact(DisplayName = "Deserializes if id does not exist")]
+        public void DeserializesWithoutId()
+        {
+            (_singleJson["data"] as JObject)?.Property("id").Remove();
+            var target = new ResourceDeserializer(_singleJson, typeof(Person));
+            var result = target.Deserialize() as Person;
+
+            Assert.Equal(null, result?.Id);
             Assert.Equal(_person.FirstName, result?.FirstName);
             Assert.Equal(_person.LastName, result?.LastName);
             Assert.Equal(_person.Age, result?.Age);

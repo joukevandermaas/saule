@@ -1,6 +1,6 @@
 ﻿using Saule;
 
-namespace Tests.Helpers
+namespace Tests.Models
 {
     public class PersonResource : ApiResource
     {

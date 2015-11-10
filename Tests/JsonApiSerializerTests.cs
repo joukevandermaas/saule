@@ -6,6 +6,7 @@ using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Saule;
 using Tests.Helpers;
+using Tests.Models;
 using Xunit;
 
 namespace Tests
