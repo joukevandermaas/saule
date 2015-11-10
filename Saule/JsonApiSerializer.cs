@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -42,17 +41,6 @@ namespace Saule
             }
         }
 
-        private JsonSerializer GetJsonSerializer()
-        {
-            var serializer = new JsonSerializer();
-            foreach (var converter in JsonConverters)
-            {
-                serializer.Converters.Add(converter);
-            }
-
-            return serializer;
-        }
-
         private static JToken SerializeAsError(object @object)
         {
             var exception = @object as Exception;
@@ -70,6 +58,17 @@ namespace Saule
             }
 
             return null;
+        }
+
+        private JsonSerializer GetJsonSerializer()
+        {
+            var serializer = new JsonSerializer();
+            foreach (var converter in JsonConverters)
+            {
+                serializer.Converters.Add(converter);
+            }
+
+            return serializer;
         }
     }
 }

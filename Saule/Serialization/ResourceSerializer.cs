@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saule.Queries;
 
 namespace Saule.Serialization
@@ -14,8 +14,8 @@ namespace Saule.Serialization
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly JArray _includedSection;
-        private bool _isCollection;
         private readonly IUrlPathBuilder _urlBuilder;
+        private bool _isCollection;
 
         public ResourceSerializer(
             object value,
@@ -59,6 +59,60 @@ namespace Saule.Serialization
             return result;
         }
 
+        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
+        {
+            var dataArray = token as JArray;
+
+            // single thing, just serialize it
+            if (dataArray == null) return token is JObject ? serializeObj((JObject)token) : null;
+
+            // serialize each element separately
+            var data = new JArray();
+            foreach (var obj in dataArray.OfType<JObject>())
+            {
+                data.Add(serializeObj(obj));
+            }
+
+            return data;
+        }
+
+        private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
+        {
+            var data = new JObject
+            {
+                ["type"] = resource.ResourceType.ToDashed(),
+                ["id"] = EnsureHasId(properties)
+            };
+
+            return data;
+        }
+
+        private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
+        {
+            var attributes = new JObject();
+            foreach (var attr in resource.Attributes)
+            {
+                var value = GetValue(attr.Name, properties);
+                if (value != null)
+                    attributes.Add(attr.Name, value);
+            }
+
+            return attributes;
+        }
+
+        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
+        {
+            return properties[name.ToPascalCase()];
+        }
+
+        private static JToken EnsureHasId(IDictionary<string, JToken> properties)
+        {
+            var id = GetValue("id", properties);
+            if (id == null) throw new JsonApiException("Resources must have an id");
+
+            return id;
+        }
+
         private JObject SerializeNull(JsonSerializer serializer)
         {
             return new JObject
@@ -91,23 +145,6 @@ namespace Saule.Serialization
             return result;
         }
 
-        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
-        {
-            var dataArray = token as JArray;
-
-            // single thing, just serialize it
-            if (dataArray == null) return token is JObject ? serializeObj((JObject)token) : null;
-
-            // serialize each element separately
-            var data = new JArray();
-            foreach (var obj in dataArray.OfType<JObject>())
-            {
-                data.Add(serializeObj(obj));
-            }
-
-            return data;
-        }
-
         private JToken SerializeData(IDictionary<string, JToken> properties)
         {
             var data = SerializeMinimalData(properties);
@@ -131,33 +168,9 @@ namespace Saule.Serialization
             return SerializeMinimalData(properties, _resource);
         }
 
-        private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            var data = new JObject
-            {
-                ["type"] = resource.ResourceType.ToDashed(),
-                ["id"] = EnsureHasId(properties)
-            };
-
-            return data;
-        }
-
         private JToken SerializeAttributes(IDictionary<string, JToken> properties)
         {
             return SerializeAttributes(properties, _resource);
-        }
-
-        private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            var attributes = new JObject();
-            foreach (var attr in resource.Attributes)
-            {
-                var value = GetValue(attr.Name, properties);
-                if (value != null)
-                    attributes.Add(attr.Name, value);
-            }
-
-            return attributes;
         }
 
         private JToken SerializeRelationships(IDictionary<string, JToken> properties)
@@ -231,19 +244,6 @@ namespace Saule.Serialization
             return _includedSection.Any(t =>
                 t.Value<string>("type") == includedData.Value<string>("type") &&
                 t.Value<string>("id") == includedData.Value<string>("id"));
-        }
-
-        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
-        {
-            return properties[name.ToPascalCase()];
-        }
-
-        private static JToken EnsureHasId(IDictionary<string, JToken> properties)
-        {
-            var id = GetValue("id", properties);
-            if (id == null) throw new JsonApiException("Resources must have an id");
-
-            return id;
         }
 
         private JObject AddUrl(JObject @object, string name, string path)

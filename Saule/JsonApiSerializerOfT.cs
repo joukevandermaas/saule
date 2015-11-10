@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries;
@@ -13,6 +13,10 @@ namespace Saule
     /// Used to manually serialize objects into Json Api.
     /// </summary>
     /// <typeparam name="T">The resource type of the objects this serializer can serialize.</typeparam>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1649:File name must match first type name",
+        Justification = "Non-generic version exists")]
     public sealed class JsonApiSerializer<T>
             where T : ApiResource, new()
         {
@@ -24,23 +28,6 @@ namespace Saule
         public JsonApiSerializer()
         {
             _serializer = new JsonApiSerializer();
-        }
-
-        /// <summary>
-        /// Produces the Json Api response that represents the given @object.
-        /// </summary>
-        /// <param name="object">The object to serialize.</param>
-        /// <param name="requestUri">The request uri that prompted the response.</param>
-        /// <returns></returns>
-        public JToken Serialize(object @object, Uri requestUri)
-        {
-            if (!Paginate) return _serializer.Serialize(@object, new T(), requestUri);
-
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var context = new PaginationContext(request.GetQueryNameValuePairs(), ItemsPerPage);
-            _serializer.PaginationContext = context;
-
-            return _serializer.Serialize(@object, new T(), requestUri);
         }
 
         /// <summary>
@@ -65,6 +52,23 @@ namespace Saule
         {
             get { return _serializer.UrlPathBuilder; }
             set { _serializer.UrlPathBuilder = value; }
+        }
+
+        /// <summary>
+        /// Produces the Json Api response that represents the given @object.
+        /// </summary>
+        /// <param name="object">The object to serialize.</param>
+        /// <param name="requestUri">The request uri that prompted the response.</param>
+        /// <returns></returns>
+        public JToken Serialize(object @object, Uri requestUri)
+        {
+            if (!Paginate) return _serializer.Serialize(@object, new T(), requestUri);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            var context = new PaginationContext(request.GetQueryNameValuePairs(), ItemsPerPage);
+            _serializer.PaginationContext = context;
+
+            return _serializer.Serialize(@object, new T(), requestUri);
         }
     }
 }

@@ -15,6 +15,12 @@ namespace Saule.Queries
             PerPage = perPage;
         }
 
+        public int Page { get; }
+
+        public int PerPage { get; }
+
+        public IDictionary<string, string> ClientFilters { get; }
+
         private int GetNumber()
         {
             if (!ClientFilters.ContainsKey(Constants.PageNumberQueryName)) return 0;
@@ -24,11 +30,5 @@ namespace Saule.Queries
 
             return isNumber ? result : 0;
         }
-
-        public int Page { get; }
-
-        public int PerPage { get; }
-
-        public IDictionary<string, string> ClientFilters { get; }
     }
 }

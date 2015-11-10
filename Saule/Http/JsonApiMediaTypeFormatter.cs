@@ -1,16 +1,15 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Saule.Serialization;
-using System;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saule.Queries;
+using Saule.Serialization;
 
 namespace Saule.Http
 {
@@ -117,14 +116,6 @@ namespace Saule.Http
             await WriteJsonToStream(json, writeStream);
         }
 
-        private async Task WriteJsonToStream(JToken json, Stream stream)
-        {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
-            {
-                await writer.WriteAsync(json.ToString(Formatting.None, _converters));
-            }
-        }
-
         /// <summary>
         ///
         /// </summary>
@@ -148,6 +139,14 @@ namespace Saule.Http
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
             return new JsonApiMediaTypeFormatter(request, _urlBuilder);
+        }
+
+        private async Task WriteJsonToStream(JToken json, Stream stream)
+        {
+            using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
+            {
+                await writer.WriteAsync(json.ToString(Formatting.None, _converters));
+            }
         }
     }
 }

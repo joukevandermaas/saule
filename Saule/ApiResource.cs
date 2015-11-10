@@ -14,20 +14,6 @@ namespace Saule
         private readonly List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
         private readonly List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
 
-        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
-
-        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
-
-        /// <summary>
-        /// The url path of this resource.
-        /// </summary>
-        public string UrlPath { get; private set; }
-
-        /// <summary>
-        /// The type name of this resource.
-        /// </summary>
-        public string ResourceType { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResource"/> class.
         /// </summary>
@@ -42,6 +28,20 @@ namespace Saule
 
             Resources.TryAdd(type, this);
         }
+
+        /// <summary>
+        /// The url path of this resource.
+        /// </summary>
+        public string UrlPath { get; private set; }
+
+        /// <summary>
+        /// The type name of this resource.
+        /// </summary>
+        public string ResourceType { get; private set; }
+
+        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
+
+        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
 
         /// <summary>
         /// Customize the type name of this resource. The default value
@@ -79,20 +79,6 @@ namespace Saule
             _attributes.Add(result);
 
             return result;
-        }
-
-        private static void VerifyPropertyName(string name)
-        {
-            var dashed = name.ToDashed();
-            switch (dashed)
-            {
-                case "id":
-                    throw new JsonApiException("You cannot add an attribute named 'id'.");
-                case "links":
-                    throw new JsonApiException("You cannot add an attribute named 'links'.");
-                case "relationships":
-                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
-            }
         }
 
         /// <summary>
@@ -151,6 +137,20 @@ namespace Saule
             _relationships.Add(result);
 
             return result;
+        }
+
+        private static void VerifyPropertyName(string name)
+        {
+            var dashed = name.ToDashed();
+            switch (dashed)
+            {
+                case "id":
+                    throw new JsonApiException("You cannot add an attribute named 'id'.");
+                case "links":
+                    throw new JsonApiException("You cannot add an attribute named 'links'.");
+                case "relationships":
+                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
+            }
         }
 
         private static T GetUniqueResource<T>()

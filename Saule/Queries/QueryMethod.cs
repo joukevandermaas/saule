@@ -9,6 +9,15 @@ namespace Saule.Queries
 {
     internal class QueryMethod
     {
+        private readonly MethodInfo _enumerable;
+        private readonly MethodInfo _queryable;
+
+        private QueryMethod(MethodInfo queryable, MethodInfo enumerable)
+        {
+            _queryable = queryable;
+            _enumerable = enumerable;
+        }
+
         // This idea was borrowed from the OData repo. See the following url:
         // https://github.com/OData/WebApi/blob/master/OData/src/System.Web.Http.OData/OData/ExpressionHelperMethods.cs
         public static QueryMethod Skip => new QueryMethod(
@@ -21,15 +30,6 @@ namespace Saule.Queries
 
         public static QueryMethod OrderBy => new OrderByQueryMethod();
 
-        private readonly MethodInfo _enumerable;
-        private readonly MethodInfo _queryable;
-
-        private QueryMethod(MethodInfo queryable, MethodInfo enumerable)
-        {
-            _queryable = queryable;
-            _enumerable = enumerable;
-        }
-
         public object ApplyTo(IQueryable queryable, params object[] arguments)
         {
             return ApplyToInternal(_queryable, new[] { queryable }.Concat(arguments).ToArray());
@@ -40,13 +40,6 @@ namespace Saule.Queries
             return ApplyToInternal(_enumerable, new[] { enumerable }.Concat(arguments).ToArray());
         }
 
-        protected virtual object ApplyToInternal(MethodInfo method, object[] arguments)
-        {
-            var typeArguments = GetTypeArguments(arguments[0]);
-            var typed = method.MakeGenericMethod(typeArguments);
-            return typed.Invoke(null, arguments);
-        }
-
         protected static Type[] GetTypeArguments(object o)
         {
             var enumerable = o // IQueryable<> extends IEnumerable<>
@@ -55,6 +48,13 @@ namespace Saule.Queries
                 .Where(i => i.IsGenericType)
                 .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
             return enumerable.GetGenericArguments();
+        }
+
+        protected virtual object ApplyToInternal(MethodInfo method, object[] arguments)
+        {
+            var typeArguments = GetTypeArguments(arguments[0]);
+            var typed = method.MakeGenericMethod(typeArguments);
+            return typed.Invoke(null, arguments);
         }
 
         private static MethodInfo GetGenericMethodInfo<TReturn>(Expression<Func<object, TReturn>> expression)
