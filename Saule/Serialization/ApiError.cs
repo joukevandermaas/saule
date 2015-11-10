@@ -13,6 +13,7 @@ namespace Saule.Serialization
             Code = ex.GetType().FullName;
             Links = new Dictionary<string, string> { ["about"] = ex.HelpLink };
         }
+
         internal ApiError(HttpError ex)
         {
             Title = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
@@ -21,8 +22,11 @@ namespace Saule.Serialization
         }
 
         public string Title { get; }
+
         public string Detail { get; }
+
         public string Code { get; }
+
         public Dictionary<string, string> Links { get; }
     }
 }

@@ -9,13 +9,13 @@ using Saule.Serialization;
 
 namespace Saule
 {
-
     /// <summary>
     /// Used to manually serialize objects into Json Api.
     /// </summary>
     /// <typeparam name="T">The resource type of the objects this serializer can serialize.</typeparam>
-    public sealed class JsonApiSerializer<T> where T : ApiResource, new()
-    {
+    public sealed class JsonApiSerializer<T>
+            where T : ApiResource, new()
+        {
         private readonly JsonApiSerializer _serializer;
 
         /// <summary>

@@ -9,6 +9,7 @@ namespace Saule
         /// A to-one relationship between resources.
         /// </summary>
         BelongsTo,
+
         /// <summary>
         /// A to-many relationship between resources.
         /// </summary>

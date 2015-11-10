@@ -75,13 +75,13 @@ namespace Saule.Http
 
             if (request.Properties.ContainsKey(Constants.PaginationContextPropertyName))
             {
-                var paginationContext = (PaginationContext) request.Properties[Constants.PaginationContextPropertyName];
+                var paginationContext = (PaginationContext)request.Properties[Constants.PaginationContextPropertyName];
                 jsonApi.PaginationContext = paginationContext;
             }
 
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))
             {
-                _resource = (ApiResource) request.Properties[Constants.RequestPropertyName];
+                _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
             }
 
             _jsonApiSerializer = jsonApi;
@@ -149,6 +149,5 @@ namespace Saule.Http
         {
             return new JsonApiMediaTypeFormatter(request, _urlBuilder);
         }
-
     }
 }

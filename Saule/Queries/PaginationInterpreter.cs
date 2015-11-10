@@ -40,7 +40,7 @@ namespace Saule.Queries
             // order the queryable first, before we can apply pagination.
             var isOrdered = queryable.GetType().GetInterfaces()
                 .Where(i => i.IsGenericType)
-                .Any(i => i.GetGenericTypeDefinition() == typeof (IOrderedQueryable<>));
+                .Any(i => i.GetGenericTypeDefinition() == typeof(IOrderedQueryable<>));
 
             var ordered = isOrdered ? queryable : OrderById(queryable);
 
@@ -82,6 +82,5 @@ namespace Saule.Queries
 
             return filtered;
         }
-
     }
 }

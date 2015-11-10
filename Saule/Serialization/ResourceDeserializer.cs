@@ -30,6 +30,7 @@ namespace Saule.Serialization
             {
                 result.Add(SingleToFlatStructure(child as JObject));
             }
+
             return result;
         }
 

@@ -21,7 +21,11 @@ namespace Saule.Http
         /// </summary>
         public int PerPage
         {
-            get { return _perPage; }
+            get
+            {
+                return _perPage;
+            }
+
             set
             {
                 if (value < 1)
@@ -31,7 +35,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="actionContext"></param>
         public override void OnActionExecuting(HttpActionContext actionContext)
@@ -44,7 +48,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="actionExecutedContext"></param>
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)

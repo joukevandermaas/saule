@@ -24,7 +24,9 @@ namespace Saule.Queries
         }
 
         public string FirstPage { get; }
+
         public string NextPage { get; }
+
         public string PreviousPage { get; }
 
         private static string CreateQueryString(

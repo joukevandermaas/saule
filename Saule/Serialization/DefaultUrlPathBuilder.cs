@@ -1,4 +1,4 @@
-namespace Saule.Serialization
+﻿namespace Saule.Serialization
 {
     /// <summary>
     /// Used to build url paths.
@@ -12,7 +12,7 @@ namespace Saule.Serialization
         /// </summary>
         public DefaultUrlPathBuilder()
             : this(string.Empty)
-        { 
+        {
         }
 
         /// <summary>

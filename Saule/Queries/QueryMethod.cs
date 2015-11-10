@@ -10,7 +10,7 @@ namespace Saule.Queries
     internal class QueryMethod
     {
         // This idea was borrowed from the OData repo. See the following url:
-        // https://github.com/OData/WebApi/blob/master/OData/src/System.Web.Http.OData/OData/ExpressionHelperMethods.cs 
+        // https://github.com/OData/WebApi/blob/master/OData/src/System.Web.Http.OData/OData/ExpressionHelperMethods.cs
         public static QueryMethod Skip => new QueryMethod(
             GetGenericMethodInfo(_ => default(IQueryable<int>).Skip(default(int))),
             GetGenericMethodInfo(_ => default(IEnumerable<int>).Skip(default(int))));
@@ -53,7 +53,7 @@ namespace Saule.Queries
                 .GetType()
                 .GetInterfaces()
                 .Where(i => i.IsGenericType)
-                .First(i => typeof (IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
+                .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
             return enumerable.GetGenericArguments();
         }
 
@@ -61,6 +61,7 @@ namespace Saule.Queries
         {
             return GetGenericMethodInfo(expression as Expression);
         }
+
         private static MethodInfo GetGenericMethodInfo(Expression expression)
         {
             var lambdaExpression = expression as LambdaExpression;
@@ -70,10 +71,12 @@ namespace Saule.Queries
 
         private class OrderByQueryMethod : QueryMethod
         {
-            public OrderByQueryMethod() : base(
+            public OrderByQueryMethod()
+                : base(
                 GetGenericMethodInfo(_ => default(IQueryable<int>).OrderBy(default(Expression<Func<int, int>>))),
                 GetGenericMethodInfo(_ => default(IQueryable<int>).OrderBy(default(Expression<Func<int, int>>))))
-            { }
+            {
+            }
 
             protected override object ApplyToInternal(MethodInfo method, object[] arguments)
             {

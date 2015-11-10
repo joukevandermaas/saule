@@ -50,6 +50,7 @@ namespace Saule.Serialization
                 {
                     ["self"] = new JValue(_baseUrl)
                 }
+
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
 
@@ -103,6 +104,7 @@ namespace Saule.Serialization
             {
                 data.Add(serializeObj(obj));
             }
+
             return data;
         }
 
@@ -115,7 +117,9 @@ namespace Saule.Serialization
 
             if (_isCollection)
             {
-                data["links"] = AddUrl(new JObject(), "self",
+                data["links"] = AddUrl(
+                    new JObject(),
+                    "self",
                     _urlBuilder.BuildCanonicalPath(_resource, EnsureHasId(properties).Value<string>()));
             }
 
@@ -126,6 +130,7 @@ namespace Saule.Serialization
         {
             return SerializeMinimalData(properties, _resource);
         }
+
         private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
         {
             var data = new JObject
@@ -141,6 +146,7 @@ namespace Saule.Serialization
         {
             return SerializeAttributes(properties, _resource);
         }
+
         private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
         {
             var attributes = new JObject();
@@ -173,7 +179,9 @@ namespace Saule.Serialization
 
             // serialize the links part (so the data can be fetched)
             var objId = EnsureHasId(properties);
-            var relToken = GetMinimumRelationship(objId.ToString(), relationship, 
+            var relToken = GetMinimumRelationship(
+                objId.ToString(),
+                relationship,
                 relationshipProperties != null ? GetValue("id", relationshipProperties).Value<string>() : null);
             if (relationshipValues == null) return relToken;
 
@@ -187,13 +195,16 @@ namespace Saule.Serialization
 
         private JToken GetRelationshipData(ResourceRelationship relationship, JToken relationshipValues)
         {
-            var data = SerializeArrayOrObject(relationshipValues,
+            var data = SerializeArrayOrObject(
+                relationshipValues,
                 props =>
                 {
                     var values = SerializeMinimalData(props, relationship.RelatedResource);
                     var includedData = values.DeepClone();
                     includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
-                    includedData["links"] = AddUrl(new JObject(), "self",
+                    includedData["links"] = AddUrl(
+                        new JObject(),
+                        "self",
                         _urlBuilder.BuildCanonicalPath(relationship.RelatedResource, EnsureHasId(props).Value<string>()));
                     if (!IsResourceIncluded(includedData))
                         _includedSection.Add(includedData);
@@ -221,10 +232,12 @@ namespace Saule.Serialization
                 t.Value<string>("type") == includedData.Value<string>("type") &&
                 t.Value<string>("id") == includedData.Value<string>("id"));
         }
+
         private static JToken GetValue(string name, IDictionary<string, JToken> properties)
         {
             return properties[name.ToPascalCase()];
         }
+
         private static JToken EnsureHasId(IDictionary<string, JToken> properties)
         {
             var id = GetValue("id", properties);

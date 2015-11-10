@@ -39,8 +39,9 @@ namespace Saule
             // SomeString
             var parts = SplitAndLower(source);
 
-            return string.Join(string.Empty, parts.Select(s =>
-                CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s)).ToArray());
+            return string.Join(
+                string.Empty,
+                parts.Select(s => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s)).ToArray());
         }
 
         public static string ToCamelCase(this string source)

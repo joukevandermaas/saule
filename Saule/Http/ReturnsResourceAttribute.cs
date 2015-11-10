@@ -41,6 +41,7 @@ namespace Saule.Http
                 // no json api media type without parameters
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.NotAcceptable);
             }
+
             var contentType = actionContext.Request.Content?.Headers?.ContentType;
             if (contentType != null && contentType.Parameters.Any())
             {

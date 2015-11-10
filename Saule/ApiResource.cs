@@ -36,8 +36,8 @@ namespace Saule
             var type = GetType();
 
             var name = type.Name;
-            OfType(name.ToUpperInvariant().EndsWith("RESOURCE") 
-                ? name.Remove(name.Length - "RESOURCE".Length) 
+            OfType(name.ToUpperInvariant().EndsWith("RESOURCE")
+                ? name.Remove(name.Length - "RESOURCE".Length)
                 : name);
 
             Resources.TryAdd(type, this);
@@ -58,7 +58,7 @@ namespace Saule
         /// is the name of the class (without 'Resource', if it exists).
         /// </summary>
         /// <param name="value">The type of the resource.</param>
-        /// <param name="path">The url pathspec of this relationship (default is the 
+        /// <param name="path">The url pathspec of this relationship (default is the
         /// pluralized version of the type name)</param>
         protected void OfType(string value, string path)
         {
@@ -99,8 +99,9 @@ namespace Saule
         /// Specify a to-one relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        protected ResourceRelationship BelongsTo<T>(string name) where T : ApiResource, new()
-        {
+        protected ResourceRelationship BelongsTo<T>(string name)
+                    where T : ApiResource, new()
+                {
             return BelongsTo<T>(name, name);
         }
 
@@ -110,8 +111,9 @@ namespace Saule
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        protected ResourceRelationship BelongsTo<T>(string name, string path) where T : ApiResource, new()
-        {
+        protected ResourceRelationship BelongsTo<T>(string name, string path)
+                    where T : ApiResource, new()
+                {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
@@ -126,8 +128,9 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        protected ResourceRelationship HasMany<T>(string name) where T : ApiResource, new()
-        {
+        protected ResourceRelationship HasMany<T>(string name)
+                    where T : ApiResource, new()
+                {
             return HasMany<T>(name, name);
         }
 
@@ -137,8 +140,9 @@ namespace Saule
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        protected ResourceRelationship HasMany<T>(string name, string path) where T : ApiResource, new()
-        {
+        protected ResourceRelationship HasMany<T>(string name, string path)
+                    where T : ApiResource, new()
+                {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
@@ -149,7 +153,8 @@ namespace Saule
             return result;
         }
 
-        private static T GetUniqueResource<T>() where T : ApiResource, new()
+        private static T GetUniqueResource<T>()
+            where T : ApiResource, new()
         {
             var type = typeof(T);
             var resource = Resources.ContainsKey(type)
