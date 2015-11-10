@@ -39,7 +39,7 @@ namespace Saule
             // SomeString
             var parts = SplitAndLower(source);
 
-            return string.Join("", parts.Select(s =>
+            return string.Join(string.Empty, parts.Select(s =>
                 CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s)).ToArray());
         }
 
@@ -53,7 +53,7 @@ namespace Saule
                     ? s.ToLowerInvariant()
                     : CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s));
 
-            return string.Join("", cased.ToArray());
+            return string.Join(string.Empty, cased.ToArray());
         }
 
         private static IEnumerable<string> SplitAndLower(string source)

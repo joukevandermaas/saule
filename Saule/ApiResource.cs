@@ -151,7 +151,7 @@ namespace Saule
 
         private static T GetUniqueResource<T>() where T : ApiResource, new()
         {
-            var type = typeof (T);
+            var type = typeof(T);
             var resource = Resources.ContainsKey(type)
                 ? Resources[type] as T
                 : new T();
