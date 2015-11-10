@@ -20,7 +20,10 @@ namespace Saule.Http
         public ReturnsResourceAttribute(Type resourceType)
         {
             if (!resourceType.IsSubclassOf(typeof(ApiResource)))
+            {
                 throw new ArgumentException("Resource types must inherit from Saule.ApiResource");
+            }
+
             Resource = resourceType.CreateInstance<ApiResource>();
         }
 

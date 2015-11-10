@@ -39,7 +39,11 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
-            if (_value == null) return SerializeNull(serializer);
+            if (_value == null)
+            {
+                return SerializeNull(serializer);
+            }
+
             var objectJson = JToken.FromObject(_value, serializer);
             _isCollection = objectJson is JArray;
 
@@ -54,7 +58,10 @@ namespace Saule.Serialization
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
 
-            if (_includedSection.Count > 0) result["included"] = _includedSection;
+            if (_includedSection.Count > 0)
+            {
+                result["included"] = _includedSection;
+            }
 
             return result;
         }
@@ -64,7 +71,10 @@ namespace Saule.Serialization
             var dataArray = token as JArray;
 
             // single thing, just serialize it
-            if (dataArray == null) return token is JObject ? serializeObj((JObject)token) : null;
+            if (dataArray == null)
+            {
+                return token is JObject ? serializeObj((JObject)token) : null;
+            }
 
             // serialize each element separately
             var data = new JArray();
@@ -94,7 +104,9 @@ namespace Saule.Serialization
             {
                 var value = GetValue(attr.Name, properties);
                 if (value != null)
+                {
                     attributes.Add(attr.Name, value);
+                }
             }
 
             return attributes;
@@ -108,7 +120,10 @@ namespace Saule.Serialization
         private static JToken EnsureHasId(IDictionary<string, JToken> properties)
         {
             var id = GetValue("id", properties);
-            if (id == null) throw new JsonApiException("Resources must have an id");
+            if (id == null)
+            {
+                throw new JsonApiException("Resources must have an id");
+            }
 
             return id;
         }
@@ -134,13 +149,19 @@ namespace Saule.Serialization
             var left = _baseUrl.GetLeftPart(UriPartial.Path);
 
             if (queryStrings.FirstPage != null)
+            {
                 result["first"] = new Uri(left + queryStrings.FirstPage);
+            }
 
             if (queryStrings.NextPage != null && count >= _paginationContext.PerPage)
+            {
                 result["next"] = new Uri(left + queryStrings.NextPage);
+            }
 
             if (queryStrings.PreviousPage != null)
+            {
                 result["prev"] = new Uri(left + queryStrings.PreviousPage);
+            }
 
             return result;
         }
@@ -196,12 +217,17 @@ namespace Saule.Serialization
                 objId.ToString(),
                 relationship,
                 relationshipProperties != null ? GetValue("id", relationshipProperties).Value<string>() : null);
-            if (relationshipValues == null) return relToken;
+            if (relationshipValues == null)
+            {
+                return relToken;
+            }
 
             // only include data if it exists, otherwise just assume it should be fetched later
             var data = GetRelationshipData(relationship, relationshipValues);
             if (data != null)
+            {
                 relToken["data"] = data;
+            }
 
             return relToken;
         }
@@ -220,7 +246,9 @@ namespace Saule.Serialization
                         "self",
                         _urlBuilder.BuildCanonicalPath(relationship.RelatedResource, EnsureHasId(props).Value<string>()));
                     if (!IsResourceIncluded(includedData))
+                    {
                         _includedSection.Add(includedData);
+                    }
 
                     return values;
                 });
@@ -248,7 +276,10 @@ namespace Saule.Serialization
 
         private JObject AddUrl(JObject @object, string name, string path)
         {
-            if (string.IsNullOrEmpty(path)) return @object;
+            if (string.IsNullOrEmpty(path))
+            {
+                return @object;
+            }
 
             var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
             @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));

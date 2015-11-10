@@ -20,10 +20,16 @@ namespace Saule
         {
             try
             {
-                if (requestUri == null) throw new ArgumentNullException(nameof(requestUri));
+                if (requestUri == null)
+                {
+                    throw new ArgumentNullException(nameof(requestUri));
+                }
 
                 var error = SerializeAsError(@object);
-                if (error != null) return error;
+                if (error != null)
+                {
+                    return error;
+                }
 
                 var dataObject = @object;
                 if (PaginationContext != null)

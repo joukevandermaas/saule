@@ -29,7 +29,10 @@ namespace Saule.Http
             set
             {
                 if (value < 1)
+                {
                     throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Must have at least one item per page.");
+                }
+
                 _perPage = value;
             }
         }

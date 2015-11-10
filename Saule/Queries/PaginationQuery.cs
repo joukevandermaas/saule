@@ -8,10 +8,15 @@ namespace Saule.Queries
     {
         public PaginationQuery(PaginationContext context)
         {
-            if (context == null) return;
+            if (context == null)
+            {
+                return;
+            }
 
             if (!context.ClientFilters.ContainsKey(Constants.PageNumberQueryName))
+            {
                 context.ClientFilters.Add(Constants.PageNumberQueryName, null);
+            }
 
             int page;
             var isNumber = int.TryParse(context.ClientFilters[Constants.PageNumberQueryName] ?? string.Empty, out page);
@@ -41,9 +46,15 @@ namespace Saule.Queries
                 var key = kv.Key;
                 var value = kv.Key == Constants.PageNumberQueryName ? page.ToString() : kv.Value;
 
-                if (string.IsNullOrEmpty(value)) return null;
+                if (string.IsNullOrEmpty(value))
+                {
+                    return null;
+                }
 
-                if (!key.Contains(".")) return new { Key = key, Value = value };
+                if (!key.Contains("."))
+                {
+                    return new { Key = key, Value = value };
+                }
 
                 var left = key.Substring(0, key.IndexOf(".", StringComparison.InvariantCulture));
                 var right = key.Substring(left.Length + 1);

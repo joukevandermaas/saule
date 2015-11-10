@@ -67,7 +67,10 @@ namespace Saule
                 if (IsSeparator(character))
                 {
                     if (builder.Length > 0)
+                    {
                         strings.Add(builder.ToString());
+                    }
+
                     builder.Clear();
                     continue;
                 }

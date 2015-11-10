@@ -62,7 +62,10 @@ namespace Saule
         /// <returns></returns>
         public JToken Serialize(object @object, Uri requestUri)
         {
-            if (!Paginate) return _serializer.Serialize(@object, new T(), requestUri);
+            if (!Paginate)
+            {
+                return _serializer.Serialize(@object, new T(), requestUri);
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             var context = new PaginationContext(request.GetQueryNameValuePairs(), ItemsPerPage);
