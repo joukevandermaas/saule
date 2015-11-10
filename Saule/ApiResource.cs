@@ -29,7 +29,7 @@ namespace Saule
         public string ResourceType { get; private set; }
 
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
         /// </summary>
         protected ApiResource()
         {

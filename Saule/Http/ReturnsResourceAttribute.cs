@@ -14,7 +14,7 @@ namespace Saule.Http
     public sealed class ReturnsResourceAttribute : ActionFilterAttribute
     {
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="ReturnsResourceAttribute"/> class.
         /// </summary>
         /// <param name="resourceType">The type of the resource this controller action returns.</param>
         public ReturnsResourceAttribute(Type resourceType)
@@ -30,7 +30,6 @@ namespace Saule.Http
         public ApiResource Resource { get; }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="actionContext"></param>
         public override void OnActionExecuting(HttpActionContext actionContext)

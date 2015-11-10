@@ -79,7 +79,7 @@ namespace Saule
         private readonly JsonApiSerializer _serializer;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="JsonApiSerializer{T}"/> class.
         /// </summary>
         public JsonApiSerializer()
         {

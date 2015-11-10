@@ -6,7 +6,7 @@
     public class ResourceAttribute
     {
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="ResourceAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
         public ResourceAttribute(string name)

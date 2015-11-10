@@ -10,6 +10,7 @@ namespace Saule
     public class JsonApiException : Exception
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="JsonApiException"/> class.
         ///
         /// </summary>
         public JsonApiException() : base("An error occured while serializing or deserializing a Json Api document")
@@ -17,6 +18,7 @@ namespace Saule
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="JsonApiException"/> class.
         ///
         /// </summary>
         /// <param name="message">
@@ -29,7 +31,7 @@ namespace Saule
         }
 
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="JsonApiException"/> class.
         /// </summary>
         /// <param name="message">
         /// A description of the error. The content of message is intended to be understood by humans.
@@ -45,7 +47,7 @@ namespace Saule
         }
 
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="JsonApiException"/> class.
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>

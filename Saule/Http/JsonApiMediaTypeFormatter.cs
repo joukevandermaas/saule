@@ -26,7 +26,7 @@ namespace Saule.Http
         private readonly JsonApiSerializer _jsonApiSerializer;
 
         /// <summary>
-        /// Creates a new instance of the JsonApiMediaTypeFormatter class.
+        /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         public JsonApiMediaTypeFormatter()
         {
@@ -36,7 +36,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// Creates a new instance of the JstonApiMediaTypeFormatter class.
+        /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         /// <param name="urlBuilder">Determines how to generate urls for links.</param>
         public JsonApiMediaTypeFormatter(IUrlPathBuilder urlBuilder)
@@ -46,7 +46,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// Creates a new instance of the JsonApiMediaTypeFormatter class.
+        /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         /// <param name="converters">Json converters to manipulate the serialization process.</param>
         public JsonApiMediaTypeFormatter(params JsonConverter[] converters)
@@ -55,7 +55,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// Creates a new instance of the JstonApiMediaTypeFormatter class.
+        /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         /// <param name="urlBuilder">Determines how to generate urls for links.</param>
         /// <param name="converters">Json converters to manipulate the serialization process.</param>
