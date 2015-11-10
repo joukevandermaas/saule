@@ -5,21 +5,18 @@ using System.Threading.Tasks;
 using Saule;
 using Tests.Helpers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Tests.SpecificationConformity
 {
     public class ContentNegotiationTests : IClassFixture<JsonApiServer>
     {
         private readonly JsonApiServer _server;
-        private readonly ITestOutputHelper _output;
 
         private readonly string _personContent = Properties.Resources.PersonResourceString;
 
-        public ContentNegotiationTests(JsonApiServer server, ITestOutputHelper output)
+        public ContentNegotiationTests(JsonApiServer server)
         {
             _server = server;
-            _output = output;
         }
 
         [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]
@@ -31,7 +28,6 @@ namespace Tests.SpecificationConformity
             var target = _server.GetClient();
 
             var result = await target.GetAsync(path);
-            _output.WriteLine(await result.Content.ReadAsStringAsync());
 
             Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
         }
