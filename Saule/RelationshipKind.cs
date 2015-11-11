@@ -1,4 +1,4 @@
-namespace Saule
+﻿namespace Saule
 {
     /// <summary>
     /// Represents the different kinds of relationships between resources.

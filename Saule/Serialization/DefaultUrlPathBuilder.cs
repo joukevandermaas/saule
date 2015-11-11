@@ -28,6 +28,7 @@
         /// Returns the UrlPath of the resource, ensuring it starts and ends with '/'
         /// </summary>
         /// <param name="resource">The resource this path refers to.</param>
+        /// <returns>A <see cref="string"/> containing the path.</returns>
         public virtual string BuildCanonicalPath(ApiResource resource)
         {
             return '/'.TrimJoin(_prefix, resource.UrlPath).EnsureEndsWith("/");
@@ -38,6 +39,7 @@
         /// </summary>
         /// <param name="resource">The resource this path refers to.</param>
         /// <param name="id">The unique id of the resource.</param>
+        /// <returns>A <see cref="string"/> containing the path.</returns>
         public virtual string BuildCanonicalPath(ApiResource resource, string id)
         {
             return '/'.TrimJoin(
@@ -51,6 +53,7 @@
         /// <param name="resource">The resource this path is related to.</param>
         /// <param name="id">The unique id of the resource.</param>
         /// <param name="relationship">The relationship this path refers to.</param>
+        /// <returns>A <see cref="string"/> containing the path.</returns>
         public virtual string BuildRelationshipPath(ApiResource resource, string id, ResourceRelationship relationship)
         {
             return '/'.TrimJoin(
@@ -65,6 +68,7 @@
         /// <param name="id">The unique id of the resource.</param>
         /// <param name="relationship">The relationship this path refers to.</param>
         /// <param name="relatedResourceId">The id of the related resource.</param>
+        /// <returns>A <see cref="string"/> containing the path.</returns>
         public virtual string BuildRelationshipPath(
             ApiResource resource,
             string id,

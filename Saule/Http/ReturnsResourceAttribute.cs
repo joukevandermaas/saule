@@ -33,8 +33,9 @@ namespace Saule.Http
         public ApiResource Resource { get; }
 
         /// <summary>
+        /// See base class documentation.
         /// </summary>
-        /// <param name="actionContext"></param>
+        /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var accept = actionContext.Request.Headers.Accept

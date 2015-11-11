@@ -70,6 +70,7 @@ namespace Saule
         /// Specify an attribute of this resource.
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
+        /// <returns>The <see cref="ResourceAttribute"/>.</returns>
         protected ResourceAttribute Attribute(string name)
         {
             VerifyPropertyName(name);
@@ -85,9 +86,11 @@ namespace Saule
         /// Specify a to-one relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
         protected ResourceRelationship BelongsTo<T>(string name)
                     where T : ApiResource, new()
-                {
+        {
             return BelongsTo<T>(name, name);
         }
 
@@ -97,9 +100,11 @@ namespace Saule
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
         protected ResourceRelationship BelongsTo<T>(string name, string path)
                     where T : ApiResource, new()
-                {
+        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
@@ -114,9 +119,11 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
         protected ResourceRelationship HasMany<T>(string name)
                     where T : ApiResource, new()
-                {
+        {
             return HasMany<T>(name, name);
         }
 
@@ -124,11 +131,12 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="path">The url pathspec of this relationship (default
-        /// is the name)</param>
+        /// <param name="path">The url pathspec of this relationship (default is the name).</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
         protected ResourceRelationship HasMany<T>(string name, string path)
                     where T : ApiResource, new()
-                {
+        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
@@ -142,6 +150,7 @@ namespace Saule
         private static void VerifyPropertyName(string name)
         {
             var dashed = name.ToDashed();
+
             switch (dashed)
             {
                 case "id":

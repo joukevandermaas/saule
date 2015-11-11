@@ -18,6 +18,8 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
+        // NOTE: the comments on `overrride` public methods below are copied from the MSDN documentation at
+        // https://msdn.microsoft.com/en-us/library/system.net.http.formatting.mediatypeformatter(v=vs.118).aspx
         private readonly JsonConverter[] _converters;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ApiResource _resource;
@@ -87,24 +89,41 @@ namespace Saule.Http
         }
 
         /// <summary>
-        ///
+        /// See base class documentation.
+        /// Queries whether this <see cref="MediaTypeFormatter"/> can serialize an
+        /// object of the specified type.
         /// </summary>
+        /// <param name="type">The type to serialize.</param>
+        /// <returns>
+        /// true if the <see cref="MediaTypeFormatter"/> can serialize the type; otherwise, false.
+        /// </returns>
         public override bool CanReadType(Type type)
         {
             return true;
         }
 
         /// <summary>
-        ///
+        /// Queries whether this <see cref="MediaTypeFormatter"/> can deserialize an
+        /// object of the specified type.
         /// </summary>
+        /// <param name="type">The type to deserialize.</param>
+        /// <returns>
+        /// true if the <see cref="MediaTypeFormatter"/> can deserialize the type; otherwise, false.
+        /// </returns>
         public override bool CanWriteType(Type type)
         {
             return true;
         }
 
         /// <summary>
-        ///
+        /// Asynchronously writes an object of the specified type.
         /// </summary>
+        /// <param name="type">The type of the object to write.</param>
+        /// <param name="value">The object value to write. It may be null.</param>
+        /// <param name="writeStream">The <see cref="Stream"/> to which to write.</param>
+        /// <param name="content">The <see cref="HttpContent"/> if available. It may be null.</param>
+        /// <param name="transportContext">The <see cref="TransportContext"/> if available. It may be null.</param>
+        /// <returns>A <see cref="Task"/> that will perform the write.</returns>
         public override async Task WriteToStreamAsync(
             Type type,
             object value,
@@ -117,8 +136,13 @@ namespace Saule.Http
         }
 
         /// <summary>
-        ///
+        /// Asynchronously deserializes an object of the specified type.
         /// </summary>
+        /// <param name="type">The type of the object to deserialize.</param>
+        /// <param name="readStream">The <see cref="Stream"/> to read.</param>
+        /// <param name="content">The <see cref="HttpContent"/>, if available. It may be null.</param>
+        /// <param name="formatterLogger">The <see cref="IFormatterLogger"/> to log events to.</param>
+        /// <returns>A <see cref="Task"/> whose result will be an object of the given type.</returns>
         public override async Task<object> ReadFromStreamAsync(
             Type type,
             Stream readStream,
@@ -133,8 +157,13 @@ namespace Saule.Http
         }
 
         /// <summary>
-        ///
+        /// Returns a specialized instance of the <see cref="MediaTypeFormatter"/> that can
+        /// format a response for the given parameters.
         /// </summary>
+        /// <param name="type">The type to format.</param>
+        /// <param name="request">The request.</param>
+        /// <param name="mediaType">The media type.</param>
+        /// <returns>Returns <see cref="JsonApiMediaTypeFormatter"/>.</returns>
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {

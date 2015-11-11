@@ -2,9 +2,6 @@
 
 namespace Saule
 {
-    /// <summary>
-    /// Represents a related resource (to-one or to-many).
-    /// </summary>
     [SuppressMessage(
         "StyleCop.CSharp.DocumentationRules",
         "SA1649:File name must match first type name",

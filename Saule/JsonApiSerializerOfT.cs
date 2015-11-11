@@ -59,7 +59,7 @@ namespace Saule
         /// </summary>
         /// <param name="object">The object to serialize.</param>
         /// <param name="requestUri">The request uri that prompted the response.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="JToken"/> representing the object.</returns>
         public JToken Serialize(object @object, Uri requestUri)
         {
             if (!Paginate)

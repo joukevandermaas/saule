@@ -38,9 +38,9 @@ namespace Saule.Http
         }
 
         /// <summary>
-        ///
+        /// See base class documentation.
         /// </summary>
-        /// <param name="actionContext"></param>
+        /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var context = new PaginationContext(
@@ -51,9 +51,9 @@ namespace Saule.Http
         }
 
         /// <summary>
-        ///
+        /// See base class documentation.
         /// </summary>
-        /// <param name="actionExecutedContext"></param>
+        /// <param name="actionExecutedContext">The action context.</param>
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             var content = actionExecutedContext.Response.Content as ObjectContent;
