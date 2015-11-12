@@ -65,11 +65,11 @@ namespace Saule.Http
             _converters = converters;
         }
 
-        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, IUrlPathBuilder urlBuilder)
+        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, IUrlPathBuilder urlBuilder, params JsonConverter[] converters)
             : this()
         {
             var jsonApi = new JsonApiSerializer { UrlPathBuilder = urlBuilder };
-            jsonApi.JsonConverters.AddRange(_converters);
+            jsonApi.JsonConverters.AddRange(converters);
 
             _baseUrl = request.RequestUri;
 
@@ -147,7 +147,7 @@ namespace Saule.Http
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            return new JsonApiMediaTypeFormatter(request, _urlBuilder);
+            return new JsonApiMediaTypeFormatter(request, _urlBuilder, _converters);
         }
 
     }
