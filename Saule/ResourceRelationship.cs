@@ -6,7 +6,7 @@
     public abstract class ResourceRelationship
     {
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="ResourceRelationship"/> class.
         /// </summary>
         /// <param name="name">The name of the reference on the resource that defines the relationship.</param>
         /// <param name="urlPath">
@@ -15,7 +15,7 @@
         /// </param>
         /// <param name="kind">The kind of relationship.</param>
         /// <param name="relationshipResource">The specification of the related resource.</param>
-        public ResourceRelationship(
+        protected ResourceRelationship(
             string name,
             string urlPath,
             RelationshipKind kind,
@@ -46,16 +46,5 @@
         /// The kind of relationship.
         /// </summary>
         public RelationshipKind Kind { get; }
-    }
-
-    /// <summary>
-    /// Represents a related resource (to-one or to-many).
-    /// </summary>
-    internal class ResourceRelationship<T> : ResourceRelationship where T : ApiResource, new()
-    {
-        internal ResourceRelationship(string name, string urlPath, RelationshipKind kind, T resource)
-            : base(name, urlPath, kind, resource)
-        {
-        }
     }
 }

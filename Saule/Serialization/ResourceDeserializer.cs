@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Saule.Serialization
 {
@@ -23,13 +23,17 @@ namespace Saule.Serialization
         {
             var array = json["data"] as JArray;
 
-            if (array == null) return SingleToFlatStructure(json["data"] as JObject);
+            if (array == null)
+            {
+                return SingleToFlatStructure(json["data"] as JObject);
+            }
 
             var result = new JArray();
             foreach (var child in array)
             {
                 result.Add(SingleToFlatStructure(child as JObject));
             }
+
             return result;
         }
 
@@ -37,7 +41,9 @@ namespace Saule.Serialization
         {
             var result = new JObject();
             if (child["id"] != null)
+            {
                 result["id"] = child["id"];
+            }
 
             foreach (var attr in child["attributes"] ?? new JArray())
             {

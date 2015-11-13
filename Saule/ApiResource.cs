@@ -14,9 +14,20 @@ namespace Saule
         private readonly List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
         private readonly List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
 
-        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
+        protected ApiResource()
+        {
+            var type = GetType();
 
-        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
+            var name = type.Name;
+            OfType(name.ToUpperInvariant().EndsWith("RESOURCE")
+                ? name.Remove(name.Length - "RESOURCE".Length)
+                : name);
+
+            Resources.TryAdd(type, this);
+        }
 
         /// <summary>
         /// The url path of this resource.
@@ -28,20 +39,9 @@ namespace Saule
         /// </summary>
         public string ResourceType { get; private set; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        protected ApiResource()
-        {
-            var type = GetType();
+        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
 
-            var name = type.Name;
-            OfType(name.ToUpperInvariant().EndsWith("RESOURCE") 
-                ? name.Remove(name.Length - "RESOURCE".Length) 
-                : name);
-
-            Resources.TryAdd(type, this);
-        }
+        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
 
         /// <summary>
         /// Customize the type name of this resource. The default value
@@ -58,7 +58,7 @@ namespace Saule
         /// is the name of the class (without 'Resource', if it exists).
         /// </summary>
         /// <param name="value">The type of the resource.</param>
-        /// <param name="path">The url pathspec of this relationship (default is the 
+        /// <param name="path">The url pathspec of this relationship (default is the
         /// pluralized version of the type name)</param>
         protected void OfType(string value, string path)
         {
@@ -70,6 +70,7 @@ namespace Saule
         /// Specify an attribute of this resource.
         /// </summary>
         /// <param name="name">The name of the attribute.</param>
+        /// <returns>The <see cref="ResourceAttribute"/>.</returns>
         protected ResourceAttribute Attribute(string name)
         {
             VerifyPropertyName(name);
@@ -81,25 +82,14 @@ namespace Saule
             return result;
         }
 
-        private static void VerifyPropertyName(string name)
-        {
-            var dashed = name.ToDashed();
-            switch (dashed)
-            {
-                case "id":
-                    throw new JsonApiException("You cannot add an attribute named 'id'.");
-                case "links":
-                    throw new JsonApiException("You cannot add an attribute named 'links'.");
-                case "relationships":
-                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
-            }
-        }
-
         /// <summary>
         /// Specify a to-one relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        protected ResourceRelationship BelongsTo<T>(string name) where T : ApiResource, new()
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship BelongsTo<T>(string name)
+                    where T : ApiResource, new()
         {
             return BelongsTo<T>(name, name);
         }
@@ -110,7 +100,10 @@ namespace Saule
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        protected ResourceRelationship BelongsTo<T>(string name, string path) where T : ApiResource, new()
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship BelongsTo<T>(string name, string path)
+                    where T : ApiResource, new()
         {
             VerifyPropertyName(name);
 
@@ -126,7 +119,10 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        protected ResourceRelationship HasMany<T>(string name) where T : ApiResource, new()
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship HasMany<T>(string name)
+                    where T : ApiResource, new()
         {
             return HasMany<T>(name, name);
         }
@@ -135,9 +131,11 @@ namespace Saule
         /// Specify a to-many relationship of this resource.
         /// </summary>
         /// <param name="name">The name of the relationship.</param>
-        /// <param name="path">The url pathspec of this relationship (default
-        /// is the name)</param>
-        protected ResourceRelationship HasMany<T>(string name, string path) where T : ApiResource, new()
+        /// <param name="path">The url pathspec of this relationship (default is the name).</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship HasMany<T>(string name, string path)
+                    where T : ApiResource, new()
         {
             VerifyPropertyName(name);
 
@@ -149,9 +147,25 @@ namespace Saule
             return result;
         }
 
-        private static T GetUniqueResource<T>() where T : ApiResource, new()
+        private static void VerifyPropertyName(string name)
         {
-            var type = typeof (T);
+            var dashed = name.ToDashed();
+
+            switch (dashed)
+            {
+                case "id":
+                    throw new JsonApiException("You cannot add an attribute named 'id'.");
+                case "links":
+                    throw new JsonApiException("You cannot add an attribute named 'links'.");
+                case "relationships":
+                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
+            }
+        }
+
+        private static T GetUniqueResource<T>()
+            where T : ApiResource, new()
+        {
+            var type = typeof(T);
             var resource = Resources.ContainsKey(type)
                 ? Resources[type] as T
                 : new T();

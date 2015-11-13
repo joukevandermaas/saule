@@ -1,4 +1,4 @@
-namespace Saule
+﻿namespace Saule
 {
     /// <summary>
     /// Represents the different kinds of relationships between resources.
@@ -9,6 +9,7 @@ namespace Saule
         /// A to-one relationship between resources.
         /// </summary>
         BelongsTo,
+
         /// <summary>
         /// A to-many relationship between resources.
         /// </summary>

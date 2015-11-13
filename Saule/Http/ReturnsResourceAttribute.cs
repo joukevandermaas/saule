@@ -14,13 +14,16 @@ namespace Saule.Http
     public sealed class ReturnsResourceAttribute : ActionFilterAttribute
     {
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="ReturnsResourceAttribute"/> class.
         /// </summary>
         /// <param name="resourceType">The type of the resource this controller action returns.</param>
         public ReturnsResourceAttribute(Type resourceType)
         {
             if (!resourceType.IsSubclassOf(typeof(ApiResource)))
+            {
                 throw new ArgumentException("Resource types must inherit from Saule.ApiResource");
+            }
+
             Resource = resourceType.CreateInstance<ApiResource>();
         }
 
@@ -30,9 +33,9 @@ namespace Saule.Http
         public ApiResource Resource { get; }
 
         /// <summary>
-        /// 
+        /// See base class documentation.
         /// </summary>
-        /// <param name="actionContext"></param>
+        /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var accept = actionContext.Request.Headers.Accept
@@ -42,6 +45,7 @@ namespace Saule.Http
                 // no json api media type without parameters
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.NotAcceptable);
             }
+
             var contentType = actionContext.Request.Content?.Headers?.ContentType;
             if (contentType != null && contentType.Parameters.Any())
             {
