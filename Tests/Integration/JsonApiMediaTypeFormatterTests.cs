@@ -97,5 +97,29 @@ namespace Tests.Integration
                 Assert.Equal("http://example.com/corporations/456/", relatedUrl);
             }
         }
+
+        [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute")]
+        public async Task GivesUsefulError()
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/broken/123/");
+                _output.WriteLine(result.ToString());
+
+                var error = result["errors"][0];
+
+                Assert.Equal("https://github.com/joukevandermaas/saule/wiki",
+                    error["links"]["about"].Value<string>());
+
+                Assert.Equal("Saule.JsonApiException",
+                    error["code"].Value<string>());
+
+                Assert.Equal("Saule.JsonApiException: You must add a [ReturnsResourceAttribute] to action methods.",
+                    error["detail"].Value<string>());
+            }
+        }
     }
 }

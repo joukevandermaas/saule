@@ -81,6 +81,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ApiResourceTests.cs" />
+    <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Experiments.cs" />
     <Compile Include="Helpers\HttpClientExtensions.cs" />
