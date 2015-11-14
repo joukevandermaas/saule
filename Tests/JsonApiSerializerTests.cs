@@ -5,15 +5,21 @@ using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Saule;
-using Tests.Helpers;
 using Tests.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tests
 {
     public class JsonApiSerializerTests
     {
+        private readonly ITestOutputHelper _output;
         private static Uri DefaultUrl => new Uri("http://example.com/api/people");
+
+        public JsonApiSerializerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Fact(DisplayName = "Does not allow null Uri")]
         public void HasAContract()
@@ -28,6 +34,8 @@ namespace Tests
             var target = new JsonApiSerializer<PersonResource>();
             var result = target.Serialize(new FileNotFoundException(), DefaultUrl);
 
+            _output.WriteLine(result.ToString());
+
             Assert.Null(result["data"]);
             Assert.NotNull(result["errors"]);
         }
@@ -37,6 +45,8 @@ namespace Tests
         {
             var target = new JsonApiSerializer<PersonResource>();
             var result = target.Serialize(new HttpError(), DefaultUrl);
+
+            _output.WriteLine(result.ToString());
 
             Assert.Null(result["data"]);
             Assert.NotNull(result["errors"]);
@@ -52,6 +62,8 @@ namespace Tests
             };
             var people = GetPeople(20).AsQueryable();
             var result = target.Serialize(people, DefaultUrl);
+
+            _output.WriteLine(result.ToString());
 
             Assert.Equal(5, result["data"].Count());
             Assert.NotNull(result["links"]["next"]);
@@ -70,6 +82,8 @@ namespace Tests
             var people = GetPeople(5);
             var result = target.Serialize(people, DefaultUrl);
 
+            _output.WriteLine(result.ToString());
+
             Assert.Equal(5, result["data"].Count());
             Assert.Null(result["links"]["next"]);
             Assert.Null(result["links"]["first"]);
@@ -79,11 +93,13 @@ namespace Tests
         [Fact(DisplayName = "Uses converters")]
         public void UsesConverters()
         {
-            var target = new JsonApiSerializer<TestConvertersResource>();
+            var target = new JsonApiSerializer<CompanyResource>();
             target.JsonConverters.Add(new StringEnumConverter());
-            var result = target.Serialize(new TestConverters(), DefaultUrl);
+            var result = target.Serialize(new Company(prefill: true), DefaultUrl);
 
-            Assert.Equal("Second", result["data"]["attributes"].Value<string>("property"));
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal("National", result["data"]["attributes"].Value<string>("location"));
         }
 
         private static IEnumerable<Person> GetPeople(int count)
@@ -92,26 +108,6 @@ namespace Tests
             {
                 yield return new Person(prefill: true, id: (i + 1).ToString());
             }
-        }
-
-        private class TestConvertersResource : ApiResource
-        {
-            public TestConvertersResource()
-            {
-                Attribute("property");
-            }
-        }
-
-        private class TestConverters
-        {
-            public enum Test
-            {
-                First,
-                Second
-            }
-
-            public Test Property { get; set; } = Test.Second;
-            public string Id { get; set; } = Test.First.ToString();
         }
     }
 }

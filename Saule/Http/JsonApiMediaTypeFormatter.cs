@@ -131,7 +131,22 @@ namespace Saule.Http
             HttpContent content,
             TransportContext transportContext)
         {
-            var json = _jsonApiSerializer.Serialize(value, _resource, _baseUrl);
+            JToken json;
+            if (_resource != null)
+            {
+                json = _jsonApiSerializer.Serialize(value, _resource, _baseUrl);
+            }
+            else
+            {
+                // user forgot the attribute
+                var exception = new JsonApiException("You must add a [ReturnsResourceAttribute] to action methods.")
+                {
+                    HelpLink = "https://github.com/joukevandermaas/saule/wiki"
+                };
+
+                json = _jsonApiSerializer.Serialize(exception, _resource, _baseUrl);
+            }
+
             await WriteJsonToStream(json, writeStream);
         }
 
