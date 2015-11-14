@@ -9,6 +9,7 @@ namespace Tests.Models
             OfType("Corporation");
             Attribute("Name");
             Attribute("NumberOfEmployees");
+            Attribute("Location");
         }
     }
 }

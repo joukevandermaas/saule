@@ -81,7 +81,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ApiResourceTests.cs" />
+    <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Experiments.cs" />
+    <Compile Include="Helpers\HttpClientExtensions.cs" />
+    <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyResource.cs" />
     <Compile Include="Models\GuidAsId.cs" />
@@ -106,7 +109,7 @@
     <Compile Include="Serialization\ResourceDeserializerTests.cs" />
     <Compile Include="Serialization\ErrorSerializerTests.cs" />
     <Compile Include="Serialization\ResourceSerializerTests.cs" />
-    <Compile Include="SpecificationConformity\ContentNegotiationTests.cs" />
+    <Compile Include="Integration\ContentNegotiationTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>

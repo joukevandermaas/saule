@@ -7,14 +7,19 @@ using Saule.Http;
 
 namespace Tests.Helpers
 {
-    public sealed class JsonApiServer :IDisposable
+    public class JsonApiServer : IDisposable
     {
         public HttpServer Server { get; }
 
         public JsonApiServer()
+            : this(new JsonApiMediaTypeFormatter())
+        {
+        }
+
+        public JsonApiServer(JsonApiMediaTypeFormatter formatter)
         {
             var config = new HttpConfiguration();
-            config.Formatters.Add(new JsonApiMediaTypeFormatter());
+            config.Formatters.Add(formatter);
             config.Routes.MapHttpRoute(
                  name: "DefaultApi",
                  routeTemplate: "{controller}/{id}",
@@ -22,14 +27,13 @@ namespace Tests.Helpers
              );
 
             Server = new HttpServer(config);
-
         }
 
         public HttpClient GetClient()
         {
             var client = new HttpClient(Server);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaType));
-            client.BaseAddress = new Uri("http://www.example.com/");
+            client.BaseAddress = new Uri("http://example.com/");
 
             return client;
         }

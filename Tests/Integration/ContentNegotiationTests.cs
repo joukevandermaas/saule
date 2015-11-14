@@ -6,7 +6,7 @@ using Saule;
 using Tests.Helpers;
 using Xunit;
 
-namespace Tests.SpecificationConformity
+namespace Tests.Integration
 {
     public class ContentNegotiationTests : IClassFixture<JsonApiServer>
     {
