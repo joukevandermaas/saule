@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Saule.Queries.Sorting;
 
 namespace Saule.Queries.Pagination
 {
@@ -41,27 +43,12 @@ namespace Saule.Queries.Pagination
 
         private static IQueryable OrderById(IQueryable queryable)
         {
-            var funcType = typeof(Func<,>).MakeGenericType(queryable.ElementType, typeof(object));
-            var param = Expression.Parameter(queryable.ElementType, "i");
-            var property = Expression.Property(param, "Id");
+            var sorting = new SortingContext(new[]
+            {
+                new KeyValuePair<string, string>(Constants.SortingQueryName, "id")
+            });
 
-            var expressionFactory = typeof(Expression).GetMethods()
-                .Where(m => m.Name == "Lambda")
-                .Select(m => new
-                {
-                    Method = m,
-                    Params = m.GetParameters(),
-                    Args = m.GetGenericArguments()
-                })
-                .Where(x => x.Params.Length == 2 && x.Args.Length == 1)
-                .Select(x => x.Method)
-                .First()
-                .MakeGenericMethod(funcType);
-
-            var expression = expressionFactory.Invoke(null, new object[] { property, new[] { param } });
-
-            var ordered = queryable.ApplyQuery(QueryMethod.OrderBy, expression) as IQueryable;
-            return ordered;
+            return Query.ApplySorting(queryable, sorting) as IQueryable;
         }
     }
 }
