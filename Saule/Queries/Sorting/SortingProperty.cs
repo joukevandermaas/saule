@@ -5,7 +5,7 @@
         public SortingProperty(string value)
         {
             Direction = FindSortingDirection(value);
-            Name = StripSyntax(value);
+            Name = StripSyntax(value).ToPascalCase();
         }
 
         public string Name { get; }

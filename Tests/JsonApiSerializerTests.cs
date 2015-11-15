@@ -129,6 +129,29 @@ namespace Tests
             Assert.Equal("National", result["data"]["attributes"].Value<string>("location"));
         }
 
+        [Fact(DisplayName = "Applies sorting before pagination")]
+        public void QueryOrderCorrect()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowUserQuery = true,
+                Paginate = true,
+                ItemsPerPage = 10
+            };
+
+            var people = GetPeople(100).AsQueryable(); 
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=-id"));
+            _output.WriteLine(result.ToString());
+
+            var ids = ((JArray) result["data"]).Select(t => t["id"].Value<string>());
+            var expected = Enumerable.Range(0, 100)
+                .OrderByDescending(i => i)
+                .Take(10)
+                .Select(i => i.ToString());
+
+            Assert.Equal(expected, ids);
+        }
+
         private static IEnumerable<Person> GetPeople(int count)
         {
             var random = new Random();

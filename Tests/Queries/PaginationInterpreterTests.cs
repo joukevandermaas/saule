@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Saule;
 using Saule.Queries;
 using Saule.Queries.Pagination;
+using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 
@@ -25,7 +23,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Orders queryables before pagination")]
         public void OrdersQueryables()
         {
-            var obj = new NotOrdered<Person>(GetPeopleDescending(99).Take(100).AsQueryable());
+            var obj = new NotOrderedQueryable<Person>(GetPeopleDescending(99).Take(100).AsQueryable());
 
             var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
@@ -70,7 +68,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not order already ordered queryable")]
         public void RespectsOrderedQueryable()
         {
-            var obj = new NotOrdered<Person>(GetPeople().Take(100).AsQueryable())
+            var obj = new NotOrderedQueryable<Person>(GetPeople().Take(100).AsQueryable())
                 .OrderByDescending(p => p.Id);
             var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
@@ -100,33 +98,6 @@ namespace Tests.Queries
             {
                 yield return new Person(prefill: true, id: i--.ToString());
             }
-        }
-
-        /// <summary>
-        /// The queryable returned by Enumerable.AsQueryable() is ordered
-        /// by default, so it cannot be used in these tests.
-        /// </summary>
-        private class NotOrdered<T> : IQueryable<T>
-        {
-            private readonly IQueryable<T> _impl;
-
-            public NotOrdered(IQueryable<T> impl)
-            {
-                _impl = impl;
-            }
-            public IEnumerator<T> GetEnumerator()
-            {
-                return _impl.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public Expression Expression => _impl.Expression;
-            public Type ElementType => _impl.ElementType;
-            public IQueryProvider Provider => _impl.Provider;
         }
     }
 }

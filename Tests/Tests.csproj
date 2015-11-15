@@ -103,7 +103,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\NotOrderedQueryable.cs" />
     <Compile Include="Queries\PaginationInterpreterTests.cs" />
+    <Compile Include="Queries\SortingInterpreterTests.cs" />
     <Compile Include="Queries\PaginationQueryTests.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilderTests.cs" />
     <Compile Include="Serialization\UrlConstructionTests.cs" />
