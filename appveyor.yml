@@ -1,4 +1,4 @@
-version: 1.2.{build}
+version: 1.3.0.{build}
 configuration: Release
 assembly_info:
   patch: true
@@ -8,6 +8,8 @@ assembly_info:
   assembly_informational_version: '{version}'
 install:
 - ps: nuget restore
+before_build:
+- ps: .\set-version.ps1
 build:
   publish_nuget: true
   verbosity: minimal
@@ -17,3 +19,18 @@ deploy:
     secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
   on:
     branch: master
+- provider: NuGet
+  api_key:
+    secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
+  on:
+    appveyor_repo_tag: true
+- release: saule-v$(appveyor_build_version)
+  description: ''
+  provider: GitHub
+  auth_token:
+    secure: 00qfkOL3Upz61CDrcEkLV+Vnn2gY4zypijGU3oUXeyxI8pNYElkLMJGzgSOEcVnH
+  artifact: /.*\.nupkg/
+  draft: false
+  prerelease: false
+  on:
+    appveyor_repo_tag: true
