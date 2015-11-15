@@ -72,9 +72,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
+    <Compile Include="Queries\Lambda.cs" />
+    <Compile Include="Queries\Query.cs" />
+    <Compile Include="Queries\QueryContext.cs" />
+    <Compile Include="Queries\SortingInterpreter.cs" />
+    <Compile Include="Queries\Sorting\SortingContext.cs" />
+    <Compile Include="Queries\Sorting\SortingDirection.cs" />
+    <Compile Include="Queries\Sorting\SortingProperty.cs" />
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />
@@ -83,11 +91,11 @@
     <Compile Include="Http\ReturnsResourceAttribute.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatter.cs" />
     <Compile Include="RelationshipKind.cs" />
-    <Compile Include="Queries\PaginationContext.cs" />
-    <Compile Include="Queries\PaginationInterpreter.cs" />
+    <Compile Include="Queries\Pagination\PaginationContext.cs" />
+    <Compile Include="Queries\Pagination\PaginationInterpreter.cs" />
     <Compile Include="Queries\QueryableExtensions.cs" />
     <Compile Include="Queries\QueryMethod.cs" />
-    <Compile Include="Queries\PaginationQuery.cs" />
+    <Compile Include="Queries\Pagination\PaginationQuery.cs" />
     <Compile Include="Serialization\ApiError.cs" />
     <Compile Include="ResourceAttribute.cs" />
     <Compile Include="ResourceRelationship.cs" />

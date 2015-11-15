@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 
 namespace Saule.Serialization
 {

@@ -7,54 +7,79 @@ using System.Reflection;
 
 namespace Saule.Queries
 {
-    internal class QueryMethod
+    internal sealed class QueryMethod
     {
-        private readonly MethodInfo _enumerable;
         private readonly MethodInfo _queryable;
+        private readonly MethodInfo _enumerable;
+        private readonly QueryType _queryType;
 
-        private QueryMethod(MethodInfo queryable, MethodInfo enumerable)
+        private QueryMethod(MethodInfo queryable, MethodInfo enumerable, QueryType queryType)
         {
             _queryable = queryable;
             _enumerable = enumerable;
+            _queryType = queryType;
+        }
+
+        private enum QueryType
+        {
+            Simple,
+            Func
         }
 
         // This idea was borrowed from the OData repo. See the following url:
         // https://github.com/OData/WebApi/blob/master/OData/src/System.Web.Http.OData/OData/ExpressionHelperMethods.cs
         public static QueryMethod Skip => new QueryMethod(
             GetGenericMethodInfo(_ => default(IQueryable<int>).Skip(default(int))),
-            GetGenericMethodInfo(_ => default(IEnumerable<int>).Skip(default(int))));
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).Skip(default(int))),
+            QueryType.Simple);
 
         public static QueryMethod Take => new QueryMethod(
             GetGenericMethodInfo(_ => default(IQueryable<int>).Take(default(int))),
-            GetGenericMethodInfo(_ => default(IEnumerable<int>).Take(default(int))));
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).Take(default(int))),
+            QueryType.Simple);
 
-        public static QueryMethod OrderBy => new OrderByQueryMethod();
+        public static QueryMethod OrderBy => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IQueryable<int>).OrderBy(default(Expression<Func<int, int>>))),
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).OrderBy(default(Func<int, int>))),
+            QueryType.Func);
+
+        public static QueryMethod OrderByDescending => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IQueryable<int>).OrderByDescending(default(Expression<Func<int, int>>))),
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).OrderByDescending(default(Func<int, int>))),
+            QueryType.Func);
+
+        public static QueryMethod ThenBy => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IOrderedQueryable<int>).ThenBy(default(Expression<Func<int, int>>))),
+            GetGenericMethodInfo(_ => default(IOrderedEnumerable<int>).ThenBy(default(Func<int, int>))),
+            QueryType.Func);
+
+        public static QueryMethod ThenByDescending => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IOrderedQueryable<int>).ThenByDescending(default(Expression<Func<int, int>>))),
+            GetGenericMethodInfo(_ => default(IOrderedEnumerable<int>).ThenByDescending(default(Func<int, int>))),
+            QueryType.Func);
 
         public object ApplyTo(IQueryable queryable, params object[] arguments)
         {
-            return ApplyToInternal(_queryable, new[] { queryable }.Concat(arguments).ToArray());
+            var invokeArgs = new[] { queryable }.Concat(arguments).ToArray();
+            var typeArguments = GetTypeArguments(invokeArgs);
+            var typed = _queryable.MakeGenericMethod(typeArguments);
+            return typed.Invoke(null, invokeArgs);
         }
 
         public object ApplyTo(IEnumerable enumerable, params object[] arguments)
         {
-            return ApplyToInternal(_enumerable, new[] { enumerable }.Concat(arguments).ToArray());
-        }
+            if (_queryType == QueryType.Func)
+            {
+                // we need to compile the expression
+                var func = (LambdaExpression)arguments[0];
+                var compiled = func.Compile();
+                arguments[0] = compiled;
+            }
 
-        protected static Type[] GetTypeArguments(object o)
-        {
-            var enumerable = o // IQueryable<> extends IEnumerable<>
-                .GetType()
-                .GetInterfaces()
-                .Where(i => i.IsGenericType)
-                .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
-            return enumerable.GetGenericArguments();
-        }
-
-        protected virtual object ApplyToInternal(MethodInfo method, object[] arguments)
-        {
-            var typeArguments = GetTypeArguments(arguments[0]);
-            var typed = method.MakeGenericMethod(typeArguments);
-            return typed.Invoke(null, arguments);
+            var invokeArgs = new[] { enumerable }.Concat(arguments).ToArray();
+            var typeArguments = GetTypeArguments(invokeArgs);
+            var typed = _enumerable.MakeGenericMethod(typeArguments);
+            return typed.Invoke(null, invokeArgs);
         }
 
         private static MethodInfo GetGenericMethodInfo<TReturn>(Expression<Func<object, TReturn>> expression)
@@ -69,23 +94,32 @@ namespace Saule.Queries
             return (lambdaExpression?.Body as MethodCallExpression)?.Method.GetGenericMethodDefinition();
         }
 
-        private class OrderByQueryMethod : QueryMethod
+        private Type[] GetTypeArguments(params object[] arguments)
         {
-            public OrderByQueryMethod()
-                : base(
-                GetGenericMethodInfo(_ => default(IQueryable<int>).OrderBy(default(Expression<Func<int, int>>))),
-                GetGenericMethodInfo(_ => default(IQueryable<int>).OrderBy(default(Expression<Func<int, int>>))))
+            switch (_queryType)
             {
-            }
+                case QueryType.Simple:
+                    var enumerable = arguments[0] // IQueryable<> extends IEnumerable<>
+                        .GetType()
+                        .GetInterfaces()
+                        .Where(i => i.IsGenericType)
+                        .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
+                    return enumerable.GetGenericArguments();
 
-            protected override object ApplyToInternal(MethodInfo method, object[] arguments)
-            {
-                // Type params are the same as the func in the expression.
-                // (arguments[0] is Expression<Func<SomeType, object>>)
-                var typeParams = arguments[1].GetType().GenericTypeArguments[0].GenericTypeArguments;
-                var typed = method.MakeGenericMethod(typeParams);
+                case QueryType.Func:
+                    // Type params are the same as the func in the expression.
+                    // (arguments[1] is Expression<Func<SomeType, object>> or
+                    // Func<SomeType, object>)
+                    var type = arguments[1].GetType();
+                    if (typeof(Expression).IsAssignableFrom(type))
+                    {
+                        type = type.GenericTypeArguments[0];
+                    }
 
-                return typed.Invoke(null, arguments);
+                    return type.GenericTypeArguments;
+
+                default:
+                    throw new InvalidOperationException("Unable to apply user query.");
             }
         }
     }

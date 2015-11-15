@@ -2,6 +2,7 @@
 using System.Linq;
 using Saule;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Xunit;
 
 namespace Tests.Queries

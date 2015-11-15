@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Saule.Queries
+namespace Saule.Queries.Pagination
 {
     internal class PaginationContext
     {

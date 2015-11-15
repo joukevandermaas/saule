@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Saule;
+using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +26,7 @@ namespace Tests
         public void HasAContract()
         {
             var target = new JsonApiSerializer<PersonResource>();
-            Assert.Throws<ArgumentNullException>(() => target.Serialize(new Person(), null));
+            Assert.Throws<ArgumentNullException>(() => target.Serialize(Get.Person(), null));
         }
 
         [Fact(DisplayName = "Serializes Exceptions as errors")]
@@ -60,7 +61,7 @@ namespace Tests
                 ItemsPerPage = 5,
                 Paginate = true
             };
-            var people = GetPeople(20).AsQueryable();
+            var people = Get.People(20).AsQueryable();
             var result = target.Serialize(people, DefaultUrl);
 
             _output.WriteLine(result.ToString());
@@ -79,7 +80,7 @@ namespace Tests
                 ItemsPerPage = 2,
                 Paginate = false
             };
-            var people = GetPeople(5);
+            var people = Get.People(5);
             var result = target.Serialize(people, DefaultUrl);
 
             _output.WriteLine(result.ToString());
@@ -90,24 +91,81 @@ namespace Tests
             Assert.NotNull(result["links"]["self"]);
         }
 
+        [Fact(DisplayName = "Applies sorting when allowed by property")]
+        public void AppliesSorting()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowQuery = true
+            };
+
+            // people needs to be > 80 so we always get doubles and we can 
+            // verify the -id properly
+            var people = Get.People(100).AsQueryable();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=+age,-id"));
+            _output.WriteLine(result.ToString());
+
+            var props = ((JArray)result["data"]).Select(t => new
+            {
+                Age = t["attributes"]["age"].Value<int>(),
+                Id = t["id"].Value<string>()
+            }).ToList();
+
+            var expected = props.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
+
+            Assert.Equal(expected, props);
+        }
+
         [Fact(DisplayName = "Uses converters")]
         public void UsesConverters()
         {
             var target = new JsonApiSerializer<CompanyResource>();
             target.JsonConverters.Add(new StringEnumConverter());
-            var result = target.Serialize(new Company(prefill: true), DefaultUrl);
+            var result = target.Serialize(Get.Company(), DefaultUrl);
 
             _output.WriteLine(result.ToString());
 
             Assert.Equal("National", result["data"]["attributes"].Value<string>("location"));
         }
 
-        private static IEnumerable<Person> GetPeople(int count)
+        [Fact(DisplayName = "Applies sorting before pagination")]
+        public void QueryOrderCorrect()
         {
-            for (var i = 0; i < count; i++)
+            var target = new JsonApiSerializer<PersonResource>
             {
-                yield return new Person(prefill: true, id: (i + 1).ToString());
-            }
+                AllowQuery = true,
+                Paginate = true,
+                ItemsPerPage = 10
+            };
+
+            var people = Get.People(100).AsQueryable();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=-id"));
+            _output.WriteLine(result.ToString());
+
+            var ids = ((JArray)result["data"]).Select(t => t["id"].Value<string>());
+            var expected = Enumerable.Range(0, 100)
+                .OrderByDescending(i => i)
+                .Take(10)
+                .Select(i => i.ToString());
+
+            Assert.Equal(expected, ids);
+        }
+
+        [Fact(DisplayName = "Gives useful error when sorting on non-existing property")]
+        public void GivesUsefulError()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowQuery = true
+            };
+
+            var people = Get.People(100).AsQueryable();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=fail-me"));
+            _output.WriteLine(result.ToString());
+
+            var error = result["errors"][0];
+
+            Assert.Equal("Attribute 'fail-me' not found.", error["title"].Value<string>());
         }
     }
 }

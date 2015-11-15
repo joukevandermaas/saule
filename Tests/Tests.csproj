@@ -84,6 +84,7 @@
     <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Experiments.cs" />
+    <Compile Include="Helpers\Get.cs" />
     <Compile Include="Helpers\HttpClientExtensions.cs" />
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Models\Company.cs" />
@@ -103,7 +104,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\NotOrderedQueryable.cs" />
     <Compile Include="Queries\PaginationInterpreterTests.cs" />
+    <Compile Include="Queries\SortingInterpreterTests.cs" />
     <Compile Include="Queries\PaginationQueryTests.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilderTests.cs" />
     <Compile Include="Serialization\UrlConstructionTests.cs" />

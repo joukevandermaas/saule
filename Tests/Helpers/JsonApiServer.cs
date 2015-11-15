@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Routing;
 using Saule;
 using Saule.Http;
 
@@ -20,11 +21,7 @@ namespace Tests.Helpers
         {
             var config = new HttpConfiguration();
             config.Formatters.Add(formatter);
-            config.Routes.MapHttpRoute(
-                 name: "DefaultApi",
-                 routeTemplate: "{controller}/{id}",
-                 defaults: new { id = RouteParameter.Optional }
-             );
+            config.MapHttpAttributeRoutes(new DefaultDirectRouteProvider());
 
             Server = new HttpServer(config);
         }
