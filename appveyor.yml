@@ -8,6 +8,8 @@ assembly_info:
   assembly_informational_version: '{version}'
 install:
 - ps: nuget restore
+before_build:
+- ps: .\set-version.ps1
 build:
   publish_nuget: true
   verbosity: minimal
@@ -17,6 +19,10 @@ deploy:
     secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
   on:
     branch: master
+- provider: NuGet
+  api_key:
+    secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
+  on:
     appveyor_repo_tag: true
 - release: saule-v$(appveyor_build_version)
   description: ''
@@ -27,5 +33,4 @@ deploy:
   draft: false
   prerelease: false
   on:
-    branch: master
     appveyor_repo_tag: true
