@@ -11,7 +11,14 @@ namespace Saule.Queries
     {
         public static Expression SelectProperty(Type type, string property)
         {
-            var returnType = type.GetProperty(property).PropertyType;
+            var returnType = type.GetProperty(property)?.PropertyType;
+            if (returnType == null)
+            {
+                throw new ArgumentException(
+                    $"Property {property} does not exist.",
+                    nameof(property));
+            }
+
             var funcType = typeof(Func<,>).MakeGenericType(type, returnType);
             var param = Expression.Parameter(type, "i");
             var property1 = Expression.Property(param, property);

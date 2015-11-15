@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -103,11 +101,11 @@ namespace Tests
 
             // people needs to be > 80 so we always get doubles and we can 
             // verify the -id properly
-            var people = Get.People(100).AsQueryable(); 
+            var people = Get.People(100).AsQueryable();
             var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=+age,-id"));
             _output.WriteLine(result.ToString());
 
-            var props = ((JArray) result["data"]).Select(t => new
+            var props = ((JArray)result["data"]).Select(t => new
             {
                 Age = t["attributes"]["age"].Value<int>(),
                 Id = t["id"].Value<string>()
@@ -140,17 +138,34 @@ namespace Tests
                 ItemsPerPage = 10
             };
 
-            var people = Get.People(100).AsQueryable(); 
+            var people = Get.People(100).AsQueryable();
             var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=-id"));
             _output.WriteLine(result.ToString());
 
-            var ids = ((JArray) result["data"]).Select(t => t["id"].Value<string>());
+            var ids = ((JArray)result["data"]).Select(t => t["id"].Value<string>());
             var expected = Enumerable.Range(0, 100)
                 .OrderByDescending(i => i)
                 .Take(10)
                 .Select(i => i.ToString());
 
             Assert.Equal(expected, ids);
+        }
+
+        [Fact(DisplayName = "Gives useful error when sorting on non-existing property")]
+        public void GivesUsefulError()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowQuery = true
+            };
+
+            var people = Get.People(100).AsQueryable();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=fail-me"));
+            _output.WriteLine(result.ToString());
+
+            var error = result["errors"][0];
+
+            Assert.Equal("Attribute 'fail-me' not found.", error["title"].Value<string>());
         }
     }
 }

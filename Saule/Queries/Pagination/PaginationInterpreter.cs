@@ -43,11 +43,20 @@ namespace Saule.Queries.Pagination
 
         private static IQueryable OrderById(IQueryable queryable)
         {
-            var sorted = queryable.ApplyQuery(
-                QueryMethod.OrderBy,
-                Lambda.SelectProperty(queryable.ElementType, "Id"));
-
-            return sorted as IQueryable;
+            try
+            {
+                var sorted = queryable.ApplyQuery(
+                    QueryMethod.OrderBy,
+                    Lambda.SelectProperty(queryable.ElementType, "Id"));
+                return sorted as IQueryable;
+            }
+            catch (ArgumentException ex)
+            {
+                // property id not found
+                throw new JsonApiException(
+                    $"Type {queryable.ElementType.Name} does not have a property called 'Id'.",
+                    ex);
+            }
         }
     }
 }

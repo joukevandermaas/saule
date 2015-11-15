@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using Saule.Queries.Sorting;
 
@@ -51,22 +52,41 @@ namespace Saule.Queries
 
         private static IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
         {
-            queryable = queryable.ApplyQuery(
-                GetQueryMethod(property.Direction, isFirst),
-                Lambda.SelectProperty(queryable.ElementType, property.Name))
-                as IQueryable;
-            return queryable;
+            try
+            {
+                queryable = queryable.ApplyQuery(
+                    GetQueryMethod(property.Direction, isFirst),
+                    Lambda.SelectProperty(queryable.ElementType, property.Name))
+                    as IQueryable;
+                return queryable;
+            }
+            catch (ArgumentException ex)
+            {
+                throw MissingProperty(property.Name, ex);
+            }
         }
 
         private static IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
         {
-            var elementType = enumerable.GetType().GetGenericArguments().First();
+            try
+            {
+                var elementType = enumerable.GetType().GetGenericArguments().First();
 
-            enumerable = enumerable.ApplyQuery(
-                GetQueryMethod(property.Direction, isFirst),
-                Lambda.SelectProperty(elementType, property.Name))
-                as IEnumerable;
-            return enumerable;
+                enumerable = enumerable.ApplyQuery(
+                    GetQueryMethod(property.Direction, isFirst),
+                    Lambda.SelectProperty(elementType, property.Name))
+                    as IEnumerable;
+                return enumerable;
+            }
+            catch (ArgumentException ex)
+            {
+                throw MissingProperty(property.Name, ex);
+            }
+        }
+
+        private static JsonApiException MissingProperty(string property, Exception ex)
+        {
+            return new JsonApiException($"Attribute '{property.ToDashed()}' not found.", ex);
         }
 
         private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)
