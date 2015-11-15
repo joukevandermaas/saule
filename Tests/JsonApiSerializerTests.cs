@@ -97,7 +97,7 @@ namespace Tests
         {
             var target = new JsonApiSerializer<PersonResource>
             {
-                AllowUserQuery = true
+                AllowQuery = true
             };
 
             // people needs to be > 80 so we always get doubles and we can 
@@ -134,7 +134,7 @@ namespace Tests
         {
             var target = new JsonApiSerializer<PersonResource>
             {
-                AllowUserQuery = true,
+                AllowQuery = true,
                 Paginate = true,
                 ItemsPerPage = 10
             };

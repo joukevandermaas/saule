@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Saule.Http;
@@ -11,29 +12,44 @@ namespace Tests.Controllers
     public class PeopleController : ApiController
     {
         [HttpGet]
+        [Route("people/{id}")]
         public Person GetPerson(string id)
         {
             return new Person(prefill: true, id: id);
         }
 
         [HttpGet]
-        public IEnumerable<Person> GetPeople()
+        [AllowsQuery]
+        [Route("people/query")]
+        public IEnumerable<Person> QueryPeople()
         {
-            return GetPersonEnumerable().Take(100);
+            return GetPeople();
         }
 
         [HttpPost]
+        [Route("people/{id}")]
         public Person PostPerson(string id, Person person)
         {
             return person;
         }
 
+        [HttpGet]
+        [Route("people")]
+        public IEnumerable<Person> GetPeople()
+        {
+            return GetPersonEnumerable().Take(100);
+        }
+
         private static IEnumerable<Person> GetPersonEnumerable()
         {
+            var random = new Random();
             var i = 0;
             while (true)
             {
-                yield return new Person(prefill: true, id: i++.ToString());
+                yield return new Person(prefill: true, id: i++.ToString())
+                {
+                    Age = random.Next(80)
+                };
             }
         }
     }

@@ -10,19 +10,21 @@ namespace Tests.Controllers
     public class CompaniesController : ApiController
     {
         [HttpGet]
+        [Route("companies/{id}")]
         public Company GetCompany(string id)
         {
             return new Company(prefill: true);
         }
 
         [HttpGet]
-        [Paginated]
+        [Paginated(PerPage = 12)]
+        [Route("companies")]
         public IEnumerable<Company> GetCompanies()
         {
             return GetEnumerable().Take(100);
         }
 
-        private IEnumerable<Company> GetEnumerable()
+        private static IEnumerable<Company> GetEnumerable()
         {
             var i = 0;
             while (true)

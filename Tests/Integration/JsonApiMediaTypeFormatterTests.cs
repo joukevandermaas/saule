@@ -110,7 +110,47 @@ namespace Tests.Integration
                 var result = await client.GetJsonResponseAsync("/companies/");
                 _output.WriteLine(result.ToString());
 
-                Assert.Equal(10, (result["data"] as JArray)?.Count);
+                Assert.Equal(12, (result["data"] as JArray)?.Count);
+            }
+        }
+
+        [Fact(DisplayName = "Applies sorting when appropriate")]
+        public async Task AppliesSorting()
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/people/query?sort=age");
+                _output.WriteLine(result.ToString());
+
+                var ages = ((JArray) result["data"])
+                    .Select(p => p["attributes"]["age"].Value<int>())
+                    .ToList();
+                var sorted = ages.OrderBy(a => a).ToList();
+
+                Assert.Equal(sorted, ages);
+            }
+        }
+
+        [Fact(DisplayName = "Does not apply sorting when not allowed")]
+        public async Task AppliesSortingConditionally()
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/people?sort=age");
+                _output.WriteLine(result.ToString());
+
+                var ages = ((JArray) result["data"])
+                    .Select(p => p["attributes"]["age"].Value<int>())
+                    .ToList();
+                var sorted = ages.OrderBy(a => a).ToList();
+
+                Assert.NotEqual(sorted, ages);
             }
         }
 

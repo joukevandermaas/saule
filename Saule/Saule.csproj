@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />

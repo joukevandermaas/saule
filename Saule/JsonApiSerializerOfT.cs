@@ -46,7 +46,7 @@ namespace Saule
         /// <summary>
         /// True if users are allowed to query this response, otherwise false.
         /// </summary>
-        public bool AllowUserQuery
+        public bool AllowQuery
         {
             get { return _serializer.AllowUserQuery; }
             set { _serializer.AllowUserQuery = value; }
@@ -92,7 +92,7 @@ namespace Saule
                 context.Pagination = new PaginationContext(keyValuePairs, ItemsPerPage);
             }
 
-            if (AllowUserQuery)
+            if (AllowQuery)
             {
                 context.Sorting = new SortingContext(keyValuePairs);
             }

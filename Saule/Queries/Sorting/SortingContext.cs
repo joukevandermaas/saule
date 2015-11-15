@@ -14,6 +14,10 @@ namespace Saule.Queries.Sorting
 
                 Properties = props.Select(p => new SortingProperty(p));
             }
+            else
+            {
+                Properties = new SortingProperty[0];
+            }
         }
 
         public IEnumerable<SortingProperty> Properties { get; }
