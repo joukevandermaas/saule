@@ -4,6 +4,7 @@ using System.Linq;
 using Saule;
 using Saule.Queries;
 using Saule.Queries.Sorting;
+using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
         public void IgnoresNonEnumerables()
         {
-            var obj = new Person(prefill: true);
+            var obj = Get.Person();
             Query.ApplySorting(obj, DefaultContext);
         }
 
@@ -47,7 +48,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Applies expected sorting to queryables")]
         public void AppliesSorting()
         {
-            var people = GetPeople().Take(100).ToList().AsQueryable();
+            var people = Get.People(100).ToList().AsQueryable();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
 
             var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
@@ -59,7 +60,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Applies expected sorting to enumerables")]
         public void AppliesSortingToEnumerables()
         {
-            var people = GetPeople().Take(100).ToList();
+            var people = Get.People(100).ToList();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
 
             var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
@@ -72,26 +73,6 @@ namespace Tests.Queries
         {
             yield return new KeyValuePair<string, string>(
                 Constants.SortingQueryName, query);
-        }
-        private static IEnumerable<Person> GetPeople()
-        {
-            var random = new Random();
-            var i = 0;
-            while (true)
-            {
-                yield return new Person(prefill: true, id: i++.ToString())
-                {
-                    Age = random.Next(80)
-                };
-            }
-        }
-        private static IEnumerable<Person> GetPeopleDescending(int start)
-        {
-            var i = start;
-            while (true)
-            {
-                yield return new Person(prefill: true, id: i--.ToString());
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using Tests.Helpers;
 using Tests.Models;
 
 namespace Tests.Controllers
@@ -8,7 +9,7 @@ namespace Tests.Controllers
         [HttpGet]
         public Person GetPerson(string id)
         {
-            return new Person(prefill: true, id: id);
+            return Get.Person(id);
         }
     }
 }

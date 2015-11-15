@@ -16,14 +16,16 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
         public void IgnoresNonEnumerables()
         {
-            var obj = new Person(prefill: true);
+            var obj = Get.Person();
             Query.ApplyPagination(obj, DefaultContext);
         }
 
         [Fact(DisplayName = "Orders queryables before pagination")]
         public void OrdersQueryables()
         {
-            var obj = new NotOrderedQueryable<Person>(GetPeopleDescending(99).Take(100).AsQueryable());
+            var obj = new NotOrderedQueryable<Person>(Get.People(100)
+                .OrderByDescending(p => p.Id)
+                .AsQueryable());
 
             var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
@@ -35,18 +37,21 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not order enumerables before pagination")]
         public void DoesNotOrderEnumerables()
         {
-            var obj = GetPeopleDescending(100).Take(100);
+            var obj = new NotOrderedQueryable<Person>(Get.People(100)
+                .OrderByDescending(p => p.Id)
+                .AsQueryable()).ToList();
+
             var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
 
-            Assert.Equal("100", result?.FirstOrDefault()?.Id);
-            Assert.Equal("99", result?.Skip(1).FirstOrDefault()?.Id);
+            Assert.Equal("99", result?.FirstOrDefault()?.Id);
+            Assert.Equal("98", result?.Skip(1).FirstOrDefault()?.Id);
         }
 
         [Fact(DisplayName = "Takes the correct elements based on the parameters")]
         public void TakesCorrectElements()
         {
-            var obj = GetPeople().Take(100);
+            var obj = Get.People(100);
             var context = new PaginationContext(GetQueryForPage(1), 10);
             var result = (Query.ApplyPagination(obj, context)
                 as IEnumerable<Person>)?.ToList();
@@ -68,7 +73,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Does not order already ordered queryable")]
         public void RespectsOrderedQueryable()
         {
-            var obj = new NotOrderedQueryable<Person>(GetPeople().Take(100).AsQueryable())
+            var obj = new NotOrderedQueryable<Person>(Get.People(100).AsQueryable())
                 .OrderByDescending(p => p.Id);
             var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
@@ -80,24 +85,6 @@ namespace Tests.Queries
         private static IEnumerable<KeyValuePair<string, string>> GetQueryForPage(int number)
         {
             yield return new KeyValuePair<string, string>(Constants.PageNumberQueryName, number.ToString());
-        }
-
-        private static IEnumerable<Person> GetPeople()
-        {
-            var i = 0;
-            while (true)
-            {
-                yield return new Person(prefill: true, id: i++.ToString());
-            }
-        }
-
-        private static IEnumerable<Person> GetPeopleDescending(int start)
-        {
-            var i = start;
-            while (true)
-            {
-                yield return new Person(prefill: true, id: i--.ToString());
-            }
         }
     }
 }

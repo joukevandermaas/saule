@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tests.Helpers;
 
 namespace Tests.Models
 {
@@ -8,7 +9,7 @@ namespace Tests.Models
         public string LastName => "Smith";
         public int Age => 34;
         public int NumberOfLegs => 2;
-        public Company Job => new Company();
+        public Company Job => Get.Company();
         public IEnumerable<Person> Friends => new List<Person>();
     }
 }

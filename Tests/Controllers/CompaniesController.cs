@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Http;
 using Saule.Http;
+using Tests.Helpers;
 using Tests.Models;
 
 namespace Tests.Controllers
@@ -13,7 +14,7 @@ namespace Tests.Controllers
         [Route("companies/{id}")]
         public Company GetCompany(string id)
         {
-            return new Company(prefill: true);
+            return Get.Company(id);
         }
 
         [HttpGet]
@@ -21,16 +22,7 @@ namespace Tests.Controllers
         [Route("companies")]
         public IEnumerable<Company> GetCompanies()
         {
-            return GetEnumerable().Take(100);
-        }
-
-        private static IEnumerable<Company> GetEnumerable()
-        {
-            var i = 0;
-            while (true)
-            {
-                yield return new Company(prefill: true, id: i++.ToString());
-            }
+            return Get.Companies(100);
         }
     }
 }

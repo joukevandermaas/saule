@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
+using Tests.Helpers;
 
 namespace Tests.Models
 {
     public class Person
     {
-        public Person()
-        {
-        }
-
         public Person(bool prefill = false, string id = "123")
         {
             Id = id;
@@ -17,7 +14,7 @@ namespace Tests.Models
             LastName = "Smith";
             Age = 34;
             NumberOfLegs = 4;
-            Job = new Company(true);
+            Job = Get.Company();
             Friends = new List<Person>();
         }
 

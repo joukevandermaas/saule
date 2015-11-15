@@ -14,7 +14,7 @@ namespace Tests.Serialization
     {
         private readonly ITestOutputHelper _output;
 
-        private static Person DefaultObject => new Person(prefill: true);
+        private static Person DefaultObject => Get.Person();
         private static ApiResource DefaultResource => new PersonResource();
         private static Uri DefaultUrl => new Uri("http://example.com/");
         private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
@@ -54,7 +54,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Uses type name from model definition")]
         public void UsesTitle()
         {
-            var company = new Company(prefill: true);
+            var company = Get.Company();
             var target = new ResourceSerializer(company, new CompanyResource(),
                 GetUri("/corporations", "456"),
                 DefaultPathBuilder, null);
@@ -114,9 +114,9 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles null relationships and attributes correctly")]
         public void HandlesNullValues()
         {
-            var person = new Person { Id = "45" };
+            var person = new Person(id: "45");
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "45"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -134,13 +134,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes enumerables properly")]
         public void SerializesEnumerables()
         {
-            var people = new[]
-            {
-                new Person(id: "a", prefill: true),
-                new Person(id: "b", prefill: true),
-                new Person(id: "c", prefill: true),
-                new Person(id: "d", prefill: true)
-            };
+            var people = Get.People(5);
             var target = new ResourceSerializer(people, DefaultResource,
                 GetUri(), DefaultPathBuilder, null);
             var result = target.Serialize();
@@ -150,7 +144,7 @@ namespace Tests.Serialization
             var jobLinks = (result["data"] as JArray)?[0]["relationships"]["job"]["links"];
 
             Assert.Equal(1, included?.Count);
-            Assert.Equal("/api/people/a/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/0/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
         }
 
         [Fact(DisplayName = "Document MUST contain at least one: data, errors, meta")]

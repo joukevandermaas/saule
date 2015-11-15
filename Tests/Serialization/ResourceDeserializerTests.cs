@@ -17,26 +17,13 @@ namespace Tests.Serialization
 
         public ResourceDeserializerTests()
         {
-            _person = new Person(prefill: true)
-            {
-                Friends = new[] { new Person(prefill: true, id: "456")
-                {
-                    FirstName = "Sara",
-                    LastName =  "Jones",
-                    Age = 38
-                } }
-            };
-            _people = new[]
-            {
-                new Person(id: "a", prefill: true),
-                new Person(id: "b", prefill: true),
-                new Person(id: "c", prefill: true),
-                new Person(id: "d", prefill: true)
-            };
+            _person = Get.Person();
+            _person.Friends = Get.People(1);
 
+            _people = Get.People(5).ToArray();
             var singleSerializer = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/1"), 
-                new DefaultUrlPathBuilder(), null);
+            _person, new PersonResource(), new Uri("http://example.com/people/1"),
+            new DefaultUrlPathBuilder(), null);
             var multiSerializer = new ResourceSerializer(
                 _people, new PersonResource(), new Uri("http://example.com/people/"),
                 new DefaultUrlPathBuilder(), null);

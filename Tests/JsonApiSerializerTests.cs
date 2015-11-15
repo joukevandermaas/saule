@@ -7,6 +7,7 @@ using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Saule;
+using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,7 +28,7 @@ namespace Tests
         public void HasAContract()
         {
             var target = new JsonApiSerializer<PersonResource>();
-            Assert.Throws<ArgumentNullException>(() => target.Serialize(new Person(), null));
+            Assert.Throws<ArgumentNullException>(() => target.Serialize(Get.Person(), null));
         }
 
         [Fact(DisplayName = "Serializes Exceptions as errors")]
@@ -62,7 +63,7 @@ namespace Tests
                 ItemsPerPage = 5,
                 Paginate = true
             };
-            var people = GetPeople(20).AsQueryable();
+            var people = Get.People(20).AsQueryable();
             var result = target.Serialize(people, DefaultUrl);
 
             _output.WriteLine(result.ToString());
@@ -81,7 +82,7 @@ namespace Tests
                 ItemsPerPage = 2,
                 Paginate = false
             };
-            var people = GetPeople(5);
+            var people = Get.People(5);
             var result = target.Serialize(people, DefaultUrl);
 
             _output.WriteLine(result.ToString());
@@ -102,7 +103,7 @@ namespace Tests
 
             // people needs to be > 80 so we always get doubles and we can 
             // verify the -id properly
-            var people = GetPeople(100).AsQueryable(); 
+            var people = Get.People(100).AsQueryable(); 
             var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=+age,-id"));
             _output.WriteLine(result.ToString());
 
@@ -122,7 +123,7 @@ namespace Tests
         {
             var target = new JsonApiSerializer<CompanyResource>();
             target.JsonConverters.Add(new StringEnumConverter());
-            var result = target.Serialize(new Company(prefill: true), DefaultUrl);
+            var result = target.Serialize(Get.Company(), DefaultUrl);
 
             _output.WriteLine(result.ToString());
 
@@ -139,7 +140,7 @@ namespace Tests
                 ItemsPerPage = 10
             };
 
-            var people = GetPeople(100).AsQueryable(); 
+            var people = Get.People(100).AsQueryable(); 
             var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=-id"));
             _output.WriteLine(result.ToString());
 
@@ -150,18 +151,6 @@ namespace Tests
                 .Select(i => i.ToString());
 
             Assert.Equal(expected, ids);
-        }
-
-        private static IEnumerable<Person> GetPeople(int count)
-        {
-            var random = new Random();
-            for (var i = 0; i < count; i++)
-            {
-                yield return new Person(prefill: true, id: (i + 1).ToString())
-                {
-                    Age = random.Next(80)
-                };
-            }
         }
     }
 }
