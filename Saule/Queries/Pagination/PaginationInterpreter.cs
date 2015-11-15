@@ -43,12 +43,11 @@ namespace Saule.Queries.Pagination
 
         private static IQueryable OrderById(IQueryable queryable)
         {
-            var sorting = new SortingContext(new[]
-            {
-                new KeyValuePair<string, string>(Constants.SortingQueryName, "id")
-            });
+            var sorted = queryable.ApplyQuery(
+                QueryMethod.OrderBy,
+                Lambda.SelectProperty(queryable.ElementType, "Id"));
 
-            return Query.ApplySorting(queryable, sorting) as IQueryable;
+            return sorted as IQueryable;
         }
     }
 }

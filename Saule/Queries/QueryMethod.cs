@@ -68,6 +68,14 @@ namespace Saule.Queries
 
         public object ApplyTo(IEnumerable enumerable, params object[] arguments)
         {
+            if (_queryType == QueryType.Func)
+            {
+                // we need to compile the expression
+                var func = (LambdaExpression)arguments[0];
+                var compiled = func.Compile();
+                arguments[0] = compiled;
+            }
+
             var invokeArgs = new[] { enumerable }.Concat(arguments).ToArray();
             var typeArguments = GetTypeArguments(invokeArgs);
             var typed = _enumerable.MakeGenericMethod(typeArguments);
@@ -100,11 +108,16 @@ namespace Saule.Queries
 
                 case QueryType.Func:
                     // Type params are the same as the func in the expression.
-                    // (arguments[0] is Expression<Func<SomeType, object>>)
-                    return arguments[1]
-                        .GetType()
-                        .GenericTypeArguments[0]
-                        .GenericTypeArguments;
+                    // (arguments[1] is Expression<Func<SomeType, object>> or
+                    // Func<SomeType, object>)
+                    var type = arguments[1].GetType();
+                    if (typeof(Expression).IsAssignableFrom(type))
+                    {
+                        type = type.GenericTypeArguments[0];
+                    }
+
+                    return type.GenericTypeArguments;
+
                 default:
                     throw new InvalidOperationException("Unable to apply user query.");
             }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
-using System.Linq.Expressions;
 using Saule.Queries.Sorting;
 
 namespace Saule.Queries
@@ -35,39 +33,40 @@ namespace Saule.Queries
 
         public IEnumerable Apply(IEnumerable enumerable)
         {
-            return null;
+            if (!_context.Properties.Any())
+            {
+                return enumerable;
+            }
+
+            var list = _context.Properties.ToList();
+            enumerable = ApplyProperty(enumerable, list[0], true);
+
+            for (var i = 1; i < list.Count; i++)
+            {
+                enumerable = ApplyProperty(enumerable, list[i], false);
+            }
+
+            return enumerable;
         }
 
         private static IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
         {
             queryable = queryable.ApplyQuery(
                 GetQueryMethod(property.Direction, isFirst),
-                CreatePropertySelector(queryable, property.Name.ToPascalCase()))
+                Lambda.SelectProperty(queryable.ElementType, property.Name))
                 as IQueryable;
             return queryable;
         }
 
-        private static object CreatePropertySelector(IQueryable queryable, string propertyName)
+        private static IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
         {
-            var returnType = queryable.ElementType.GetProperty(propertyName).PropertyType;
-            var funcType = typeof(Func<,>).MakeGenericType(queryable.ElementType, returnType);
-            var param = Expression.Parameter(queryable.ElementType, "i");
-            var property = Expression.Property(param, propertyName);
+            var elementType = enumerable.GetType().GetGenericArguments().First();
 
-            var expressionFactory = typeof(Expression).GetMethods()
-                .Where(m => m.Name == "Lambda")
-                .Select(m => new
-                {
-                    Method = m,
-                    Params = m.GetParameters(),
-                    Args = m.GetGenericArguments()
-                })
-                .Where(x => x.Params.Length == 2 && x.Args.Length == 1)
-                .Select(x => x.Method)
-                .First()
-                .MakeGenericMethod(funcType);
-
-            return expressionFactory.Invoke(null, new object[] { property, new[] { param } });
+            enumerable = enumerable.ApplyQuery(
+                GetQueryMethod(property.Direction, isFirst),
+                Lambda.SelectProperty(elementType, property.Name))
+                as IEnumerable;
+            return enumerable;
         }
 
         private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)

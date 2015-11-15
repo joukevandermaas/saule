@@ -44,7 +44,7 @@ namespace Tests.Queries
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = "Applies expected sorting")]
+        [Fact(DisplayName = "Applies expected sorting to queryables")]
         public void AppliesSorting()
         {
             var people = GetPeople().Take(100).ToList().AsQueryable();
@@ -52,6 +52,18 @@ namespace Tests.Queries
 
             var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
                 as IQueryable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies expected sorting to enumerables")]
+        public void AppliesSortingToEnumerables()
+        {
+            var people = GetPeople().Take(100).ToList();
+            var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
+
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
+                as IEnumerable<Person>;
 
             Assert.Equal(expected, result);
         }
