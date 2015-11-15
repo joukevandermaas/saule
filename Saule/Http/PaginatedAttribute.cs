@@ -9,8 +9,8 @@ using Saule.Queries.Pagination;
 namespace Saule.Http
 {
     /// <summary>
-    /// Indicates that the returned queryable must be paginated. Only works if the action
-    /// method returns <see cref="IQueryable{T}"/>.
+    /// Indicates that the returned collection must be paginated. If the collection
+    /// implements <see cref="IQueryable{T}"/>, the query will be executed efficiently.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class PaginatedAttribute : ActionFilterAttribute
