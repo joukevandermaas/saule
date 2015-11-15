@@ -75,6 +75,8 @@
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
+    <Compile Include="Queries\Query.cs" />
+    <Compile Include="Queries\QueryContext.cs" />
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />

@@ -74,10 +74,10 @@ namespace Saule.Http
 
             _baseUrl = request.RequestUri;
 
-            if (request.Properties.ContainsKey(Constants.PaginationContextPropertyName))
+            if (request.Properties.ContainsKey(Constants.QueryContextPropertyName))
             {
-                var paginationContext = (PaginationContext)request.Properties[Constants.PaginationContextPropertyName];
-                jsonApi.PaginationContext = paginationContext;
+                var queryContext = (QueryContext)request.Properties[Constants.QueryContextPropertyName];
+                jsonApi.QueryContext = queryContext;
             }
 
             if (request.Properties.ContainsKey(Constants.RequestPropertyName))

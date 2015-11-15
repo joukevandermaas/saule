@@ -2,11 +2,11 @@
 {
     public class Company
     {
-        public Company(bool prefill = false)
+        public Company(bool prefill = false, string id = "456")
         {
+            Id = id;
             if (!prefill) return;
 
-            Id = "456";
             Name = "Awesome, Inc.";
             NumberOfEmployees = 24;
             Location = LocationType.National;

@@ -12,9 +12,11 @@ namespace Saule
     {
         public List<JsonConverter> JsonConverters { get; } = new List<JsonConverter>();
 
-        public PaginationContext PaginationContext { get; set; } = null;
+        public QueryContext QueryContext { get; set; } = null;
 
         public IUrlPathBuilder UrlPathBuilder { get; set; } = new DefaultUrlPathBuilder();
+
+        public bool AllowUserQuery { get; set; } = false;
 
         public JToken Serialize(object @object, ApiResource resource, Uri requestUri)
         {
@@ -32,12 +34,18 @@ namespace Saule
                 }
 
                 var dataObject = @object;
-                if (PaginationContext != null)
+                if (QueryContext != null)
                 {
-                    dataObject = PaginationInterpreter.ApplyPaginationIfApplicable(PaginationContext, dataObject);
+                    dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination);
                 }
 
-                var serializer = new ResourceSerializer(dataObject, resource, requestUri, UrlPathBuilder, PaginationContext);
+                var serializer = new ResourceSerializer(
+                    value: dataObject,
+                    type: resource,
+                    baseUrl: requestUri,
+                    urlBuilder: UrlPathBuilder,
+                    paginationContext: QueryContext?.Pagination);
+
                 var jsonSerializer = GetJsonSerializer();
                 return serializer.Serialize(jsonSerializer);
             }

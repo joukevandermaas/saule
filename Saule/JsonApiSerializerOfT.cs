@@ -19,7 +19,7 @@ namespace Saule
         Justification = "Non-generic version exists")]
     public sealed class JsonApiSerializer<T>
             where T : ApiResource, new()
-        {
+    {
         private readonly JsonApiSerializer _serializer;
 
         /// <summary>
@@ -38,12 +38,21 @@ namespace Saule
         /// <summary>
         /// True if responses should be paginated, otherwise false.
         /// </summary>
-        public bool Paginate { get; set; }
+        public bool Paginate { get; set; } = false;
+
+        /// <summary>
+        /// True if users are allowed to query this response, otherwise false.
+        /// </summary>
+        public bool AllowUserQuery
+        {
+            get { return _serializer.AllowUserQuery; }
+            set { _serializer.AllowUserQuery = value; }
+        }
 
         /// <summary>
         /// The number of items per page, if the responses are paginated.
         /// </summary>
-        public int ItemsPerPage { get; set; }
+        public int ItemsPerPage { get; set; } = 10;
 
         /// <summary>
         /// The url path builder to use during serialization.
@@ -69,7 +78,7 @@ namespace Saule
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             var context = new PaginationContext(request.GetQueryNameValuePairs(), ItemsPerPage);
-            _serializer.PaginationContext = context;
+            _serializer.QueryContext = new QueryContext { Pagination = context };
 
             return _serializer.Serialize(@object, new T(), requestUri);
         }

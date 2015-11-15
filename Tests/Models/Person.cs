@@ -10,9 +10,9 @@ namespace Tests.Models
 
         public Person(bool prefill = false, string id = "123")
         {
+            Id = id;
             if (!prefill) return;
 
-            Id = id;
             FirstName = "John";
             LastName = "Smith";
             Age = 34;

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Saule;
 using Saule.Queries;
-using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 
@@ -19,7 +18,7 @@ namespace Tests.Queries
         public void IgnoresNonEnumerables()
         {
             var obj = new Person(prefill: true);
-            PaginationInterpreter.ApplyPaginationIfApplicable(DefaultContext, obj);
+            Query.ApplyPagination(obj, DefaultContext);
         }
 
         [Fact(DisplayName = "Orders queryables before pagination")]
@@ -27,7 +26,7 @@ namespace Tests.Queries
         {
             var obj = new NotOrdered<Person>(GetPeopleDescending(99).Take(100).AsQueryable());
 
-            var result = (PaginationInterpreter.ApplyPaginationIfApplicable(DefaultContext, obj)
+            var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
 
             Assert.Equal("0", result?.FirstOrDefault()?.Id);
@@ -38,7 +37,7 @@ namespace Tests.Queries
         public void DoesNotOrderEnumerables()
         {
             var obj = GetPeopleDescending(100).Take(100);
-            var result = (PaginationInterpreter.ApplyPaginationIfApplicable(DefaultContext, obj)
+            var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
 
             Assert.Equal("100", result?.FirstOrDefault()?.Id);
@@ -50,7 +49,7 @@ namespace Tests.Queries
         {
             var obj = GetPeople().Take(100);
             var context = new PaginationContext(GetQueryForPage(1), 10);
-            var result = (PaginationInterpreter.ApplyPaginationIfApplicable(context, obj)
+            var result = (Query.ApplyPagination(obj, context)
                 as IEnumerable<Person>)?.ToList();
 
             Assert.Equal(10, result?.Count);
@@ -61,7 +60,7 @@ namespace Tests.Queries
         public void WorksOnEmptyEnumerable()
         {
             var obj = Enumerable.Empty<Person>();
-            var result = PaginationInterpreter.ApplyPaginationIfApplicable(DefaultContext, obj)
+            var result = Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>;
 
             Assert.Equal(false, result?.Any());
@@ -72,7 +71,7 @@ namespace Tests.Queries
         {
             var obj = new NotOrdered<Person>(GetPeople().Take(100).AsQueryable())
                 .OrderByDescending(p => p.Id);
-            var result = (PaginationInterpreter.ApplyPaginationIfApplicable(DefaultContext, obj)
+            var result = (Query.ApplyPagination(obj, DefaultContext)
                 as IEnumerable<Person>)?.ToList();
 
             Assert.Equal("99", result?.FirstOrDefault()?.Id);

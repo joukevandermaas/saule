@@ -46,26 +46,30 @@ namespace Saule.Http
             var context = new PaginationContext(
                 actionContext.Request.GetQueryNameValuePairs(),
                 PerPage);
-            actionContext.Request.Properties.Add(Constants.PaginationContextPropertyName, context);
+
+            var query = GetQueryContext(actionContext);
+
+            query.Pagination = context;
             base.OnActionExecuting(actionContext);
         }
 
-        /// <summary>
-        /// See base class documentation.
-        /// </summary>
-        /// <param name="actionExecutedContext">The action context.</param>
-        public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+        private static QueryContext GetQueryContext(HttpActionContext actionContext)
         {
-            var content = actionExecutedContext.Response.Content as ObjectContent;
-            var context = actionExecutedContext.Request.Properties[Constants.PaginationContextPropertyName]
-                as PaginationContext;
+            var hasQuery = actionContext.Request.Properties.ContainsKey(Constants.QueryContextPropertyName);
+            QueryContext query;
 
-            if (content != null)
+            if (hasQuery)
             {
-                content.Value = PaginationInterpreter.ApplyPaginationIfApplicable(context, content.Value);
+                query = actionContext.Request.Properties[Constants.QueryContextPropertyName]
+                    as QueryContext;
+            }
+            else
+            {
+                query = new QueryContext();
+                actionContext.Request.Properties.Add(Constants.QueryContextPropertyName, query);
             }
 
-            base.OnActionExecuted(actionExecutedContext);
+            return query;
         }
     }
 }

@@ -14,25 +14,6 @@ namespace Saule.Queries
 
         public PaginationContext Context { get; }
 
-        public static object ApplyPaginationIfApplicable(PaginationContext context, object data)
-        {
-            var queryable = data as IQueryable;
-            if (queryable != null)
-            {
-                return new PaginationInterpreter(context).Apply(queryable);
-            }
-
-            var enumerable = data as IEnumerable;
-            if (enumerable != null)
-            {
-                // all queryables are enumerable, so this needs to be after
-                // the queryable case
-                return new PaginationInterpreter(context).Apply(enumerable);
-            }
-
-            return data;
-        }
-
         public IQueryable Apply(IQueryable queryable)
         {
             // Skip does not work on queryables by default, because it makes

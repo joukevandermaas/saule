@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
@@ -95,6 +96,21 @@ namespace Tests.Integration
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
                     .Value<string>();
                 Assert.Equal("http://example.com/corporations/456/", relatedUrl);
+            }
+        }
+
+        [Fact(DisplayName = "Applies pagination when appropriate")]
+        public async Task AppliesPagination()
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/companies/");
+                _output.WriteLine(result.ToString());
+
+                Assert.Equal(10, (result["data"] as JArray)?.Count);
             }
         }
 
