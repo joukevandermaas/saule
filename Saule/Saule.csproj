@@ -77,7 +77,10 @@
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryContext.cs" />
+    <Compile Include="Queries\SortingInterpreter.cs" />
     <Compile Include="Queries\Sorting\SortingContext.cs" />
+    <Compile Include="Queries\Sorting\SortingDirection.cs" />
+    <Compile Include="Queries\Sorting\SortingProperty.cs" />
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />

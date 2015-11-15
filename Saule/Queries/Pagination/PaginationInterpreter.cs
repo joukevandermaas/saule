@@ -7,12 +7,12 @@ namespace Saule.Queries.Pagination
 {
     internal class PaginationInterpreter
     {
+        private readonly PaginationContext _context;
+
         public PaginationInterpreter(PaginationContext context)
         {
-            Context = context;
+            _context = context;
         }
-
-        public PaginationContext Context { get; }
 
         public IQueryable Apply(IQueryable queryable)
         {
@@ -25,16 +25,16 @@ namespace Saule.Queries.Pagination
 
             var ordered = isOrdered ? queryable : OrderById(queryable);
 
-            var filtered = ordered.ApplyQuery(QueryMethod.Skip, Context.Page * Context.PerPage) as IQueryable;
-            filtered = filtered.ApplyQuery(QueryMethod.Take, Context.PerPage) as IQueryable;
+            var filtered = ordered.ApplyQuery(QueryMethod.Skip, _context.Page * _context.PerPage) as IQueryable;
+            filtered = filtered.ApplyQuery(QueryMethod.Take, _context.PerPage) as IQueryable;
 
             return filtered;
         }
 
         public IEnumerable Apply(IEnumerable queryable)
         {
-            var filtered = queryable.ApplyQuery(QueryMethod.Skip, Context.Page * Context.PerPage) as IEnumerable;
-            filtered = filtered.ApplyQuery(QueryMethod.Take, Context.PerPage) as IEnumerable;
+            var filtered = queryable.ApplyQuery(QueryMethod.Skip, _context.Page * _context.PerPage) as IEnumerable;
+            filtered = filtered.ApplyQuery(QueryMethod.Take, _context.PerPage) as IEnumerable;
 
             return filtered;
         }

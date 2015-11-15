@@ -7,5 +7,6 @@
         public const string MediaType = "application/vnd.api+json";
 
         public const string PageNumberQueryName = "page.number";
+        public const string SortingQueryName = "sort";
     }
 }

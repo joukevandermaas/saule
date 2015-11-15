@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries;
 using Saule.Queries.Pagination;
+using Saule.Queries.Sorting;
 using Saule.Serialization;
 
 namespace Saule
@@ -72,16 +74,30 @@ namespace Saule
         /// <returns>A <see cref="JToken"/> representing the object.</returns>
         public JToken Serialize(object @object, Uri requestUri)
         {
-            if (!Paginate)
-            {
-                return _serializer.Serialize(@object, new T(), requestUri);
-            }
-
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var context = new PaginationContext(request.GetQueryNameValuePairs(), ItemsPerPage);
-            _serializer.QueryContext = new QueryContext { Pagination = context };
+            var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
+
+            _serializer.QueryContext = queryContext;
 
             return _serializer.Serialize(@object, new T(), requestUri);
+        }
+
+        private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters)
+        {
+            var context = new QueryContext();
+            var keyValuePairs = filters as IList<KeyValuePair<string, string>> ?? filters.ToList();
+
+            if (Paginate)
+            {
+                context.Pagination = new PaginationContext(keyValuePairs, ItemsPerPage);
+            }
+
+            if (AllowUserQuery)
+            {
+                context.Sorting = new SortingContext(keyValuePairs);
+            }
+
+            return context;
         }
     }
 }
