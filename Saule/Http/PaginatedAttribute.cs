@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 
 namespace Saule.Http
 {

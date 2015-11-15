@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Saule;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Tests.Models;
 using Xunit;
 

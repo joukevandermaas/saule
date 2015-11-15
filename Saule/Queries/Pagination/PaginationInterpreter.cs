@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Saule.Queries
+namespace Saule.Queries.Pagination
 {
     internal class PaginationInterpreter
     {

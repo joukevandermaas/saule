@@ -5,6 +5,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Saule.Serialization;
 
 namespace Saule
