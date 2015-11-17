@@ -5,6 +5,7 @@ using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Saule;
+using Saule.Serialization;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
@@ -126,6 +127,24 @@ namespace Tests
             _output.WriteLine(result.ToString());
 
             Assert.Equal("National", result["data"]["attributes"].Value<string>("location"));
+        }
+
+        [Fact(DisplayName = "Uses UrlPathBuilder")]
+        public void UsesUrlBuilder()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                UrlPathBuilder = new CanonicalUrlPathBuilder()
+            };
+
+            var result = target.Serialize(Get.Person(), DefaultUrl);
+            _output.WriteLine(result.ToString());
+
+            var related = result["data"]["relationships"]["job"]["links"]["related"].Value<Uri>()
+                .AbsolutePath;
+
+
+            Assert.Equal("/corporations/456/", related);
         }
 
         [Fact(DisplayName = "Applies sorting before pagination")]
