@@ -8,6 +8,10 @@ namespace Tests.Serialization
 {
     public class DefaultUrlPathBuilderTests
     {
+        // todo: unit test DefaultUrlPathBuilder
+        // All four methods use prefix if it exists, default to '/'
+        // All four methods use ApiResource for url gen where possible
+        // Given person resource, all four give the correct response
         private readonly ITestOutputHelper _output;
 
         public DefaultUrlPathBuilderTests(ITestOutputHelper output)

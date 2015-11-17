@@ -12,6 +12,10 @@ namespace Tests.Queries
 {
     public class SortingInterpreterTests
     {
+        // todo: increase coverage
+        // - test ThenBy sorting
+        // - test how it works on empty queryable & enumerable
+        // - test sorting on non-existant property for enumerable
         private static SortingContext DefaultContext => new SortingContext(GetQuery("id"));
 
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]

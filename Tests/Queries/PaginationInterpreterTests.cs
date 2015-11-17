@@ -11,6 +11,7 @@ namespace Tests.Queries
 {
     public class PaginationInterpreterTests
     {
+        // todo: test throws exception when no Id property
         private static PaginationContext DefaultContext => new PaginationContext(GetQueryForPage(0), 10);
 
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
