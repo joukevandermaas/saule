@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Web.Http;
 using Saule.Http;
 using Tests.Helpers;
@@ -11,6 +9,8 @@ namespace Tests.Controllers
     [ReturnsResource(typeof(PersonResource))]
     public class PeopleController : ApiController
     {
+        public IEnumerable<Person> People { get; } = Get.People(100);
+
         [HttpGet]
         [Route("people/{id}")]
         public Person GetPerson(string id)
@@ -20,8 +20,26 @@ namespace Tests.Controllers
 
         [HttpGet]
         [AllowsQuery]
-        [Route("people/query")]
+        [Route("query/people")]
         public IEnumerable<Person> QueryPeople()
+        {
+            return GetPeople();
+        }
+
+        [HttpGet]
+        [AllowsQuery]
+        [Paginated]
+        [Route("query/paginate/people")]
+        public IEnumerable<Person> QueryAndPaginatePeople()
+        {
+            return GetPeople();
+        }
+
+        [HttpGet]
+        [Paginated]
+        [AllowsQuery]
+        [Route("paginate/query/people")]
+        public IEnumerable<Person> PaginateAndQueryPeople()
         {
             return GetPeople();
         }
@@ -38,7 +56,7 @@ namespace Tests.Controllers
         [Route("people")]
         public IEnumerable<Person> GetPeople()
         {
-            return Get.People(100);
+            return People;
         }
     }
 }

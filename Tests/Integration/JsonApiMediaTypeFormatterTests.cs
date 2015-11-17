@@ -122,7 +122,7 @@ namespace Tests.Integration
             using (var server = new JsonApiServer(formatter))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/people/query?sort=age");
+                var result = await client.GetJsonResponseAsync("/query/people?sort=age");
                 _output.WriteLine(result.ToString());
 
                 var ages = ((JArray) result["data"])
@@ -151,6 +151,34 @@ namespace Tests.Integration
                 var sorted = ages.OrderBy(a => a).ToList();
 
                 Assert.NotEqual(sorted, ages);
+            }
+        }
+
+        [Theory(DisplayName = "Always does sorting before pagination")]
+        [InlineData("/query/paginate")]
+        [InlineData("/paginate/query")]
+        public async Task AppliesSortingBeforePagination(string path)
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result1 = await client.GetJsonResponseAsync($"{path}/people?sort=age");
+                var result2 = await client.GetJsonResponseAsync($"{path}/people?sort=age&page[number]=1");
+                _output.WriteLine(result1.ToString());
+                _output.WriteLine(result2.ToString());
+
+                var ages1 = ((JArray) result1["data"])
+                    .Select(p => p["attributes"]["age"].Value<int>())
+                    .ToList();
+                var ages2 = ((JArray) result2["data"])
+                    .Select(p => p["attributes"]["age"].Value<int>())
+                    .ToList();
+
+                var sorted = ages1.Concat(ages2).OrderBy(a => a).ToList();
+
+                Assert.Equal(sorted, ages1.Concat(ages2).ToList());
             }
         }
 
