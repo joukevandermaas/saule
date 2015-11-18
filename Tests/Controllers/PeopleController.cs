@@ -9,8 +9,6 @@ namespace Tests.Controllers
     [ReturnsResource(typeof(PersonResource))]
     public class PeopleController : ApiController
     {
-        public IEnumerable<Person> People { get; } = Get.People(100);
-
         [HttpGet]
         [Route("people/{id}")]
         public Person GetPerson(string id)
@@ -32,7 +30,7 @@ namespace Tests.Controllers
         [Route("query/paginate/people")]
         public IEnumerable<Person> QueryAndPaginatePeople()
         {
-            return GetPeople();
+            return GetPeopleNotRandom();
         }
 
         [HttpGet]
@@ -41,7 +39,7 @@ namespace Tests.Controllers
         [Route("paginate/query/people")]
         public IEnumerable<Person> PaginateAndQueryPeople()
         {
-            return GetPeople();
+            return GetPeopleNotRandom();
         }
 
         [HttpPost]
@@ -56,7 +54,17 @@ namespace Tests.Controllers
         [Route("people")]
         public IEnumerable<Person> GetPeople()
         {
-            return People;
+            return Get.People(100);
+        }
+
+        private static IEnumerable<Person> GetPeopleNotRandom()
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                var person = Get.Person(i.ToString());
+                person.Age = i + 2;
+                yield return person;
+            }
         }
     }
 }

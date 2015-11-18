@@ -14,7 +14,6 @@ namespace Tests.Queries
     {
         // todo: increase coverage
         // - test ThenBy sorting
-        // - test how it works on empty queryable & enumerable
         // - test sorting on non-existant property for enumerable
         private static SortingContext DefaultContext => new SortingContext(GetQuery("id"));
 
@@ -23,6 +22,17 @@ namespace Tests.Queries
         {
             var obj = Get.Person();
             Query.ApplySorting(obj, DefaultContext);
+        }
+
+        [Fact(DisplayName = "Doesn't do anything on empty queryable/enumerable")]
+        public void EmptyIsNoop()
+        {
+            var target = new SortingInterpreter(DefaultContext);
+            var enumerableResult = target.Apply(Enumerable.Empty<Person>()) as IEnumerable<Person>;
+            var queryableResult = target.Apply(Enumerable.Empty<Person>().AsQueryable()) as IQueryable<Person>;
+
+            Assert.Equal(Enumerable.Empty<Person>().ToList(), enumerableResult.ToList());
+            Assert.Equal(Enumerable.Empty<Person>().AsQueryable(), queryableResult);
         }
 
         [Theory(DisplayName = "Parses sorting string value correctly")]
@@ -47,6 +57,16 @@ namespace Tests.Queries
             }).ToList();
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact(DisplayName = "Parses empty query string correctly")]
+        public void ParsesEmpty()
+        {
+            var context = new SortingContext(Enumerable.Empty<KeyValuePair<string, string>>());
+
+            var actual = context.Properties;
+
+            Assert.Equal(Enumerable.Empty<SortingProperty>(), actual);
         }
 
         [Fact(DisplayName = "Applies expected sorting to queryables")]
