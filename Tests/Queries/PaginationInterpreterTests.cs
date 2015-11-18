@@ -13,6 +13,21 @@ namespace Tests.Queries
     {
         private static PaginationContext DefaultContext => new PaginationContext(GetQueryForPage(0), 10);
 
+        [Fact(DisplayName = "Throws exception when resource doesn't have an Id property")]
+        public void ThrowsWhenNoId()
+        {
+            var people = new NotOrderedQueryable<PersonWithNoId>(new[]
+            {
+                new PersonWithNoId(),
+                new PersonWithNoId(),
+                new PersonWithNoId(),
+                new PersonWithNoId()
+            }.AsQueryable());
+            var target = new PaginationInterpreter(DefaultContext);
+
+            Assert.Throws<JsonApiException>(() => target.Apply(people));
+        }
+
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
         public void IgnoresNonEnumerables()
         {

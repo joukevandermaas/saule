@@ -70,7 +70,11 @@ namespace Saule.Queries
         {
             try
             {
-                var elementType = enumerable.GetType().GetGenericArguments().First();
+                var elementType = enumerable
+                    .GetType()
+                    .GetInterface("IEnumerable`1")
+                    .GetGenericArguments()
+                    .First();
 
                 enumerable = enumerable.ApplyQuery(
                     GetQueryMethod(property.Direction, isFirst),

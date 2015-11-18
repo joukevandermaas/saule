@@ -19,10 +19,4 @@ namespace Website
         }
     }
 
-    // todo: test with Guid for id
-    //todo: test resource relationship hasmany generation
-    public class TestUrlBuilder : CanonicalUrlPathBuilder
-    {
-
-    }
 }

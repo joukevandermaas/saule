@@ -31,7 +31,9 @@
         /// <returns>A <see cref="string"/> containing the path.</returns>
         public virtual string BuildCanonicalPath(ApiResource resource)
         {
-            return '/'.TrimJoin(_prefix, resource.UrlPath).EnsureEndsWith("/");
+            return '/'.TrimJoin(_prefix, resource.UrlPath)
+                .EnsureStartsWith("/")
+                .EnsureEndsWith("/");
         }
 
         /// <summary>
@@ -44,6 +46,7 @@
         {
             return '/'.TrimJoin(
                 BuildCanonicalPath(resource), id)
+                .EnsureStartsWith("/")
                 .EnsureEndsWith("/");
         }
 
@@ -58,6 +61,7 @@
         {
             return '/'.TrimJoin(
                 BuildCanonicalPath(resource, id), "relationships", relationship.UrlPath)
+                .EnsureStartsWith("/")
                 .EnsureEndsWith("/");
         }
 
@@ -77,6 +81,7 @@
         {
             return '/'.TrimJoin(
                 BuildCanonicalPath(resource, id), relationship.UrlPath)
+                .EnsureStartsWith("/")
                 .EnsureEndsWith("/");
         }
     }
