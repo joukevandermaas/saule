@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Saule;
-using Saule.Queries;
 using Saule.Queries.Pagination;
 using Xunit;
 

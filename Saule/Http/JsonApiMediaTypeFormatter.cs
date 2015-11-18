@@ -18,7 +18,7 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
-        // NOTE: the comments on `overrride` public methods below are copied from the MSDN documentation at
+        // NOTE: the comments on `override` public methods below are copied from the MSDN documentation at
         // https://msdn.microsoft.com/en-us/library/system.net.http.formatting.mediatypeformatter(v=vs.118).aspx
         private readonly JsonConverter[] _converters;
         private readonly IUrlPathBuilder _urlBuilder;
