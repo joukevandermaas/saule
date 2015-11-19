@@ -21,6 +21,14 @@ namespace Saule.Serialization
             Code = ex.ExceptionType;
         }
 
+        public string Title { get; }
+
+        public string Detail { get; }
+
+        public string Code { get; }
+
+        public Dictionary<string, string> Links { get; }
+
         private static string GetRecursiveExceptionMessage(HttpError ex)
         {
             var msg = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
@@ -31,13 +39,5 @@ namespace Saule.Serialization
 
             return msg;
         }
-
-        public string Title { get; }
-
-        public string Detail { get; }
-
-        public string Code { get; }
-
-        public Dictionary<string, string> Links { get; }
     }
 }
