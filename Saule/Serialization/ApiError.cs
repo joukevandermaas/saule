@@ -32,7 +32,7 @@ namespace Saule.Serialization
         private static string GetRecursiveExceptionMessage(HttpError ex)
         {
             var msg = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
-            msg = msg.EnsureEndsWith(".");
+            msg = msg?.EnsureEndsWith(".");
             if (ex.InnerException != null)
             {
                 msg += ' ' + GetRecursiveExceptionMessage(ex.InnerException);
