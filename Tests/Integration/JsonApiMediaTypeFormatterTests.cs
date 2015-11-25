@@ -37,7 +37,7 @@ namespace Tests.Integration
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
                     .Value<string>();
-                Assert.Equal("http://example.com/people/0/employer/", relatedUrl);
+                Assert.Equal("http://localhost/people/0/employer/", relatedUrl);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Tests.Integration
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
                     .Value<string>();
-                Assert.Equal("http://example.com/corporations/456/", relatedUrl);
+                Assert.Equal("http://localhost/corporations/456/", relatedUrl);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Tests.Integration
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
                     .Value<string>();
-                Assert.Equal("http://example.com/corporations/456/", relatedUrl);
+                Assert.Equal("http://localhost/corporations/456/", relatedUrl);
             }
         }
 

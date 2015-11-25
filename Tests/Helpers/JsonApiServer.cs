@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Routing;
+using Microsoft.Owin.Testing;
+using Owin;
 using Saule;
 using Saule.Http;
 
@@ -10,7 +12,7 @@ namespace Tests.Helpers
 {
     public class JsonApiServer : IDisposable
     {
-        public HttpServer Server { get; }
+        private readonly TestServer _server;
 
         public JsonApiServer()
             : this(new JsonApiMediaTypeFormatter())
@@ -20,24 +22,27 @@ namespace Tests.Helpers
         public JsonApiServer(JsonApiMediaTypeFormatter formatter)
         {
             var config = new HttpConfiguration();
+            config.Formatters.Clear();
             config.Formatters.Add(formatter);
             config.MapHttpAttributeRoutes(new DefaultDirectRouteProvider());
 
-            Server = new HttpServer(config);
+            _server = TestServer.Create(builder =>
+            {
+                builder.UseWebApi(config);
+            });
         }
 
         public HttpClient GetClient()
         {
-            var client = new HttpClient(Server);
+            var client = _server.HttpClient;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaType));
-            client.BaseAddress = new Uri("http://example.com/");
 
             return client;
         }
 
         public void Dispose()
         {
-            Server.Dispose();
+            _server.Dispose();
         }
     }
 }

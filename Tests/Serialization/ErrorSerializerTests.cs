@@ -1,5 +1,6 @@
 ﻿using Saule.Serialization;
 using System;
+using Saule;
 using Xunit;
 
 namespace Tests.Serialization
@@ -16,6 +17,15 @@ namespace Tests.Serialization
             Assert.Equal(exception.HelpLink, errors["links"].Value<string>("about"));
             Assert.Equal(exception.GetType().FullName, errors.Value<string>("code"));
             Assert.Equal(exception.ToString(), errors.Value<string>("detail"));
+        }
+
+        [Fact(DisplayName = "Does not serialize links when HelpLink is null")]
+        public void DoesNotPutNullInALink()
+        {
+            var exception = new JsonApiException("Some message");
+            var errors = new ErrorSerializer().Serialize(new ApiError(exception))["errors"][0];
+
+            Assert.Null(errors["links"]);
         }
 
         [Fact(DisplayName = "Serializers HttpError properties")]

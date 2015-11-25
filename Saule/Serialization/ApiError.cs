@@ -11,7 +11,9 @@ namespace Saule.Serialization
             Title = ex.Message;
             Detail = ex.ToString();
             Code = ex.GetType().FullName;
-            Links = new Dictionary<string, string> { ["about"] = ex.HelpLink };
+            Links = ex.HelpLink != null
+                ? new Dictionary<string, string> { ["about"] = ex.HelpLink }
+                : null;
         }
 
         internal ApiError(HttpError ex)

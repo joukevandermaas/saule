@@ -7,6 +7,7 @@ namespace Tests.Controllers
     public class BrokenController : ApiController
     {
         [HttpGet]
+        [Route("broken/{id}")]
         public Person GetPerson(string id)
         {
             return Get.Person(id);
