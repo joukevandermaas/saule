@@ -170,8 +170,8 @@ namespace Tests
             Assert.Equal(expected, ids);
         }
 
-        [Fact(DisplayName = "Gives useful error when sorting on non-existing property")]
-        public void GivesUsefulError()
+        [Fact(DisplayName = "Gives useful error when sorting on non-existing property (queryable)")]
+        public void GivesUsefulErrorForQueryable()
         {
             var target = new JsonApiSerializer<PersonResource>
             {
@@ -179,6 +179,23 @@ namespace Tests
             };
 
             var people = Get.People(100).AsQueryable();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=fail-me"));
+            _output.WriteLine(result.ToString());
+
+            var error = result["errors"][0];
+
+            Assert.Equal("Attribute 'fail-me' not found.", error["title"].Value<string>());
+        }
+
+        [Fact(DisplayName = "Gives useful error when sorting on non-existing property (enumerable)")]
+        public void GivesUsefulErrorForEnumerable()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowQuery = true
+            };
+
+            var people = Get.People(100);
             var result = target.Serialize(people, new Uri(DefaultUrl, "?sort=fail-me"));
             _output.WriteLine(result.ToString());
 

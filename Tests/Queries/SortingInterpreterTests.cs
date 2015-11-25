@@ -11,9 +11,6 @@ namespace Tests.Queries
 {
     public class SortingInterpreterTests
     {
-        // todo: increase coverage
-        // - test ThenBy sorting
-        // - test sorting on non-existant property for enumerable
         private static SortingContext DefaultContext => new SortingContext(GetQuery("id"));
 
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
@@ -68,8 +65,8 @@ namespace Tests.Queries
             Assert.Equal(Enumerable.Empty<SortingProperty>(), actual);
         }
 
-        [Fact(DisplayName = "Applies expected sorting to queryables")]
-        public void AppliesSorting()
+        [Fact(DisplayName = "Applies sorting order (asc,desc)")]
+        public void AppliesSortingAscDesc()
         {
             var people = Get.People(100).ToList().AsQueryable();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
@@ -80,8 +77,32 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
-        [Fact(DisplayName = "Applies expected sorting to enumerables")]
-        public void AppliesSortingToEnumerables()
+        [Fact(DisplayName = "Applies sorting order (ask,asc)")]
+        public void AppliesSortingAscAsc()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Id);
+
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")))
+                as IQueryable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies expected sorting (asc, asc) to enumerables")]
+        public void AppliesSortingAscAscToEnumerables()
+        {
+            var people = Get.People(100).ToList();
+            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Id);
+
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")))
+                as IEnumerable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies expected sorting (asc, desc) to enumerables")]
+        public void AppliesSortingAscDescToEnumerables()
         {
             var people = Get.People(100).ToList();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
