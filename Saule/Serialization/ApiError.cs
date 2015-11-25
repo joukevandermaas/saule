@@ -16,7 +16,7 @@ namespace Saule.Serialization
 
         internal ApiError(HttpError ex)
         {
-            Title = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
+            Title = GetRecursiveExceptionMessage(ex);
             Detail = ex.StackTrace;
             Code = ex.ExceptionType;
         }
@@ -28,5 +28,17 @@ namespace Saule.Serialization
         public string Code { get; }
 
         public Dictionary<string, string> Links { get; }
+
+        private static string GetRecursiveExceptionMessage(HttpError ex)
+        {
+            var msg = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
+            msg = msg?.EnsureEndsWith(".");
+            if (ex.InnerException != null)
+            {
+                msg += ' ' + GetRecursiveExceptionMessage(ex.InnerException);
+            }
+
+            return msg;
+        }
     }
 }
