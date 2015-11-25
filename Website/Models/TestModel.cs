@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Website.Models
+﻿namespace Website.Models
 {
     public class TestModel
     {

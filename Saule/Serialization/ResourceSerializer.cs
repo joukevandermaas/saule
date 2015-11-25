@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Saule.Queries;
 using Saule.Queries.Pagination;
 
 namespace Saule.Serialization
@@ -42,7 +41,7 @@ namespace Saule.Serialization
         {
             if (_value == null)
             {
-                return SerializeNull(serializer);
+                return SerializeNull();
             }
 
             var objectJson = JToken.FromObject(_value, serializer);
@@ -129,7 +128,7 @@ namespace Saule.Serialization
             return id;
         }
 
-        private JObject SerializeNull(JsonSerializer serializer)
+        private JObject SerializeNull()
         {
             return new JObject
             {
