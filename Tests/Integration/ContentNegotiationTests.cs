@@ -22,7 +22,6 @@ namespace Tests.Integration
         [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]
         [InlineData(Paths.SingleResource)]
         [InlineData(Paths.ResourceCollection)]
-        [InlineData(Paths.NonExistingPath)]
         public async Task MustReturnJsonApiContentType(string path)
         {
             var target = _server.GetClient();
