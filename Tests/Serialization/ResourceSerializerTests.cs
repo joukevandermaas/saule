@@ -14,10 +14,10 @@ namespace Tests.Serialization
     {
         private readonly ITestOutputHelper _output;
 
-        private static Person DefaultObject => Get.Person();
-        private static ApiResource DefaultResource => new PersonResource();
-        private static Uri DefaultUrl => new Uri("http://example.com/");
-        private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
+        private static Person DefaultObject { get; } = Get.Person();
+        private static ApiResource DefaultResource { get; } = new PersonResource();
+        private static Uri DefaultUrl { get; } = new Uri("http://example.com/");
+        private static IUrlPathBuilder DefaultPathBuilder { get; } = new DefaultUrlPathBuilder("/api");
 
         public ResourceSerializerTests(ITestOutputHelper output)
         {
