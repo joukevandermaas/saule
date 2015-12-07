@@ -24,13 +24,3 @@ deploy:
     secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
   on:
     appveyor_repo_tag: true
-- release: saule-v$(appveyor_build_version)
-  description: ''
-  provider: GitHub
-  auth_token:
-    secure: 00qfkOL3Upz61CDrcEkLV+Vnn2gY4zypijGU3oUXeyxI8pNYElkLMJGzgSOEcVnH
-  artifact: /.*\.nupkg/
-  draft: false
-  prerelease: false
-  on:
-    appveyor_repo_tag: true
