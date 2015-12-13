@@ -6,6 +6,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries;
+using Saule.Queries.Filtering;
 using Saule.Queries.Pagination;
 using Saule.Queries.Sorting;
 using Saule.Serialization;
@@ -95,6 +96,7 @@ namespace Saule
             if (AllowQuery)
             {
                 context.Sorting = new SortingContext(keyValuePairs);
+                context.Filtering = new FilteringContext(keyValuePairs);
             }
 
             return context;

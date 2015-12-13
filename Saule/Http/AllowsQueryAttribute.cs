@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Saule.Queries;
+using Saule.Queries.Filtering;
 using Saule.Queries.Sorting;
 
 namespace Saule.Http
@@ -22,11 +23,15 @@ namespace Saule.Http
         /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
-            var context = new SortingContext(actionContext.Request.GetQueryNameValuePairs());
+            var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
+            var sorting = new SortingContext(queryParams);
+            var filtering = new FilteringContext(queryParams);
 
-            var query = GetQueryContext(actionContext);
+            var queryContext = GetQueryContext(actionContext);
 
-            query.Sorting = context;
+            queryContext.Sorting = sorting;
+            queryContext.Filtering = filtering;
+
             base.OnActionExecuting(actionContext);
         }
 

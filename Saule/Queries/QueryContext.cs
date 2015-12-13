@@ -1,4 +1,5 @@
-﻿using Saule.Queries.Pagination;
+﻿using Saule.Queries.Filtering;
+using Saule.Queries.Pagination;
 using Saule.Queries.Sorting;
 
 namespace Saule.Queries
@@ -8,5 +9,7 @@ namespace Saule.Queries
         public PaginationContext Pagination { get; set; }
 
         public SortingContext Sorting { get; set; }
+
+        public FilteringContext Filtering { get; set; }
     }
 }

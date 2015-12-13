@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using Saule.Queries.Sorting;
 
-namespace Saule.Queries
+namespace Saule.Queries.Sorting
 {
     internal class SortingInterpreter
     {

@@ -61,7 +61,10 @@ namespace Tests.Helpers
         }
         public static Company Company(string id = "456")
         {
-            return new Company(prefill: true, id: id);
+            return new Company(prefill: true, id: id)
+            {
+                Location = (LocationType)random.Next(Enum.GetNames(typeof(LocationType)).Length)
+            };
         }
     }
 }
