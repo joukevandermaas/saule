@@ -13,7 +13,10 @@ namespace Tests.Controllers
         [Route("companies/{id}")]
         public Company GetCompany(string id)
         {
-            return Get.Company(id);
+            var company = Get.Company(id);
+            company.Location = LocationType.National;
+
+            return company;
         }
 
         [HttpGet]

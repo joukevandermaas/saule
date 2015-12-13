@@ -134,6 +134,27 @@ namespace Tests.Integration
             }
         }
 
+        [Fact(DisplayName="Applies filtering when appropriate")]
+        public async Task AppliesFiltering()
+        {
+            var formatter = new JsonApiMediaTypeFormatter();
+
+            using (var server = new JsonApiServer(formatter))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/query/people?filter[last-name]=Russel");
+                _output.WriteLine(result.ToString());
+
+                var names = ((JArray) result["data"])
+                    .Select(p => p["attributes"]["last-name"].Value<string>())
+                    .ToList();
+
+                var filtered = names.Where(a => a == "Russel").ToList();
+
+                Assert.Equal(filtered.Count, names.Count);
+            }
+        }
+
         [Fact(DisplayName = "Does not apply sorting when not allowed")]
         public async Task AppliesSortingConditionally()
         {

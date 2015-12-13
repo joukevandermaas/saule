@@ -17,7 +17,9 @@ namespace Tests.Queries
         public void IgnoresNonEnumerables()
         {
             var obj = Get.Person();
-            Query.ApplySorting(obj, DefaultContext);
+            var result = Query.ApplySorting(obj, DefaultContext);
+
+            Assert.Same(obj, result);
         }
 
         [Fact(DisplayName = "Doesn't do anything on empty queryable/enumerable")]
@@ -77,7 +79,7 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
-        [Fact(DisplayName = "Applies sorting order (ask,asc)")]
+        [Fact(DisplayName = "Applies sorting order (asc,asc)")]
         public void AppliesSortingAscAsc()
         {
             var people = Get.People(100).ToList().AsQueryable();

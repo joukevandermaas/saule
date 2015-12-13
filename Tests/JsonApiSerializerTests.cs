@@ -23,6 +23,31 @@ namespace Tests
             _output = output;
         }
 
+        [Fact(DisplayName = "Applies filtering if allowed")]
+        public void AppliesFilters()
+        {
+            var target = new JsonApiSerializer<CompanyResource>
+            {
+                AllowQuery = true
+            };
+
+            var companies = Get.Companies(100).ToList().AsQueryable();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, "?filter[location]=1"));
+            _output.WriteLine(result.ToString());
+
+            var filtered = ((JArray)result["data"]).ToList();
+
+            var expected = companies.Where(x => x.Location == LocationType.National).ToList();
+
+            Assert.Equal(expected.Count, filtered.Count);
+        }
+
+        [Fact(DisplayName = "Does not apply filtering if not allowed")]
+        public void ConditionallyAppliesFilters()
+        {
+
+        }
+
         [Fact(DisplayName = "Does not allow null Uri")]
         public void HasAContract()
         {
@@ -121,12 +146,13 @@ namespace Tests
         public void UsesConverters()
         {
             var target = new JsonApiSerializer<CompanyResource>();
+            var company = Get.Company();
             target.JsonConverters.Add(new StringEnumConverter());
-            var result = target.Serialize(Get.Company(), DefaultUrl);
+            var result = target.Serialize(company, DefaultUrl);
 
             _output.WriteLine(result.ToString());
 
-            Assert.Equal("National", result["data"]["attributes"].Value<string>("location"));
+            Assert.Equal(company.Location.ToString(), result["data"]["attributes"].Value<string>("location"));
         }
 
         [Fact(DisplayName = "Uses UrlPathBuilder")]
@@ -142,7 +168,6 @@ namespace Tests
 
             var related = result["data"]["relationships"]["job"]["links"]["related"].Value<Uri>()
                 .AbsolutePath;
-
 
             Assert.Equal("/corporations/456/", related);
         }

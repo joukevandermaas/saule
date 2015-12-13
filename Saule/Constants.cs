@@ -8,5 +8,6 @@
 
         public const string PageNumberQueryName = "page.number";
         public const string SortingQueryName = "sort";
+        public const string FilteringQueryName = "filter";
     }
 }

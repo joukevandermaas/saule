@@ -1,0 +1,20 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Saule.Queries.Filtering
+{
+    internal class FilteringContext
+    {
+        public FilteringContext(IEnumerable<KeyValuePair<string, string>> queryParams)
+        {
+            Properties =
+                from query in queryParams
+                where query.Key.StartsWith(Constants.FilteringQueryName)
+                let name = query.Key.Substring(Constants.FilteringQueryName.Length + 1)
+                let value = query.Value
+                select new FilteringProperty(name, value);
+        }
+
+        public IEnumerable<FilteringProperty> Properties { get; }
+    }
+}

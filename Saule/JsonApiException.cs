@@ -12,14 +12,6 @@ namespace Saule
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiException"/> class.
         /// </summary>
-        public JsonApiException()
-            : base("An error occured while serializing or deserializing a Json Api document")
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonApiException"/> class.
-        /// </summary>
         /// <param name="message">
         /// A description of the error. The content of message is intended to be understood by humans.
         /// The caller of this constructor is required to ensure that this string has been localized

@@ -127,6 +127,7 @@
     </Compile>
     <Compile Include="Helpers\NotOrderedQueryable.cs" />
     <Compile Include="Queries\PaginationInterpreterTests.cs" />
+    <Compile Include="Queries\FilteringInterpreterTests.cs" />
     <Compile Include="Queries\SortingInterpreterTests.cs" />
     <Compile Include="Queries\PaginationQueryTests.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilderTests.cs" />

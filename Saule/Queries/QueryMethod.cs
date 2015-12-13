@@ -23,7 +23,8 @@ namespace Saule.Queries
         private enum QueryType
         {
             Simple,
-            Func
+            Func,
+            Predicate
         }
 
         // This idea was borrowed from the OData repo. See the following url:
@@ -58,6 +59,11 @@ namespace Saule.Queries
             GetGenericMethodInfo(_ => default(IOrderedEnumerable<int>).ThenByDescending(default(Func<int, int>))),
             QueryType.Func);
 
+        public static QueryMethod Where => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IQueryable<int>).Where(default(Expression<Func<int, bool>>))),
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).Where(default(Func<int, bool>))),
+            QueryType.Predicate);
+
         public object ApplyTo(IQueryable queryable, params object[] arguments)
         {
             var invokeArgs = new[] { queryable }.Concat(arguments).ToArray();
@@ -68,7 +74,7 @@ namespace Saule.Queries
 
         public object ApplyTo(IEnumerable enumerable, params object[] arguments)
         {
-            if (_queryType == QueryType.Func)
+            if (_queryType != QueryType.Simple)
             {
                 // we need to compile the expression
                 var func = (LambdaExpression)arguments[0];
@@ -94,30 +100,51 @@ namespace Saule.Queries
             return (lambdaExpression?.Body as MethodCallExpression)?.Method.GetGenericMethodDefinition();
         }
 
+        private static Type[] GetPredicateTypeArguments(object[] arguments)
+        {
+            var predicateType = arguments[1].GetType();
+            if (typeof(Expression).IsAssignableFrom(predicateType))
+            {
+                predicateType = predicateType.GenericTypeArguments[0];
+            }
+
+            return predicateType.GenericTypeArguments.Take(1).ToArray();
+        }
+
+        private static Type[] GetFuncTypeArguments(object[] arguments)
+        {
+            // Type params are the same as the func in the expression.
+            // (arguments[1] is Expression<Func<SomeType, object>> or
+            // Func<SomeType, object>)
+            var type = arguments[1].GetType();
+            if (typeof(Expression).IsAssignableFrom(type))
+            {
+                type = type.GenericTypeArguments[0];
+            }
+
+            return type.GenericTypeArguments;
+        }
+
+        private static Type[] GetSimpleTypeArguments(object[] arguments)
+        {
+            var enumerable = arguments[0] // IQueryable<> extends IEnumerable<>
+                .GetType()
+                .GetInterfaces()
+                .Where(i => i.IsGenericType)
+                .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
+            return enumerable.GetGenericArguments();
+        }
+
         private Type[] GetTypeArguments(params object[] arguments)
         {
             switch (_queryType)
             {
                 case QueryType.Simple:
-                    var enumerable = arguments[0] // IQueryable<> extends IEnumerable<>
-                        .GetType()
-                        .GetInterfaces()
-                        .Where(i => i.IsGenericType)
-                        .First(i => typeof(IEnumerable<>).IsAssignableFrom(i.GetGenericTypeDefinition()));
-                    return enumerable.GetGenericArguments();
-
+                    return GetSimpleTypeArguments(arguments);
                 case QueryType.Func:
-                    // Type params are the same as the func in the expression.
-                    // (arguments[1] is Expression<Func<SomeType, object>> or
-                    // Func<SomeType, object>)
-                    var type = arguments[1].GetType();
-                    if (typeof(Expression).IsAssignableFrom(type))
-                    {
-                        type = type.GenericTypeArguments[0];
-                    }
-
-                    return type.GenericTypeArguments;
-
+                    return GetFuncTypeArguments(arguments);
+                case QueryType.Predicate:
+                    return GetPredicateTypeArguments(arguments);
                 default:
                     throw new InvalidOperationException("Unable to apply user query.");
             }

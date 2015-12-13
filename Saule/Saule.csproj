@@ -76,10 +76,13 @@
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
+    <Compile Include="Queries\Filtering\FilteringContext.cs" />
+    <Compile Include="Queries\Filtering\FilteringInterpreter.cs" />
+    <Compile Include="Queries\Filtering\FilteringProperty.cs" />
     <Compile Include="Queries\Lambda.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryContext.cs" />
-    <Compile Include="Queries\SortingInterpreter.cs" />
+    <Compile Include="Queries\Sorting\SortingInterpreter.cs" />
     <Compile Include="Queries\Sorting\SortingContext.cs" />
     <Compile Include="Queries\Sorting\SortingDirection.cs" />
     <Compile Include="Queries\Sorting\SortingProperty.cs" />

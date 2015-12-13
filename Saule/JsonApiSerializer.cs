@@ -34,6 +34,12 @@ namespace Saule
                 }
 
                 var dataObject = @object;
+
+                if (QueryContext?.Filtering != null)
+                {
+                    dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filtering);
+                }
+
                 if (QueryContext?.Sorting != null)
                 {
                     dataObject = Query.ApplySorting(dataObject, QueryContext.Sorting);
