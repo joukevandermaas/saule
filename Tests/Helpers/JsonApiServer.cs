@@ -19,7 +19,7 @@ namespace Tests.Helpers
         {
         }
 
-        public JsonApiServer(JsonApiMediaTypeFormatter formatter)
+        internal JsonApiServer(JsonApiMediaTypeFormatter formatter)
         {
             var config = new HttpConfiguration();
             config.Formatters.Clear();
