@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Saule.Http;
 
 namespace Saule.Queries.Filtering
 {
@@ -16,5 +17,7 @@ namespace Saule.Queries.Filtering
         }
 
         public IEnumerable<FilteringProperty> Properties { get; }
+
+        public QueryFilterExpressionCollection QueryFilters { get; set; } = new QueryFilterExpressionCollection();
     }
 }

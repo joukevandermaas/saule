@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Saule.Queries;
 
 namespace Saule
 {
@@ -13,6 +16,22 @@ namespace Saule
             where T : class
         {
             return Activator.CreateInstance(type) as T;
+        }
+
+        public static IEnumerable<Type> GetInheritanceChain(this Type type)
+        {
+            if (type.BaseType == null)
+            {
+                return type.ToEnumerable()
+                    .Concat(type.GetInterfaces());
+            }
+
+            return type.ToEnumerable()
+                .Concat(type.GetInterfaces())
+                .Concat(type.BaseType.ToEnumerable())
+                .Concat(type.GetInterfaces().SelectMany(GetInheritanceChain))
+                .Concat(type.BaseType.GetInheritanceChain())
+                .Distinct();
         }
     }
 }

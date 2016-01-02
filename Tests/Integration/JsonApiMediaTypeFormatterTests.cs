@@ -426,5 +426,28 @@ namespace Tests.Integration
                     error["detail"].Value<string>());
             }
         }
+
+        [Fact(DisplayName = "Uses user specified query filter expression for filtering")]
+        public async Task UsesQueryFilterExpression()
+        {
+            var config = new JsonApiConfiguration();
+            config.QueryFilterExpressions.SetExpression<string>((left, right) => left != right);
+
+            using (var server = new NewSetupJsonApiServer(config))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("/query/people?filter[last-name]=Russel");
+                _output.WriteLine(result.ToString());
+
+                var names = ((JArray)result["data"])
+                    .Select(p => p["attributes"]["last-name"].Value<string>())
+                    .ToList();
+
+                var filtered = names.Where(a => a != "Russel").ToList();
+
+                Assert.Equal(filtered.Count, names.Count);
+            }
+
+        }
     }
 }

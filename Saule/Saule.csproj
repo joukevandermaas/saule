@@ -45,10 +45,6 @@
       <HintPath>..\packages\Humanizer.1.37.7\lib\portable-win+net40+sl50+wp8+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Humanizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.6.1\lib\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -75,12 +71,18 @@
     <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="Http\HttpConfigExtensions.cs" />
     <Compile Include="Http\JsonApiConfiguration.cs" />
+    <Compile Include="Http\FilterExpressions\CaseInsensitiveStringQueryFilterExpression.cs" />
+    <Compile Include="Http\FilterExpressions\DefaultQueryFilterExpression.cs" />
+    <Compile Include="Http\FilterExpressions\LambdaQueryFilterExpression.cs" />
+    <Compile Include="Http\IQueryFilterExpression.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="Queries\Filtering\FilteringContext.cs" />
     <Compile Include="Queries\Filtering\FilteringInterpreter.cs" />
     <Compile Include="Queries\Filtering\FilteringProperty.cs" />
+    <Compile Include="Http\QueryFilterExpressionCollection.cs" />
+    <Compile Include="Queries\Filtering\TypeCorrectingVisitor.cs" />
     <Compile Include="Queries\Lambda.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryContext.cs" />
@@ -98,7 +100,7 @@
     <Compile Include="RelationshipKind.cs" />
     <Compile Include="Queries\Pagination\PaginationContext.cs" />
     <Compile Include="Queries\Pagination\PaginationInterpreter.cs" />
-    <Compile Include="Queries\QueryableExtensions.cs" />
+    <Compile Include="Queries\EnumerableExtensions.cs" />
     <Compile Include="Queries\QueryMethod.cs" />
     <Compile Include="Queries\Pagination\PaginationQuery.cs" />
     <Compile Include="Serialization\ApiError.cs" />
@@ -122,6 +124,7 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0-beta015\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0-beta015\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets" Condition="Exists('..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
