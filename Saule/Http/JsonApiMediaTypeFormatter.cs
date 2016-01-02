@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -16,6 +17,7 @@ namespace Saule.Http
     /// <summary>
     /// Custom media type formatter for Json Api (1.0) responses and requests.
     /// </summary>
+    [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
         // NOTE: the comments on `override` public methods below are copied from the MSDN documentation at
@@ -64,6 +66,13 @@ namespace Saule.Http
             : this(urlBuilder)
         {
             _converters = converters;
+        }
+
+        internal JsonApiMediaTypeFormatter(JsonApiConfiguration config)
+        {
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
+            _converters = config.JsonConverters.ToArray();
+            _urlBuilder = config.UrlPathBuilder;
         }
 
         internal JsonApiMediaTypeFormatter(HttpRequestMessage request, IUrlPathBuilder urlBuilder, params JsonConverter[] converters)
