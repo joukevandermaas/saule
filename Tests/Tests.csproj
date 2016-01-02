@@ -113,10 +113,14 @@
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyResource.cs" />
+    <Compile Include="Models\CompanyWithDifferentId.cs" />
+    <Compile Include="Models\CompanyWithDifferentIdResource.cs" />
     <Compile Include="Models\GuidAsId.cs" />
     <Compile Include="Helpers\JsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\PersonResource.cs" />
+    <Compile Include="Models\PersonWithDifferentId.cs" />
+    <Compile Include="Models\PersonWithDifferentIdResource.cs" />
     <Compile Include="Models\PersonWithNoId.cs" />
     <Compile Include="Models\PersonWithNoJob.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
