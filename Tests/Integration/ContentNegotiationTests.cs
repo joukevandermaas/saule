@@ -8,80 +8,160 @@ using Xunit;
 
 namespace Tests.Integration
 {
-    public class ContentNegotiationTests : IClassFixture<JsonApiServer>
+    public class ContentNegotiationTests
     {
-        private readonly JsonApiServer _server;
-
-        private readonly string _personContent = Properties.Resources.PersonResourceString;
-
-        public ContentNegotiationTests(JsonApiServer server)
+        public class ObsoleteSetup : IClassFixture<ObsoleteSetupJsonApiServer>
         {
-            _server = server;
+            private readonly ObsoleteSetupJsonApiServer _server;
+
+            private readonly string _personContent = Properties.Resources.PersonResourceString;
+
+            public ObsoleteSetup(ObsoleteSetupJsonApiServer server)
+            {
+                _server = server;
+            }
+
+            [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]
+            [InlineData(Paths.SingleResource)]
+            [InlineData(Paths.ResourceCollection)]
+            public async Task MustReturnJsonApiContentType(string path)
+            {
+                var target = _server.GetClient();
+
+                var result = await target.GetAsync(path);
+
+                Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
+            }
+
+            [Theory(DisplayName = "Servers MUST respond with '415 Not supported' to media type parameters in content-type header")]
+            [InlineData("version", "1")]
+            [InlineData("charset", "utf-8")]
+            public async Task MustReturn415ToWrongContentTypeHeader(string key, string value)
+            {
+                var target = _server.GetClient();
+
+                var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
+                HttpContent content = new StringContent(_personContent);
+                content.Headers.ContentType = mediaType;
+
+                var result = await target.PostAsync(Paths.SingleResource, content);
+
+                Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+            }
+
+            [Theory(DisplayName = "Servers MUST respond with '406 Not acceptable' to media type parameters in accept header")]
+            [InlineData("version", "1")]
+            [InlineData("charset", "utf-8")]
+            public async Task MustReturn406ToWrongAcceptHeader(string key, string value)
+            {
+                var target = _server.GetClient();
+
+                var mediaType = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
+                target.DefaultRequestHeaders.Accept.Clear();
+                target.DefaultRequestHeaders.Accept.Add(mediaType);
+
+                var result = await target.GetAsync(Paths.SingleResource);
+
+                Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
+            }
+
+            [Fact(DisplayName = "Should return OK if at least one Accept header does not have media type parameters")]
+            public async Task MustReturn200OkForOneValidAccept()
+            {
+                var target = _server.GetClient();
+
+                var mediaTypeWithParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+                mediaTypeWithParams.Parameters.Add(new NameValueHeaderValue("charset", "utf-8"));
+
+                var mediaTypeWithoutParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+
+                target.DefaultRequestHeaders.Accept.Clear();
+                target.DefaultRequestHeaders.Accept.Add(mediaTypeWithParams);
+                target.DefaultRequestHeaders.Accept.Add(mediaTypeWithoutParams);
+
+                var result = await target.GetAsync(Paths.SingleResource);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
         }
 
-        [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]
-        [InlineData(Paths.SingleResource)]
-        [InlineData(Paths.ResourceCollection)]
-        public async Task MustReturnJsonApiContentType(string path)
+        public class NewSetup : IClassFixture<NewSetupJsonApiServer>
         {
-            var target = _server.GetClient();
+            private readonly NewSetupJsonApiServer _server;
 
-            var result = await target.GetAsync(path);
+            private readonly string _personContent = Properties.Resources.PersonResourceString;
 
-            Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
-        }
+            public NewSetup(NewSetupJsonApiServer server)
+            {
+                _server = server;
+            }
 
-        [Theory(DisplayName = "Servers MUST respond with '415 Not supported' to media type parameters in content-type header")]
-        [InlineData("version", "1")]
-        [InlineData("charset", "utf-8")]
-        public async Task MustReturn415ToWrongContentTypeHeader(string key, string value)
-        {
-            var target = _server.GetClient();
+            [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]
+            [InlineData(Paths.SingleResource)]
+            [InlineData(Paths.ResourceCollection)]
+            public async Task MustReturnJsonApiContentType(string path)
+            {
+                var target = _server.GetClient();
 
-            var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
-            mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
-            HttpContent content = new StringContent(_personContent);
-            content.Headers.ContentType = mediaType;
+                var result = await target.GetAsync(path);
 
-            var result = await target.PostAsync(Paths.SingleResource, content);
+                Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
+            }
 
-            Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
-        }
+            [Theory(DisplayName = "Servers MUST respond with '415 Not supported' to media type parameters in content-type header")]
+            [InlineData("version", "1")]
+            [InlineData("charset", "utf-8")]
+            public async Task MustReturn415ToWrongContentTypeHeader(string key, string value)
+            {
+                var target = _server.GetClient();
 
-        [Theory(DisplayName = "Servers MUST respond with '406 Not acceptable' to media type parameters in accept header")]
-        [InlineData("version", "1")]
-        [InlineData("charset", "utf-8")]
-        public async Task MustReturn406ToWrongAcceptHeader(string key, string value)
-        {
-            var target = _server.GetClient();
+                var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
+                HttpContent content = new StringContent(_personContent);
+                content.Headers.ContentType = mediaType;
 
-            var mediaType = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
-            mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
-            target.DefaultRequestHeaders.Accept.Clear();
-            target.DefaultRequestHeaders.Accept.Add(mediaType);
+                var result = await target.PostAsync(Paths.SingleResource, content);
 
-            var result = await target.GetAsync(Paths.SingleResource);
+                Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+            }
 
-            Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
-        }
+            [Theory(DisplayName = "Servers MUST respond with '406 Not acceptable' to media type parameters in accept header")]
+            [InlineData("version", "1")]
+            [InlineData("charset", "utf-8")]
+            public async Task MustReturn406ToWrongAcceptHeader(string key, string value)
+            {
+                var target = _server.GetClient();
 
-        [Fact(DisplayName = "Should return OK if at least one Accept header does not have media type parameters")]
-        public async Task MustReturn200OkForOneValidAccept()
-        {
-            var target = _server.GetClient();
+                var mediaType = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
+                target.DefaultRequestHeaders.Accept.Clear();
+                target.DefaultRequestHeaders.Accept.Add(mediaType);
 
-            var mediaTypeWithParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
-            mediaTypeWithParams.Parameters.Add(new NameValueHeaderValue("charset", "utf-8"));
+                var result = await target.GetAsync(Paths.SingleResource);
 
-            var mediaTypeWithoutParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+                Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
+            }
 
-            target.DefaultRequestHeaders.Accept.Clear();
-            target.DefaultRequestHeaders.Accept.Add(mediaTypeWithParams);
-            target.DefaultRequestHeaders.Accept.Add(mediaTypeWithoutParams);
+            [Fact(DisplayName = "Should return OK if at least one Accept header does not have media type parameters")]
+            public async Task MustReturn200OkForOneValidAccept()
+            {
+                var target = _server.GetClient();
 
-            var result = await target.GetAsync(Paths.SingleResource);
+                var mediaTypeWithParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+                mediaTypeWithParams.Parameters.Add(new NameValueHeaderValue("charset", "utf-8"));
 
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var mediaTypeWithoutParams = new MediaTypeWithQualityHeaderValue(Constants.MediaType);
+
+                target.DefaultRequestHeaders.Accept.Clear();
+                target.DefaultRequestHeaders.Accept.Add(mediaTypeWithParams);
+                target.DefaultRequestHeaders.Accept.Add(mediaTypeWithoutParams);
+
+                var result = await target.GetAsync(Paths.SingleResource);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
         }
     }
 }

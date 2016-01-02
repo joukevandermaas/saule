@@ -108,6 +108,7 @@
     <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Helpers\Get.cs" />
     <Compile Include="Helpers\HttpClientExtensions.cs" />
+    <Compile Include="Helpers\NewSetupJsonApiServer.cs" />
     <Compile Include="Http\AttributeTests.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
@@ -116,7 +117,7 @@
     <Compile Include="Models\CompanyWithDifferentId.cs" />
     <Compile Include="Models\CompanyWithDifferentIdResource.cs" />
     <Compile Include="Models\GuidAsId.cs" />
-    <Compile Include="Helpers\JsonApiServer.cs" />
+    <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\PersonResource.cs" />
     <Compile Include="Models\PersonWithDifferentId.cs" />

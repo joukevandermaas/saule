@@ -10,16 +10,16 @@ using Saule.Http;
 
 namespace Tests.Helpers
 {
-    public class JsonApiServer : IDisposable
+    public class ObsoleteSetupJsonApiServer : IDisposable
     {
         private readonly TestServer _server;
 
-        public JsonApiServer()
+        public ObsoleteSetupJsonApiServer()
             : this(new JsonApiMediaTypeFormatter())
         {
         }
 
-        internal JsonApiServer(JsonApiMediaTypeFormatter formatter)
+        internal ObsoleteSetupJsonApiServer(JsonApiMediaTypeFormatter formatter)
         {
             var config = new HttpConfiguration();
             config.Formatters.Clear();
