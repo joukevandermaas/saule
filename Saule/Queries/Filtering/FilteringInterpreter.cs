@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using Saule.Http;
 
 namespace Saule.Queries.Filtering
 {
@@ -27,7 +28,12 @@ namespace Saule.Queries.Filtering
                 : enumerable;
         }
 
-        private static IEnumerable ApplyProperty(IEnumerable enumerable, FilteringProperty property)
+        private static JsonApiException MissingProperty(string property, Exception ex)
+        {
+            return new JsonApiException($"Attribute '{property.ToDashed()}' not found.", ex);
+        }
+
+        private IEnumerable ApplyProperty(IEnumerable enumerable, FilteringProperty property)
         {
             try
             {
@@ -39,7 +45,7 @@ namespace Saule.Queries.Filtering
 
                 enumerable = enumerable.ApplyQuery(
                     QueryMethod.Where,
-                    Lambda.SelectPropertyValue(elementType, property.Name, property.Value))
+                    Lambda.SelectPropertyValue(elementType, property.Name, property.Value, _context.QueryFilters))
                     as IEnumerable;
 
                 return enumerable;
@@ -50,13 +56,13 @@ namespace Saule.Queries.Filtering
             }
         }
 
-        private static IQueryable ApplyProperty(IQueryable queryable, FilteringProperty property)
+        private IQueryable ApplyProperty(IQueryable queryable, FilteringProperty property)
         {
             try
             {
                 queryable = queryable.ApplyQuery(
                     QueryMethod.Where,
-                    Lambda.SelectPropertyValue(queryable.ElementType, property.Name, property.Value))
+                    Lambda.SelectPropertyValue(queryable.ElementType, property.Name, property.Value, _context.QueryFilters))
                     as IQueryable;
                 return queryable;
             }
@@ -64,11 +70,6 @@ namespace Saule.Queries.Filtering
             {
                 throw MissingProperty(property.Name, ex);
             }
-        }
-
-        private static JsonApiException MissingProperty(string property, Exception ex)
-        {
-            return new JsonApiException($"Attribute '{property.ToDashed()}' not found.", ex);
         }
     }
 }

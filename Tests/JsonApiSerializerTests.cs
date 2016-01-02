@@ -23,6 +23,26 @@ namespace Tests
             _output = output;
         }
 
+        [Fact(DisplayName = "Uses query filter expressions if specified")]
+        public void UsesQueryFilterExpressions()
+        {
+            var target = new JsonApiSerializer<CompanyResource>
+            {
+                AllowQuery = true
+            };
+            target.QueryFilterExpressions.SetExpression<LocationType>((left, right) => left != right);
+
+            var companies = Get.Companies(100).ToList().AsQueryable();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, "?filter[location]=1"));
+            _output.WriteLine(result.ToString());
+
+            var filtered = ((JArray)result["data"]).ToList();
+
+            var expected = companies.Where(x => x.Location != LocationType.National).ToList();
+
+            Assert.Equal(expected.Count, filtered.Count);
+        }
+
         [Fact(DisplayName = "Applies filtering if allowed")]
         public void AppliesFilters()
         {

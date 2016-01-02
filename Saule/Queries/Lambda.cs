@@ -3,26 +3,26 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
+using Saule.Http;
 
 namespace Saule.Queries
 {
     internal static class Lambda
     {
-        public static Expression SelectPropertyValue(Type type, string property, string value)
+        public static Expression SelectPropertyValue(Type type, string property, string value, QueryFilterExpressionCollection queryFilter)
         {
             var valueType = GetPropertyType(type, property);
             var parsedValue = TryConvert(value, valueType);
-            var funcType = typeof(Func<,>).MakeGenericType(type, typeof(bool));
             var param = Expression.Parameter(type, "i");
             var propertyExpression = Expression.Property(param, property);
-            var equalsExpression = Expression.Equal(
-                propertyExpression,
-                Expression.Constant(parsedValue));
 
-            var expressionFactory = CreateExpressionFactory(funcType);
+            var expression = queryFilter.GetQueryFilterExpression(type.GetProperty(property));
 
-            return expressionFactory.Invoke(null, new object[] { equalsExpression, new[] { param } }) as Expression;
+            return typeof(Lambda)
+                .GetMethod(nameof(Convert), BindingFlags.Static | BindingFlags.NonPublic)
+                .MakeGenericMethod(valueType, type)
+                .Invoke(null, new[] { expression, parsedValue, propertyExpression, param })
+                as Expression;
         }
 
         public static Expression SelectProperty(Type type, string property)
@@ -35,6 +35,18 @@ namespace Saule.Queries
             var expressionFactory = CreateExpressionFactory(funcType);
 
             return expressionFactory.Invoke(null, new object[] { propertyExpression, new[] { param } }) as Expression;
+        }
+
+        // Return value is used through reflection invocation
+        // ReSharper disable once UnusedMethodReturnValue.Local
+        private static Expression<Func<TClass, bool>> Convert<TProperty, TClass>(
+            Expression<Func<TProperty, TProperty, bool>> expression,
+            TProperty constant,
+            MemberExpression propertyExpression,
+            ParameterExpression parameter)
+        {
+            var curriedBody = new FilterLambdaVisitor(propertyExpression, constant).Visit(expression.Body);
+            return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);
         }
 
         private static object TryConvert(string value, Type type)
@@ -71,6 +83,32 @@ namespace Saule.Queries
                 .First()
                 .MakeGenericMethod(funcType);
             return expressionFactory;
+        }
+
+        private class FilterLambdaVisitor : ExpressionVisitor
+        {
+            private readonly MemberExpression _property;
+            private readonly object _constant;
+
+            private int _parameterCounter = 0;
+
+            public FilterLambdaVisitor(MemberExpression property, object constant)
+            {
+                _property = property;
+                _constant = constant;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                // user's `(left, right) => left == right` should
+                // turn into `(i) => i.Property == "constant"`
+                if (_parameterCounter++ == 0)
+                {
+                    return _property;
+                }
+
+                return Expression.Constant(_constant);
+            }
         }
     }
 }

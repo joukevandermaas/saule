@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
+using Saule.Http;
 using Saule.Queries.Filtering;
 using Saule.Queries.Pagination;
 using Saule.Queries.Sorting;

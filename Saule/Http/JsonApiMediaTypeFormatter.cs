@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -27,6 +28,7 @@ namespace Saule.Http
         private readonly ApiResource _resource;
         private readonly Uri _baseUrl;
         private readonly JsonApiSerializer _jsonApiSerializer;
+        private readonly QueryFilterExpressionCollection _queryFilterExpressions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
@@ -36,6 +38,7 @@ namespace Saule.Http
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
             _converters = new JsonConverter[0];
             _urlBuilder = new DefaultUrlPathBuilder();
+            _queryFilterExpressions = new QueryFilterExpressionCollection();
         }
 
         /// <summary>
@@ -73,12 +76,20 @@ namespace Saule.Http
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
             _converters = config.JsonConverters.ToArray();
             _urlBuilder = config.UrlPathBuilder;
+            _queryFilterExpressions = config.QueryFilterExpressions;
         }
 
-        internal JsonApiMediaTypeFormatter(HttpRequestMessage request, IUrlPathBuilder urlBuilder, params JsonConverter[] converters)
+        internal JsonApiMediaTypeFormatter(
+            HttpRequestMessage request,
+            IUrlPathBuilder urlBuilder,
+            QueryFilterExpressionCollection filterExpressions,
+            IEnumerable<JsonConverter> converters)
             : this()
         {
-            var jsonApi = new JsonApiSerializer { UrlPathBuilder = urlBuilder };
+            var jsonApi = new JsonApiSerializer
+            {
+                UrlPathBuilder = urlBuilder
+            };
             jsonApi.JsonConverters.AddRange(converters);
 
             _baseUrl = request.RequestUri;
@@ -86,6 +97,12 @@ namespace Saule.Http
             if (request.Properties.ContainsKey(Constants.QueryContextPropertyName))
             {
                 var queryContext = (QueryContext)request.Properties[Constants.QueryContextPropertyName];
+
+                if (queryContext.Filtering != null)
+                {
+                    queryContext.Filtering.QueryFilters = filterExpressions;
+                }
+
                 jsonApi.QueryContext = queryContext;
             }
 
@@ -191,7 +208,7 @@ namespace Saule.Http
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            return new JsonApiMediaTypeFormatter(request, _urlBuilder, _converters);
+            return new JsonApiMediaTypeFormatter(request, _urlBuilder, _queryFilterExpressions, _converters);
         }
 
         private async Task WriteJsonToStream(JToken json, Stream stream)

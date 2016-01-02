@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Saule.Http;
 using Saule.Queries;
 using Saule.Queries.Filtering;
 using Saule.Queries.Pagination;
@@ -54,6 +55,11 @@ namespace Saule
         }
 
         /// <summary>
+        /// Used to execute filters specified through query parameters in the request url.
+        /// </summary>
+        public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
+
+        /// <summary>
         /// The number of items per page, if the responses are paginated.
         /// </summary>
         public int ItemsPerPage { get; set; } = 10;
@@ -96,7 +102,7 @@ namespace Saule
             if (AllowQuery)
             {
                 context.Sorting = new SortingContext(keyValuePairs);
-                context.Filtering = new FilteringContext(keyValuePairs);
+                context.Filtering = new FilteringContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
             }
 
             return context;
