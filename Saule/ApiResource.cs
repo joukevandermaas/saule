@@ -10,7 +10,9 @@ namespace Saule
     /// </summary>
     public abstract class ApiResource
     {
-        private static readonly ConcurrentDictionary<Type, ApiResource> Resources = new ConcurrentDictionary<Type, ApiResource>();
+        private static readonly ConcurrentDictionary<Type, ApiResource> Resources =
+            new ConcurrentDictionary<Type, ApiResource>();
+
         private readonly List<ResourceAttribute> _attributes = new List<ResourceAttribute>();
         private readonly List<ResourceRelationship> _relationships = new List<ResourceRelationship>();
 
@@ -25,6 +27,8 @@ namespace Saule
             OfType(name.ToUpperInvariant().EndsWith("RESOURCE")
                 ? name.Remove(name.Length - "RESOURCE".Length)
                 : name);
+
+            WithId("Id");
 
             Resources.TryAdd(type, this);
         }
@@ -42,6 +46,8 @@ namespace Saule
         internal IEnumerable<ResourceAttribute> Attributes => _attributes;
 
         internal IEnumerable<ResourceRelationship> Relationships => _relationships;
+
+        internal string IdProperty { get; private set; }
 
         /// <summary>
         /// Customize the type name of this resource. The default value
@@ -64,6 +70,21 @@ namespace Saule
         {
             ResourceType = value.ToDashed();
             UrlPath = path.ToDashed().EnsureStartsWith("/");
+        }
+
+        /// <summary>
+        /// Customize the id property of this resource. The default value
+        /// is 'Id'.
+        /// </summary>
+        /// <param name="name">The name of the property that holds the id.</param>
+        /// <returns>Value that was set.</returns>
+        protected string WithId(string name)
+        {
+            VerifyPropertyName(name, allowId: true);
+
+            IdProperty = name.ToPascalCase();
+
+            return IdProperty;
         }
 
         /// <summary>
@@ -147,18 +168,23 @@ namespace Saule
             return result;
         }
 
-        private static void VerifyPropertyName(string name)
+        private static void VerifyPropertyName(string name, bool allowId = false)
         {
             var dashed = name.ToDashed();
 
-            switch (dashed)
+            if (dashed == "id" && !allowId)
             {
-                case "id":
-                    throw new JsonApiException("You cannot add an attribute named 'id'.");
-                case "links":
-                    throw new JsonApiException("You cannot add an attribute named 'links'.");
-                case "relationships":
-                    throw new JsonApiException("You cannot add an attribute named 'relationships'.");
+                throw new JsonApiException("You cannot add an attribute named 'id'.");
+            }
+
+            if (dashed == "links")
+            {
+                throw new JsonApiException("You cannot add an attribute named 'links'.");
+            }
+
+            if (dashed == "relationships")
+            {
+                throw new JsonApiException("You cannot add an attribute named 'relationships'.");
             }
         }
 
