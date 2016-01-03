@@ -86,7 +86,8 @@ namespace Saule
 
             _serializer.QueryContext = queryContext;
 
-            return _serializer.Serialize(@object, new T(), requestUri);
+            var preprocessResult = _serializer.PreprocessContent(@object, new T(), requestUri);
+            return JsonApiSerializer.Serialize(preprocessResult);
         }
 
         private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters)

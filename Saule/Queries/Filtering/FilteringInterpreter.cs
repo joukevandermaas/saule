@@ -30,7 +30,7 @@ namespace Saule.Queries.Filtering
 
         private static JsonApiException MissingProperty(string property, Exception ex)
         {
-            return new JsonApiException($"Attribute '{property.ToDashed()}' not found.", ex);
+            return new JsonApiException(ErrorType.Client, $"Attribute '{property.ToDashed()}' not found.", ex);
         }
 
         private IEnumerable ApplyProperty(IEnumerable enumerable, FilteringProperty property)

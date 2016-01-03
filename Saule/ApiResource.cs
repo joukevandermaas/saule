@@ -174,17 +174,17 @@ namespace Saule
 
             if (dashed == "id" && !allowId)
             {
-                throw new JsonApiException("You cannot add an attribute named 'id'.");
+                throw new JsonApiException(ErrorType.Server, "You cannot add an attribute named 'id'.");
             }
 
             if (dashed == "links")
             {
-                throw new JsonApiException("You cannot add an attribute named 'links'.");
+                throw new JsonApiException(ErrorType.Server, "You cannot add an attribute named 'links'.");
             }
 
             if (dashed == "relationships")
             {
-                throw new JsonApiException("You cannot add an attribute named 'relationships'.");
+                throw new JsonApiException(ErrorType.Server, "You cannot add an attribute named 'relationships'.");
             }
         }
 

@@ -19,8 +19,24 @@ namespace Saule
 
         public bool AllowUserQuery { get; set; } = false;
 
-        public JToken Serialize(object @object, ApiResource resource, Uri requestUri)
+        public static JToken Serialize(PreprocessResult result)
         {
+            if (result.ErrorContent != null)
+            {
+                return new ErrorSerializer().Serialize(result.ErrorContent);
+            }
+
+            var jsonSerializer = GetJsonSerializer(result.JsonConverters);
+            return result.ResourceSerializer.Serialize(jsonSerializer);
+        }
+
+        public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri)
+        {
+            var result = new PreprocessResult
+            {
+                JsonConverters = JsonConverters
+            };
+
             try
             {
                 if (requestUri == null)
@@ -28,10 +44,10 @@ namespace Saule
                     throw new ArgumentNullException(nameof(requestUri));
                 }
 
-                var error = SerializeAsError(@object);
+                var error = GetAsError(@object);
                 if (error != null)
                 {
-                    return error;
+                    result.ErrorContent = error;
                 }
 
                 var dataObject = @object;
@@ -58,38 +74,37 @@ namespace Saule
                     urlBuilder: UrlPathBuilder,
                     paginationContext: QueryContext?.Pagination);
 
-                var jsonSerializer = GetJsonSerializer();
-                return serializer.Serialize(jsonSerializer);
+                result.ResourceSerializer = serializer;
             }
             catch (JsonApiException ex)
             {
-                return SerializeAsError(ex);
+                result.ErrorContent = GetAsError(ex);
             }
+
+            return result;
         }
 
-        private static JToken SerializeAsError(object @object)
+        private static ApiError GetAsError(object @object)
         {
             var exception = @object as Exception;
             if (exception != null)
             {
-                var error = new ApiError(exception);
-                return new ErrorSerializer().Serialize(error);
+                return new ApiError(exception);
             }
 
             var httpError = @object as HttpError;
             if (httpError != null)
             {
-                var error = new ApiError(httpError);
-                return new ErrorSerializer().Serialize(error);
+                return new ApiError(httpError);
             }
 
             return null;
         }
 
-        private JsonSerializer GetJsonSerializer()
+        private static JsonSerializer GetJsonSerializer(IEnumerable<JsonConverter> converters)
         {
             var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            foreach (var converter in JsonConverters)
+            foreach (var converter in converters)
             {
                 serializer.Converters.Add(converter);
             }

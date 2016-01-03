@@ -6,6 +6,8 @@ namespace Saule.Serialization
 {
     internal class ApiError
     {
+        private readonly JsonApiException _exception;
+
         public ApiError(Exception ex)
         {
             Title = ex.Message;
@@ -14,6 +16,8 @@ namespace Saule.Serialization
             Links = ex.HelpLink != null
                 ? new Dictionary<string, string> { ["about"] = ex.HelpLink }
                 : null;
+
+            _exception = ex as JsonApiException;
         }
 
         internal ApiError(HttpError ex)
@@ -30,6 +34,11 @@ namespace Saule.Serialization
         public string Code { get; }
 
         public Dictionary<string, string> Links { get; }
+
+        public static bool IsClientError(ApiError error)
+        {
+            return error._exception != null && error._exception.ErrorType == ErrorType.Client;
+        }
 
         private static string GetRecursiveExceptionMessage(HttpError ex)
         {
