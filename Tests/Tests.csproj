@@ -128,6 +128,7 @@
     <Compile Include="Models\PersonWithNoJob.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="JsonApiSerializerTests.cs" />
+    <Compile Include="Models\Recursion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
