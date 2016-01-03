@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -10,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Saule.Queries;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -18,46 +15,40 @@ namespace Saule.Http
     /// <summary>
     /// Custom media type formatter for Json Api (1.0) responses and requests.
     /// </summary>
-    [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
     public class JsonApiMediaTypeFormatter : MediaTypeFormatter
     {
-        // NOTE: the comments on `override` public methods below are copied from the MSDN documentation at
-        // https://msdn.microsoft.com/en-us/library/system.net.http.formatting.mediatypeformatter(v=vs.118).aspx
-        private readonly JsonConverter[] _converters;
-        private readonly IUrlPathBuilder _urlBuilder;
-        private readonly ApiResource _resource;
-        private readonly Uri _baseUrl;
-        private readonly JsonApiSerializer _jsonApiSerializer;
-        private readonly QueryFilterExpressionCollection _queryFilterExpressions;
+        private readonly JsonApiConfiguration _config = new JsonApiConfiguration();
+        private HttpRequestMessage _request;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
+        [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
         public JsonApiMediaTypeFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
-            _converters = new JsonConverter[0];
-            _urlBuilder = new DefaultUrlPathBuilder();
-            _queryFilterExpressions = new QueryFilterExpressionCollection();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         /// <param name="urlBuilder">Determines how to generate urls for links.</param>
+        [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
         public JsonApiMediaTypeFormatter(IUrlPathBuilder urlBuilder)
             : this()
         {
-            _urlBuilder = urlBuilder;
+            _config.UrlPathBuilder = urlBuilder;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiMediaTypeFormatter"/> class.
         /// </summary>
         /// <param name="converters">Json converters to manipulate the serialization process.</param>
+        [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
         public JsonApiMediaTypeFormatter(params JsonConverter[] converters)
-            : this(new DefaultUrlPathBuilder(), converters)
+            : this()
         {
+            _config.JsonConverters.AddRange(converters);
         }
 
         /// <summary>
@@ -65,91 +56,41 @@ namespace Saule.Http
         /// </summary>
         /// <param name="urlBuilder">Determines how to generate urls for links.</param>
         /// <param name="converters">Json converters to manipulate the serialization process.</param>
+        [Obsolete("Please use the extension method 'ConfigureJsonApi' on HttpConfiguration instead.")]
         public JsonApiMediaTypeFormatter(IUrlPathBuilder urlBuilder, params JsonConverter[] converters)
-            : this(urlBuilder)
+            : this()
         {
-            _converters = converters;
+            _config.UrlPathBuilder = urlBuilder;
+            _config.JsonConverters.AddRange(converters);
         }
 
         internal JsonApiMediaTypeFormatter(JsonApiConfiguration config)
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
-            _converters = config.JsonConverters.ToArray();
-            _urlBuilder = config.UrlPathBuilder;
-            _queryFilterExpressions = config.QueryFilterExpressions;
+            _config = config;
         }
 
         internal JsonApiMediaTypeFormatter(
             HttpRequestMessage request,
-            IUrlPathBuilder urlBuilder,
-            QueryFilterExpressionCollection filterExpressions,
-            IEnumerable<JsonConverter> converters)
-            : this()
+            JsonApiConfiguration config)
+            : this(config)
         {
-            var jsonApi = new JsonApiSerializer
-            {
-                UrlPathBuilder = urlBuilder
-            };
-            jsonApi.JsonConverters.AddRange(converters);
-
-            _baseUrl = request.RequestUri;
-
-            if (request.Properties.ContainsKey(Constants.QueryContextPropertyName))
-            {
-                var queryContext = (QueryContext)request.Properties[Constants.QueryContextPropertyName];
-
-                if (queryContext.Filtering != null)
-                {
-                    queryContext.Filtering.QueryFilters = filterExpressions;
-                }
-
-                jsonApi.QueryContext = queryContext;
-            }
-
-            if (request.Properties.ContainsKey(Constants.RequestPropertyName))
-            {
-                _resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
-            }
-
-            _jsonApiSerializer = jsonApi;
+            _request = request;
         }
 
-        /// <summary>
-        /// See base class documentation.
-        /// Queries whether this <see cref="MediaTypeFormatter"/> can serialize an
-        /// object of the specified type.
-        /// </summary>
-        /// <param name="type">The type to serialize.</param>
-        /// <returns>
-        /// true if the <see cref="MediaTypeFormatter"/> can serialize the type; otherwise, false.
-        /// </returns>
+        /// <inheritdoc/>
         public override bool CanReadType(Type type)
         {
             return true;
         }
 
-        /// <summary>
-        /// Queries whether this <see cref="MediaTypeFormatter"/> can deserialize an
-        /// object of the specified type.
-        /// </summary>
-        /// <param name="type">The type to deserialize.</param>
-        /// <returns>
-        /// true if the <see cref="MediaTypeFormatter"/> can deserialize the type; otherwise, false.
-        /// </returns>
+        /// <inheritdoc/>
         public override bool CanWriteType(Type type)
         {
             return true;
         }
 
-        /// <summary>
-        /// Asynchronously writes an object of the specified type.
-        /// </summary>
-        /// <param name="type">The type of the object to write.</param>
-        /// <param name="value">The object value to write. It may be null.</param>
-        /// <param name="writeStream">The <see cref="Stream"/> to which to write.</param>
-        /// <param name="content">The <see cref="HttpContent"/> if available. It may be null.</param>
-        /// <param name="transportContext">The <see cref="TransportContext"/> if available. It may be null.</param>
-        /// <returns>A <see cref="Task"/> that will perform the write.</returns>
+        /// <inheritdoc/>
         public override async Task WriteToStreamAsync(
             Type type,
             object value,
@@ -157,33 +98,23 @@ namespace Saule.Http
             HttpContent content,
             TransportContext transportContext)
         {
-            JToken json;
-            if (_resource != null)
+            PreprocessResult preprocessed;
+            if (_request.Properties.ContainsKey(Constants.PreprocessResultPropertyName))
             {
-                json = _jsonApiSerializer.Serialize(value, _resource, _baseUrl);
+                preprocessed = _request.Properties[Constants.PreprocessResultPropertyName]
+                    as PreprocessResult;
             }
             else
             {
-                // user forgot the attribute
-                var exception = new JsonApiException("You must add a [ReturnsResourceAttribute] to action methods.")
-                {
-                    HelpLink = "https://github.com/joukevandermaas/saule/wiki"
-                };
-
-                json = _jsonApiSerializer.Serialize(exception, _resource, _baseUrl);
+                // backwards compatibility with old way to do Saule setup
+                preprocessed = PreprocessingDelegatingHandler.PreprocessRequest(value, _request, _config);
             }
 
+            var json = JsonApiSerializer.Serialize(preprocessed);
             await WriteJsonToStream(json, writeStream);
         }
 
-        /// <summary>
-        /// Asynchronously deserializes an object of the specified type.
-        /// </summary>
-        /// <param name="type">The type of the object to deserialize.</param>
-        /// <param name="readStream">The <see cref="Stream"/> to read.</param>
-        /// <param name="content">The <see cref="HttpContent"/>, if available. It may be null.</param>
-        /// <param name="formatterLogger">The <see cref="IFormatterLogger"/> to log events to.</param>
-        /// <returns>A <see cref="Task"/> whose result will be an object of the given type.</returns>
+        /// <inheritdoc/>
         public override async Task<object> ReadFromStreamAsync(
             Type type,
             Stream readStream,
@@ -197,25 +128,18 @@ namespace Saule.Http
             }
         }
 
-        /// <summary>
-        /// Returns a specialized instance of the <see cref="MediaTypeFormatter"/> that can
-        /// format a response for the given parameters.
-        /// </summary>
-        /// <param name="type">The type to format.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="mediaType">The media type.</param>
-        /// <returns>Returns <see cref="JsonApiMediaTypeFormatter"/>.</returns>
+        /// <inheritdoc/>
         public override MediaTypeFormatter GetPerRequestFormatterInstance(
             Type type, HttpRequestMessage request, MediaTypeHeaderValue mediaType)
         {
-            return new JsonApiMediaTypeFormatter(request, _urlBuilder, _queryFilterExpressions, _converters);
+            return new JsonApiMediaTypeFormatter(request, _config);
         }
 
         private async Task WriteJsonToStream(JToken json, Stream stream)
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
             {
-                await writer.WriteAsync(json.ToString(Formatting.None, _converters));
+                await writer.WriteAsync(json.ToString(Formatting.None, _config.JsonConverters.ToArray()));
             }
         }
     }

@@ -89,7 +89,7 @@ namespace Saule.Queries.Sorting
 
         private static JsonApiException MissingProperty(string property, Exception ex)
         {
-            return new JsonApiException($"Attribute '{property.ToDashed()}' not found.", ex);
+            return new JsonApiException(ErrorType.Server, $"Attribute '{property.ToDashed()}' not found.", ex);
         }
 
         private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)

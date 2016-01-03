@@ -17,7 +17,7 @@ namespace Saule.Http
         /// <summary>
         /// Json converters to manipulate the serialization process.
         /// </summary>
-        public ICollection<JsonConverter> JsonConverters { get; } = new List<JsonConverter>();
+        public List<JsonConverter> JsonConverters { get; } = new List<JsonConverter>();
 
         /// <summary>
         /// Determines the expressions that are used to evaluate filter queries on a per-type basis.

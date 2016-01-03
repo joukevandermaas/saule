@@ -51,6 +51,7 @@ namespace Saule.Queries.Pagination
             {
                 // property id not found
                 throw new JsonApiException(
+                    ErrorType.Server,
                     $"Type {queryable.ElementType.Name} does not have a property called 'Id'.",
                     ex);
             }

@@ -22,7 +22,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Does not serialize links when HelpLink is null")]
         public void DoesNotPutNullInALink()
         {
-            var exception = new JsonApiException("Some message");
+            var exception = new JsonApiException(ErrorType.Server, "Some message");
             var errors = new ErrorSerializer().Serialize(new ApiError(exception))["errors"][0];
 
             Assert.Null(errors["links"]);

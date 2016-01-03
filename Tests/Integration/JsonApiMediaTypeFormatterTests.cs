@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -411,9 +412,10 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/broken/123/");
-                _output.WriteLine(result.ToString());
+                var response = await client.GetFullJsonResponseAsync("/broken/123/");
+                _output.WriteLine(response.ToString());
 
+                var result = response.Content;
                 var error = result["errors"][0];
 
                 Assert.Equal("https://github.com/joukevandermaas/saule/wiki",
@@ -424,6 +426,8 @@ namespace Tests.Integration
 
                 Assert.Equal("Saule.JsonApiException: You must add a [ReturnsResourceAttribute] to action methods.",
                     error["detail"].Value<string>());
+
+                Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             }
         }
 

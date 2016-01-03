@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Humanizer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries.Pagination;
@@ -128,7 +127,7 @@ namespace Saule.Serialization
             var id = GetId(properties, resource);
             if (id == null)
             {
-                throw new JsonApiException("Resources must have an id");
+                throw new JsonApiException(ErrorType.Server, "Resources must have an id");
             }
 
             return id;
