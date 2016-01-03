@@ -88,7 +88,7 @@ namespace Saule
 
         private JsonSerializer GetJsonSerializer()
         {
-            var serializer = new JsonSerializer();
+            var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             foreach (var converter in JsonConverters)
             {
                 serializer.Converters.Add(converter);

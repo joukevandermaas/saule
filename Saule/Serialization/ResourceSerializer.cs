@@ -35,7 +35,7 @@ namespace Saule.Serialization
 
         public JObject Serialize()
         {
-            return Serialize(new JsonSerializer());
+            return Serialize(new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
         }
 
         public JObject Serialize(JsonSerializer serializer)

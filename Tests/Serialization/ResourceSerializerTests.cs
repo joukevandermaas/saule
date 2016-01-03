@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Serialization;
 using System.Linq;
+using System.Threading;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
@@ -23,6 +24,25 @@ namespace Tests.Serialization
         public ResourceSerializerTests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        [Fact(DisplayName = "Handles recursive properties on resource objects")]
+        public void HandlesRecursiveProperties()
+        {
+            var firstModel = new Recursion.FirstModel();
+            var secondModel = new Recursion.SecondModel();
+            firstModel.Model = secondModel;
+            secondModel.Model = firstModel;
+
+            var target = new ResourceSerializer(firstModel, new Recursion.Resource(), 
+                GetUri(id: "123"), DefaultPathBuilder, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var id = result["data"].Value<string>("id");
+
+            Assert.Equal(firstModel.Id, id);
         }
 
         [Fact(DisplayName = "Uses a property called 'Id' when none is specified for Ids")]
