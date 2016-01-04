@@ -51,6 +51,25 @@ namespace Saule.Queries.Sorting
             return enumerable;
         }
 
+        private static JsonApiException MissingProperty(string property, Exception ex)
+        {
+            return new JsonApiException(ErrorType.Server, $"Attribute '{property.ToDashed()}' not found.", ex);
+        }
+
+        private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)
+        {
+            if (isFirst)
+            {
+                return direction == SortingDirection.Descending
+                    ? QueryMethod.OrderByDescending
+                    : QueryMethod.OrderBy;
+            }
+
+            return direction == SortingDirection.Descending
+                ? QueryMethod.ThenByDescending
+                : QueryMethod.ThenBy;
+        }
+
         private IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
         {
             try
@@ -90,25 +109,6 @@ namespace Saule.Queries.Sorting
             {
                 throw MissingProperty(property.Name, ex);
             }
-        }
-
-        private static JsonApiException MissingProperty(string property, Exception ex)
-        {
-            return new JsonApiException(ErrorType.Server, $"Attribute '{property.ToDashed()}' not found.", ex);
-        }
-
-        private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)
-        {
-            if (isFirst)
-            {
-                return direction == SortingDirection.Descending
-                    ? QueryMethod.OrderByDescending
-                    : QueryMethod.OrderBy;
-            }
-
-            return direction == SortingDirection.Descending
-                ? QueryMethod.ThenByDescending
-                : QueryMethod.ThenBy;
         }
     }
 }

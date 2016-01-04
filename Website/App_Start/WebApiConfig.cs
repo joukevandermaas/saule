@@ -8,14 +8,13 @@ namespace Website
     {
         public static void Register(HttpConfiguration config)
         {
-            var formatter = new JsonApiMediaTypeFormatter(
-                new DefaultUrlPathBuilder("api/"));
-
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            config.Formatters.Clear();
-            config.Formatters.Add(formatter);
+            config.ConfigureJsonApi(new JsonApiConfiguration
+            {
+                UrlPathBuilder = new DefaultUrlPathBuilder("/api")
+            });
         }
     }
 
