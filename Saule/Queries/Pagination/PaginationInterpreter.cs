@@ -7,10 +7,12 @@ namespace Saule.Queries.Pagination
     internal class PaginationInterpreter
     {
         private readonly PaginationContext _context;
+        private readonly ApiResource _resource;
 
-        public PaginationInterpreter(PaginationContext context)
+        public PaginationInterpreter(PaginationContext context, ApiResource resource)
         {
             _context = context;
+            _resource = resource;
         }
 
         public IQueryable Apply(IQueryable queryable)
@@ -38,13 +40,13 @@ namespace Saule.Queries.Pagination
             return filtered;
         }
 
-        private static IQueryable OrderById(IQueryable queryable)
+        private IQueryable OrderById(IQueryable queryable)
         {
             try
             {
                 var sorted = queryable.ApplyQuery(
                     QueryMethod.OrderBy,
-                    Lambda.SelectProperty(queryable.ElementType, "Id"));
+                    Lambda.SelectProperty(queryable.ElementType, _resource.IdProperty));
                 return sorted as IQueryable;
             }
             catch (ArgumentException ex)
@@ -52,7 +54,7 @@ namespace Saule.Queries.Pagination
                 // property id not found
                 throw new JsonApiException(
                     ErrorType.Server,
-                    $"Type {queryable.ElementType.Name} does not have a property called 'Id'.",
+                    $"Type {queryable.ElementType.Name} does not have a property called '{_resource.IdProperty}'.",
                     ex);
             }
         }

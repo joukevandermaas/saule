@@ -17,7 +17,7 @@ namespace Tests.Queries
         public void IgnoresNonEnumerables()
         {
             var obj = Get.Person();
-            var result = Query.ApplySorting(obj, DefaultContext);
+            var result = Query.ApplySorting(obj, DefaultContext, new PersonResource());
 
             Assert.Same(obj, result);
         }
@@ -25,7 +25,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Doesn't do anything on empty queryable/enumerable")]
         public void EmptyIsNoop()
         {
-            var target = new SortingInterpreter(DefaultContext);
+            var target = new SortingInterpreter(DefaultContext, new PersonResource());
             var enumerableResult = target.Apply(Enumerable.Empty<Person>()) as IEnumerable<Person>;
             var queryableResult = target.Apply(Enumerable.Empty<Person>().AsQueryable()) as IQueryable<Person>;
 
@@ -71,9 +71,9 @@ namespace Tests.Queries
         public void AppliesSortingAscDesc()
         {
             var people = Get.People(100).ToList().AsQueryable();
-            var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
+            var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -83,9 +83,9 @@ namespace Tests.Queries
         public void AppliesSortingAscAsc()
         {
             var people = Get.People(100).ToList().AsQueryable();
-            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Id);
+            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")))
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -95,9 +95,9 @@ namespace Tests.Queries
         public void AppliesSortingAscAscToEnumerables()
         {
             var people = Get.People(100).ToList();
-            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Id);
+            var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")))
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")), new PersonResource())
                 as IEnumerable<Person>;
 
             Assert.Equal(expected, result);
@@ -107,9 +107,9 @@ namespace Tests.Queries
         public void AppliesSortingAscDescToEnumerables()
         {
             var people = Get.People(100).ToList();
-            var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Id);
+            var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")))
+            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")), new PersonResource())
                 as IEnumerable<Person>;
 
             Assert.Equal(expected, result);

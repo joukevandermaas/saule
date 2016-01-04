@@ -7,7 +7,7 @@ namespace Tests.Models
     {
         public Person(bool prefill = false, string id = "123")
         {
-            Id = id;
+            Identifier = id;
             if (!prefill) return;
 
             FirstName = "John";
@@ -18,7 +18,7 @@ namespace Tests.Models
             Friends = new List<Person>();
         }
 
-        public string Id { get; set; }
+        public string Identifier { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }

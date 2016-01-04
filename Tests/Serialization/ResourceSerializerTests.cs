@@ -48,7 +48,8 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Uses a property called 'Id' when none is specified for Ids")]
         public void UsesDefaultPropertyId()
         {
-            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+            var data = new PersonWithNoJob();
+            var target = new ResourceSerializer(data, new PersonWithDefaultIdResource(), 
                 GetUri(id: "123"), DefaultPathBuilder, null);
 
             var result = target.Serialize();
@@ -56,15 +57,13 @@ namespace Tests.Serialization
 
             var id = result["data"].Value<string>("id");
 
-            Assert.Equal(DefaultObject.Id, id);
+            Assert.Equal(data.Id, id);
         }
 
         [Fact(DisplayName = "Uses specified property if it exists for Ids")]
         public void UsesSpecifiedPropertyId()
         {
-            var person = new PersonWithDifferentId(id: "abc", prefill: true);
-            var resource = new PersonWithDifferentIdResource();
-            var target = new ResourceSerializer(person, resource,
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null);
 
             var result = target.Serialize();
@@ -72,15 +71,14 @@ namespace Tests.Serialization
 
             var id = result["data"].Value<string>("id");
 
-            Assert.Equal(person.PersonId, id);
+            Assert.Equal(DefaultObject.Identifier, id);
         }
 
         [Fact(DisplayName = "Uses custom id property for urls")]
         public void UsesCustomIdInUrls()
         {
-            var person = new PersonWithDifferentId(id: "abc", prefill: true);
-            var resource = new PersonWithDifferentIdResource();
-            var target = new ResourceSerializer(person, resource,
+            var person = Get.Person(id: "abc");
+            var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null);
 
             var result = target.Serialize();
@@ -107,24 +105,24 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Uses custom id property in collections")]
         public void UsesCustomIdInCollections()
         {
-            var person = new PersonWithDifferentId(id: "abc", prefill: true)
+            var person = new Person(id: "abc", prefill: true)
             {
-                Friends = new List<PersonWithDifferentId>
+                Friends = new List<Person>
                 {
-                    new PersonWithDifferentId(id: "def", prefill: true),
-                    new PersonWithDifferentId(id: "ghi", prefill: true),
-                    new PersonWithDifferentId(id: "jkl", prefill: true),
+                    new Person(id: "def", prefill: true),
+                    new Person(id: "ghi", prefill: true),
+                    new Person(id: "jkl", prefill: true),
                 }
             };
-            var resource = new PersonWithDifferentIdResource();
-            var target = new ResourceSerializer(person, resource,
+
+            var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var ids = result["data"]["relationships"]["friends"]["data"].Select(t => t.Value<string>("id"));
-            var expected = person.Friends.Select(p => p.PersonId);
+            var expected = person.Friends.Select(p => p.Identifier);
 
             Assert.Equal(expected, ids);
         }
@@ -202,7 +200,7 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, DefaultResource,
+            var target = new ResourceSerializer(person, new PersonWithDefaultIdResource(), 
                 GetUri(id: "123"), DefaultPathBuilder, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -307,7 +305,7 @@ namespace Tests.Serialization
         public void SupportsGuidIds()
         {
             var guid = new GuidAsId();
-            var serializer = new ResourceSerializer(guid, DefaultResource,
+            var serializer = new ResourceSerializer(guid, new PersonWithDefaultIdResource(), 
                 GetUri(id: "123"), DefaultPathBuilder, null);
 
             var guidResult = serializer.Serialize();
@@ -320,16 +318,16 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Does not serialize attributes that are not found")]
         public void SerializeOnlyWhatYouHave()
         {
-            var person = new GuidAsId();
-            var serializer = new ResourceSerializer(person, DefaultResource,
+            var company = new GuidAsId();
+            var serializer = new ResourceSerializer(company, new CompanyResource(),
                 GetUri(id: "123"), DefaultPathBuilder, null);
 
             var result = serializer.Serialize();
             _output.WriteLine(result.ToString());
 
-            Assert.Null(result["data"]["attributes"]["first-name"]);
-            Assert.Null(result["data"]["attributes"]["last-name"]);
-            Assert.Null(result["data"]["attributes"]["age"]);
+            Assert.Null(result["data"]["attributes"]["name"]);
+            Assert.Null(result["data"]["attributes"]["location"]);
+            Assert.Null(result["data"]["attributes"]["number-of-employees"]);
         }
 
         private static Uri GetUri(string path = "/people/", string id = null, string query = null)

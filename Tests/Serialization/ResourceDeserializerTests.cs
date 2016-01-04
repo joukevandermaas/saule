@@ -17,7 +17,7 @@ namespace Tests.Serialization
 
         public ResourceDeserializerTests()
         {
-            _person = Get.Person();
+            _person = Get.Person(id: "hello");
             _person.Friends = Get.People(1);
 
             _people = Get.People(5).ToArray();
@@ -28,8 +28,8 @@ namespace Tests.Serialization
                 _people, new PersonResource(), new Uri("http://example.com/people/"),
                 new DefaultUrlPathBuilder(), null);
 
-            _singleJson = singleSerializer.Serialize();
-            _collectionJson = multiSerializer.Serialize();
+            _singleJson = JToken.Parse(singleSerializer.Serialize().ToString());
+            _collectionJson = JToken.Parse(multiSerializer.Serialize().ToString());
         }
 
         [Fact(DisplayName = "Deserializes id and attributes")]
@@ -38,7 +38,7 @@ namespace Tests.Serialization
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
             var result = target.Deserialize() as Person;
 
-            Assert.Equal(_person.Id, result?.Id);
+            Assert.Equal(_person.Identifier, result?.Identifier);
             Assert.Equal(_person.FirstName, result?.FirstName);
             Assert.Equal(_person.LastName, result?.LastName);
             Assert.Equal(_person.Age, result?.Age);
@@ -51,7 +51,7 @@ namespace Tests.Serialization
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
             var result = target.Deserialize() as Person;
 
-            Assert.Equal(null, result?.Id);
+            Assert.Equal(null, result?.Identifier);
             Assert.Equal(_person.FirstName, result?.FirstName);
             Assert.Equal(_person.LastName, result?.LastName);
             Assert.Equal(_person.Age, result?.Age);
@@ -78,7 +78,7 @@ namespace Tests.Serialization
             var expected = _person.Friends.Single();
             var actual = result?.Friends.Single();
 
-            Assert.Equal(expected.Id, actual?.Id);
+            Assert.Equal(expected.Identifier, actual?.Identifier);
             Assert.Null(actual?.FirstName);
             Assert.Null(actual?.LastName);
             Assert.Equal(0, actual?.Age);
@@ -95,7 +95,7 @@ namespace Tests.Serialization
             Assert.Equal(_people.Length, result?.Length);
             for (var i = 0; i < _people.Length; i++)
             {
-                Assert.Equal(_people[i].Id, result?[i].Id);
+                Assert.Equal(_people[i].Identifier, result?[i].Identifier);
             }
         }
     }

@@ -7,10 +7,12 @@ namespace Saule.Queries.Sorting
     internal class SortingInterpreter
     {
         private readonly SortingContext _context;
+        private readonly ApiResource _resource;
 
-        public SortingInterpreter(SortingContext context)
+        public SortingInterpreter(SortingContext context, ApiResource resource)
         {
             _context = context;
+            _resource = resource;
         }
 
         public IQueryable Apply(IQueryable queryable)
@@ -49,44 +51,6 @@ namespace Saule.Queries.Sorting
             return enumerable;
         }
 
-        private static IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
-        {
-            try
-            {
-                queryable = queryable.ApplyQuery(
-                    GetQueryMethod(property.Direction, isFirst),
-                    Lambda.SelectProperty(queryable.ElementType, property.Name))
-                    as IQueryable;
-                return queryable;
-            }
-            catch (ArgumentException ex)
-            {
-                throw MissingProperty(property.Name, ex);
-            }
-        }
-
-        private static IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
-        {
-            try
-            {
-                var elementType = enumerable
-                    .GetType()
-                    .GetInterface("IEnumerable`1")
-                    .GetGenericArguments()
-                    .First();
-
-                enumerable = enumerable.ApplyQuery(
-                    GetQueryMethod(property.Direction, isFirst),
-                    Lambda.SelectProperty(elementType, property.Name))
-                    as IEnumerable;
-                return enumerable;
-            }
-            catch (ArgumentException ex)
-            {
-                throw MissingProperty(property.Name, ex);
-            }
-        }
-
         private static JsonApiException MissingProperty(string property, Exception ex)
         {
             return new JsonApiException(ErrorType.Server, $"Attribute '{property.ToDashed()}' not found.", ex);
@@ -104,6 +68,47 @@ namespace Saule.Queries.Sorting
             return direction == SortingDirection.Descending
                 ? QueryMethod.ThenByDescending
                 : QueryMethod.ThenBy;
+        }
+
+        private IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
+        {
+            try
+            {
+                var propertyName = property.Name == "Id" ? _resource.IdProperty : property.Name;
+
+                queryable = queryable.ApplyQuery(
+                    GetQueryMethod(property.Direction, isFirst),
+                    Lambda.SelectProperty(queryable.ElementType, propertyName))
+                    as IQueryable;
+                return queryable;
+            }
+            catch (ArgumentException ex)
+            {
+                throw MissingProperty(property.Name, ex);
+            }
+        }
+
+        private IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
+        {
+            try
+            {
+                var elementType = enumerable
+                    .GetType()
+                    .GetInterface("IEnumerable`1")
+                    .GetGenericArguments()
+                    .First();
+                var propertyName = property.Name == "Id" ? _resource.IdProperty : property.Name;
+
+                enumerable = enumerable.ApplyQuery(
+                    GetQueryMethod(property.Direction, isFirst),
+                    Lambda.SelectProperty(elementType, propertyName))
+                    as IEnumerable;
+                return enumerable;
+            }
+            catch (ArgumentException ex)
+            {
+                throw MissingProperty(property.Name, ex);
+            }
         }
     }
 }
