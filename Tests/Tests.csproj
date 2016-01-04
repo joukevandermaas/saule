@@ -122,6 +122,7 @@
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\PersonResource.cs" />
+    <Compile Include="Models\PersonWithDefaultIdResource.cs" />
     <Compile Include="Models\PersonWithDifferentId.cs" />
     <Compile Include="Models\PersonWithDifferentIdResource.cs" />
     <Compile Include="Models\PersonWithNoId.cs" />

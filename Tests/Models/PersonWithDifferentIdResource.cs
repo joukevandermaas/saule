@@ -7,14 +7,14 @@ namespace Tests.Models
         public PersonWithDifferentIdResource()
         {
             OfType("Person");
-            WithId("PersonId");
+            WithId(nameof(PersonWithDifferentId.PersonId));
 
-            Attribute("FirstName");
-            Attribute("LastName");
-            Attribute("Age");
+            Attribute(nameof(PersonWithDifferentId.FirstName));
+            Attribute(nameof(PersonWithDifferentId.LastName));
+            Attribute(nameof(PersonWithDifferentId.Age));
 
-            BelongsTo<CompanyWithDifferentIdResource>("Job", "/employer");
-            HasMany<PersonWithDifferentIdResource>("Friends");
+            BelongsTo<CompanyWithDifferentIdResource>(nameof(PersonWithDifferentId.Job), "/employer");
+            HasMany<PersonWithDifferentIdResource>(nameof(PersonWithDifferentId.Friends));
         }
     }
 }

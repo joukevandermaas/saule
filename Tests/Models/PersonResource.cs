@@ -6,12 +6,14 @@ namespace Tests.Models
     {
         public PersonResource()
         {
-            Attribute("FirstName");
-            Attribute("LastName");
-            Attribute("Age");
+            WithId(nameof(Person.Identifier));
 
-            BelongsTo<CompanyResource>("Job", "/employer");
-            HasMany<PersonResource>("Friends");
+            Attribute(nameof(Person.FirstName));
+            Attribute(nameof(Person.LastName));
+            Attribute(nameof(Person.Age));
+
+            BelongsTo<CompanyResource>(nameof(Person.Job), "/employer");
+            HasMany<PersonResource>(nameof(Person.Friends));
         }
     }
 }

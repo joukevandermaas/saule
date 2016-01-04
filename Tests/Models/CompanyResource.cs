@@ -7,9 +7,9 @@ namespace Tests.Models
         public CompanyResource()
         {
             OfType("Corporation");
-            Attribute("Name");
-            Attribute("NumberOfEmployees");
-            Attribute("Location");
+            Attribute(nameof(Company.Name));
+            Attribute(nameof(Company.NumberOfEmployees));
+            Attribute(nameof(Company.Location));
         }
     }
 }

@@ -7,10 +7,12 @@ namespace Saule.Queries.Sorting
     internal class SortingInterpreter
     {
         private readonly SortingContext _context;
+        private readonly ApiResource _resource;
 
-        public SortingInterpreter(SortingContext context)
+        public SortingInterpreter(SortingContext context, ApiResource resource)
         {
             _context = context;
+            _resource = resource;
         }
 
         public IQueryable Apply(IQueryable queryable)
@@ -49,13 +51,15 @@ namespace Saule.Queries.Sorting
             return enumerable;
         }
 
-        private static IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
+        private IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
         {
             try
             {
+                var propertyName = property.Name == "Id" ? _resource.IdProperty : property.Name;
+
                 queryable = queryable.ApplyQuery(
                     GetQueryMethod(property.Direction, isFirst),
-                    Lambda.SelectProperty(queryable.ElementType, property.Name))
+                    Lambda.SelectProperty(queryable.ElementType, propertyName))
                     as IQueryable;
                 return queryable;
             }
@@ -65,7 +69,7 @@ namespace Saule.Queries.Sorting
             }
         }
 
-        private static IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
+        private IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
         {
             try
             {
@@ -74,10 +78,11 @@ namespace Saule.Queries.Sorting
                     .GetInterface("IEnumerable`1")
                     .GetGenericArguments()
                     .First();
+                var propertyName = property.Name == "Id" ? _resource.IdProperty : property.Name;
 
                 enumerable = enumerable.ApplyQuery(
                     GetQueryMethod(property.Direction, isFirst),
-                    Lambda.SelectProperty(elementType, property.Name))
+                    Lambda.SelectProperty(elementType, propertyName))
                     as IEnumerable;
                 return enumerable;
             }

@@ -47,7 +47,7 @@ namespace Tests.Controllers
         [Route("people/{id}")]
         public Person PostPerson(string id, Person person)
         {
-            person.Id = id;
+            person.Identifier = id;
             return person;
         }
 

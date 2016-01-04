@@ -54,17 +54,17 @@ namespace Saule
 
                 if (QueryContext?.Filtering != null)
                 {
-                    dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filtering);
+                    dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filtering, resource);
                 }
 
                 if (QueryContext?.Sorting != null)
                 {
-                    dataObject = Query.ApplySorting(dataObject, QueryContext.Sorting);
+                    dataObject = Query.ApplySorting(dataObject, QueryContext.Sorting, resource);
                 }
 
                 if (QueryContext?.Pagination != null)
                 {
-                    dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination);
+                    dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
                 }
 
                 var serializer = new ResourceSerializer(

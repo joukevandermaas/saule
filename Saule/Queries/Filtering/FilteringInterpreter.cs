@@ -8,24 +8,36 @@ namespace Saule.Queries.Filtering
     internal class FilteringInterpreter
     {
         private readonly FilteringContext _context;
+        private readonly ApiResource _resource;
 
-        public FilteringInterpreter(FilteringContext context)
+        public FilteringInterpreter(FilteringContext context, ApiResource resource)
         {
             _context = context;
+            _resource = resource;
         }
 
         public IQueryable Apply(IQueryable queryable)
         {
-            return _context.Properties.Any()
-                ? _context.Properties.Aggregate(queryable, ApplyProperty)
-                : queryable;
+            if (_context.Properties.Any())
+            {
+                 return _context.Properties
+                    .Select(p => p.Name == "Id" ? new FilteringProperty(_resource.IdProperty, p.Value) : p)
+                    .Aggregate(queryable, ApplyProperty);
+            }
+
+            return queryable;
         }
 
         public IEnumerable Apply(IEnumerable enumerable)
         {
-            return _context.Properties.Any()
-                ? _context.Properties.Aggregate(enumerable, ApplyProperty)
-                : enumerable;
+            if (_context.Properties.Any())
+            {
+                 return _context.Properties
+                    .Select(p => p.Name == "Id" ? new FilteringProperty(_resource.IdProperty, p.Value) : p)
+                    .Aggregate(enumerable, ApplyProperty);
+            }
+
+            return enumerable;
         }
 
         private static JsonApiException MissingProperty(string property, Exception ex)
