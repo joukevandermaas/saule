@@ -45,7 +45,7 @@ namespace Saule.Queries
             MemberExpression propertyExpression,
             ParameterExpression parameter)
         {
-            var curriedBody = new FilterLambdaVisitor(propertyExpression, constant).Visit(expression.Body);
+            var curriedBody = new FilterLambdaVisitor<TProperty>(propertyExpression, constant).Visit(expression.Body);
             return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);
         }
 
@@ -85,14 +85,14 @@ namespace Saule.Queries
             return expressionFactory;
         }
 
-        private class FilterLambdaVisitor : ExpressionVisitor
+        private class FilterLambdaVisitor<T> : ExpressionVisitor
         {
             private readonly MemberExpression _property;
-            private readonly object _constant;
+            private readonly T _constant;
 
             private int _parameterCounter = 0;
 
-            public FilterLambdaVisitor(MemberExpression property, object constant)
+            public FilterLambdaVisitor(MemberExpression property, T constant)
             {
                 _property = property;
                 _constant = constant;
@@ -107,7 +107,7 @@ namespace Saule.Queries
                     return _property;
                 }
 
-                return Expression.Constant(_constant);
+                return Expression.Constant(_constant, typeof(T));
             }
         }
     }
