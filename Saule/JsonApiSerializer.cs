@@ -36,14 +36,13 @@ namespace Saule
             {
                 JsonConverters = JsonConverters
             };
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
 
             try
             {
-                if (requestUri == null)
-                {
-                    throw new ArgumentNullException(nameof(requestUri));
-                }
-
                 var error = GetAsError(@object);
                 if (error != null)
                 {
@@ -76,7 +75,7 @@ namespace Saule
 
                 result.ResourceSerializer = serializer;
             }
-            catch (JsonApiException ex)
+            catch (Exception ex)
             {
                 result.ErrorContent = GetAsError(ex);
             }
