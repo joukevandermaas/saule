@@ -81,7 +81,7 @@ namespace Tests.Serialization
             Assert.Equal(expected.Identifier, actual?.Identifier);
             Assert.Null(actual?.FirstName);
             Assert.Null(actual?.LastName);
-            Assert.Equal(0, actual?.Age);
+            Assert.Equal(default(int?), actual?.Age);
             Assert.Null(actual?.Job);
             Assert.Null(actual?.Friends);
         }

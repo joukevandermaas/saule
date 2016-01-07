@@ -21,7 +21,7 @@ namespace Tests.Models
         public string Identifier { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int Age { get; set; }
+        public int? Age { get; set; }
         public int NumberOfLegs { get; set; }
         public Company Job { get; set; }
         public IEnumerable<Person> Friends { get; set; }
