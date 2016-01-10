@@ -11,7 +11,7 @@ namespace Tests.Controllers
     public class PeopleController : ApiController
     {
         [HttpGet]
-        [Route("people/{id}")]
+        [Route("api/people/{id}")]
         public Person GetPerson(string id)
         {
             return Get.Person(id);
@@ -19,7 +19,7 @@ namespace Tests.Controllers
 
         [HttpGet]
         [AllowsQuery]
-        [Route("query/people")]
+        [Route("api/query/people")]
         public IEnumerable<Person> QueryPeople()
         {
             return GetPeople();
@@ -28,7 +28,7 @@ namespace Tests.Controllers
         [HttpGet]
         [AllowsQuery]
         [Paginated]
-        [Route("query/paginate/people")]
+        [Route("api/query/paginate/people")]
         public IEnumerable<Person> QueryAndPaginatePeople()
         {
             return GetPeopleNotRandom();
@@ -37,14 +37,14 @@ namespace Tests.Controllers
         [HttpGet]
         [Paginated]
         [AllowsQuery]
-        [Route("paginate/query/people")]
+        [Route("api/paginate/query/people")]
         public IEnumerable<Person> PaginateAndQueryPeople()
         {
             return GetPeopleNotRandom();
         }
 
         [HttpPost]
-        [Route("people/{id}")]
+        [Route("api/people/{id}")]
         public Person PostPerson(string id, Person person)
         {
             person.Identifier = id;
@@ -52,7 +52,7 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
-        [Route("people")]
+        [Route("api/people")]
         public IEnumerable<Person> GetPeople()
         {
             return Get.People(100);

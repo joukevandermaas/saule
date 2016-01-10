@@ -2,8 +2,8 @@
 {
     public static class Paths
     {
-        public const string SingleResource = "people/123/";
-        public const string ResourceCollection = "people/";
-        public const string NonExistingPath = "wrong/";
+        public const string SingleResource = "api/people/123/";
+        public const string ResourceCollection = "api/people/";
+        public const string NonExistingPath = "api/wrong/";
     }
 }

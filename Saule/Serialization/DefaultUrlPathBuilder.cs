@@ -1,4 +1,9 @@
-﻿namespace Saule.Serialization
+﻿using System;
+using System.Linq;
+using Humanizer;
+using Saule.Queries;
+
+namespace Saule.Serialization
 {
     /// <summary>
     /// Used to build url paths.
@@ -22,6 +27,14 @@
         public DefaultUrlPathBuilder(string prefix)
         {
             _prefix = prefix;
+        }
+
+        internal DefaultUrlPathBuilder(string template, ApiResource resource)
+        {
+            var parts = template.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var start = parts.TakeWhile(p => !p.StartsWith("{")).ToList();
+
+            _prefix = '/'.TrimJoin(start.Take(start.Count - 1).ToArray());
         }
 
         /// <summary>
