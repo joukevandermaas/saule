@@ -7,10 +7,11 @@ using Tests.Models;
 namespace Tests.Controllers
 {
     [ReturnsResource(typeof(CompanyResource))]
+    [RoutePrefix("api")]
     public class CompaniesController : ApiController
     {
         [HttpGet]
-        [Route("api/companies/{id}")]
+        [Route("companies/{id}")]
         public Company GetCompany(string id)
         {
             var company = Get.Company(id);
@@ -21,7 +22,7 @@ namespace Tests.Controllers
 
         [HttpGet]
         [Paginated(PerPage = 12)]
-        [Route("api/companies")]
+        [Route("companies")]
         public IEnumerable<Company> GetCompanies()
         {
             return Get.Companies(100);
