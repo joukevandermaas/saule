@@ -47,6 +47,7 @@ namespace Saule
                 if (error != null)
                 {
                     result.ErrorContent = error;
+                    return result;
                 }
 
                 var dataObject = @object;
