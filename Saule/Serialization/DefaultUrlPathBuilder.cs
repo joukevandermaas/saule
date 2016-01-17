@@ -31,10 +31,16 @@ namespace Saule.Serialization
 
         internal DefaultUrlPathBuilder(string template, ApiResource resource)
         {
-            var parts = template.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            var start = parts.TakeWhile(p => !p.StartsWith("{")).ToList();
+            var templateParts = template.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var dynamicCount = templateParts.Count(t => t.StartsWith("{"));
+            var preDynamic = templateParts.TakeWhile(t => !t.StartsWith("{")).ToList();
 
-            _prefix = '/'.TrimJoin(start.Take(start.Count - 1).ToArray());
+            if (dynamicCount < 2)
+            {
+                preDynamic = preDynamic.Take(preDynamic.Count - 1).ToList();
+            }
+
+            _prefix = '/'.TrimJoin(preDynamic.ToArray());
         }
 
         /// <summary>

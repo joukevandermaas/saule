@@ -1,4 +1,7 @@
-﻿using Saule;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Saule;
 using Saule.Serialization;
 using Tests.Models;
 using Xunit;
@@ -18,6 +21,44 @@ namespace Tests.Serialization
         public DefaultUrlPathBuilderTests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        public static IEnumerable<object[]> GetPrefixData()
+        {
+            var prefixes = new[]
+            {
+                "/api",
+                "/two/parts",
+                ""
+            };
+            var templates = new[]
+            {
+                "{controller}/{id}",
+                "{controller}/{category}/{id}",
+                "people/{id}",
+                "people/{id}/employees",
+                "people"
+            };
+
+            return from prefix in prefixes
+                   from template in templates
+                   select new object[] { prefix, template };
+        }
+
+        [Theory(DisplayName = "Finds correct prefix from template & url/")]
+        [MemberData("GetPrefixData")]
+        public void FindsCorrectPrefix(string prefix, string template)
+        {
+            var resource = new PersonResource();
+            template = $"{prefix}/{template}";
+
+            var builder = new DefaultUrlPathBuilder(template, resource);
+
+            var url = builder.BuildCanonicalPath(resource);
+
+            _output.WriteLine($"template: {template}\ngenerated result: {url}");
+
+            Assert.Equal($"{prefix}/people/", builder.BuildCanonicalPath(resource));
         }
 
         [Fact(DisplayName = "Collection uses ApiResource.UrlPath")]
