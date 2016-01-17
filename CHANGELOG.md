@@ -10,3 +10,5 @@
   (requires the new setup)
 - [**BUGFIX**] Saule now supports recursive object graphs
 - [**BUGFIX**] Saule can now be installed in .NET 4.5 projects
+- [**BUGFIX**] Iconsistency between top-level `self` link and generated urls. If you don't specify an
+  url path builder, the path namespace is now automatically guessed for you.

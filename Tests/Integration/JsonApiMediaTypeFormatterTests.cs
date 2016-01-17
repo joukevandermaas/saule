@@ -20,107 +20,245 @@ namespace Tests.Integration
             _output = output;
         }
 
-        [Fact(DisplayName = "Default constructor uses DefaultUrlPathBuilder and no converters (obsolete)")]
-        public async Task DefaultConstructorObsolete()
+        public class ObsoleteSetup
         {
-            var formatter = new JsonApiMediaTypeFormatter();
+            private readonly ITestOutputHelper _output;
 
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
+            public ObsoleteSetup(ITestOutputHelper output)
             {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
-                _output.WriteLine(result.ToString());
+                _output = output;
+            }
 
-                Assert.Equal(1, result["data"]["attributes"]["location"].Value<int>());
+            [Fact(DisplayName = "Default constructor uses DefaultUrlPathBuilder and no converters")]
+            public async Task DefaultConstructorObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
 
-                result = await client.GetJsonResponseAsync("/people/");
-                _output.WriteLine(result.ToString());
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/companies/456/");
+                    _output.WriteLine(result.ToString());
 
-                var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
-                    .Value<string>();
-                Assert.Equal("http://localhost/people/0/employer/", relatedUrl);
+                    Assert.Equal(1, result["data"]["attributes"]["location"].Value<int>());
+
+                    result = await client.GetJsonResponseAsync("api/people/");
+                    _output.WriteLine(result.ToString());
+
+                    var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
+                        .Value<string>();
+                    Assert.Equal("http://localhost/api/people/0/employer/", relatedUrl);
+                }
+            }
+
+            [Fact(DisplayName = "Url builder constructor generates those urls")]
+            public async Task UrlBuilderConstructorObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter(
+                    new CanonicalUrlPathBuilder());
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/people/");
+                    _output.WriteLine(result.ToString());
+
+                    var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
+                        .Value<string>();
+                    Assert.Equal("http://localhost/corporations/456/", relatedUrl);
+                }
+            }
+
+            [Fact(DisplayName = "Converter constructor uses that converter")]
+            public async Task ConverterConstructorObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter(
+                    new StringEnumConverter());
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/companies/456/");
+                    _output.WriteLine(result.ToString());
+
+                    Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
+                }
+            }
+
+            [Fact(DisplayName = "Builder and converter constructor uses both of those")]
+            public async Task BuilderAndConverterConstructorObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter(
+                    new CanonicalUrlPathBuilder(),
+                    new StringEnumConverter());
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/companies/456/");
+                    _output.WriteLine(result.ToString());
+
+                    Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
+
+                    result = await client.GetJsonResponseAsync("api/people/");
+                    _output.WriteLine(result.ToString());
+
+                    var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
+                        .Value<string>();
+                    Assert.Equal("http://localhost/corporations/456/", relatedUrl);
+                }
+            }
+
+            [Fact(DisplayName = "Applies pagination when appropriate")]
+            public async Task AppliesPaginationObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/companies/");
+                    _output.WriteLine(result.ToString());
+
+                    Assert.Equal(12, (result["data"] as JArray)?.Count);
+                }
+            }
+
+            [Fact(DisplayName = "Applies sorting when appropriate")]
+            public async Task AppliesSortingObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/query/people?sort=age");
+                    _output.WriteLine(result.ToString());
+
+                    var ages = ((JArray)result["data"])
+                        .Select(p => p["attributes"]["age"].Value<int>())
+                        .ToList();
+                    var sorted = ages.OrderBy(a => a).ToList();
+
+                    Assert.Equal(sorted, ages);
+                }
+            }
+
+            [Fact(DisplayName = "Applies filtering when appropriate")]
+            public async Task AppliesFilteringObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/query/people?filter[last-name]=Russel");
+                    _output.WriteLine(result.ToString());
+
+                    var names = ((JArray)result["data"])
+                        .Select(p => p["attributes"]["last-name"].Value<string>())
+                        .ToList();
+
+                    var filtered = names.Where(a => a == "Russel").ToList();
+
+                    Assert.Equal(filtered.Count, names.Count);
+                }
+            }
+
+            [Fact(DisplayName = "Does not apply sorting when not allowed")]
+            public async Task AppliesSortingConditionallyObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/people?sort=age");
+                    _output.WriteLine(result.ToString());
+
+                    var ages = ((JArray)result["data"])
+                        .Select(p => p["attributes"]["age"].Value<int>())
+                        .ToList();
+                    var sorted = ages.OrderBy(a => a).ToList();
+
+                    Assert.NotEqual(sorted, ages);
+                }
+            }
+
+            [Theory(DisplayName = "Always does sorting before pagination")]
+            [InlineData("query/paginate")]
+            [InlineData("paginate/query")]
+            public async Task AppliesSortingBeforePaginationObsolete(string path)
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result1 = await client.GetJsonResponseAsync($"api/{path}/people?sort=age");
+                    var result2 = await client.GetJsonResponseAsync($"api/{path}/people?sort=age&page[number]=1");
+                    _output.WriteLine(result1.ToString());
+                    _output.WriteLine(result2.ToString());
+
+                    var ages1 = ((JArray)result1["data"])
+                        .Select(p => p["attributes"]["age"].Value<int>())
+                        .ToList();
+                    var ages2 = ((JArray)result2["data"])
+                        .Select(p => p["attributes"]["age"].Value<int>())
+                        .ToList();
+
+                    var sorted = ages1.Concat(ages2).OrderBy(a => a).ToList();
+
+                    Assert.Equal(sorted, ages1.Concat(ages2).ToList());
+                }
+            }
+
+            [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute")]
+            public async Task GivesUsefulErrorObsolete()
+            {
+                var formatter = new JsonApiMediaTypeFormatter();
+
+                using (var server = new ObsoleteSetupJsonApiServer(formatter))
+                {
+                    var client = server.GetClient();
+                    var result = await client.GetJsonResponseAsync("api/broken/123/");
+                    _output.WriteLine(result.ToString());
+
+                    var error = result["errors"][0];
+
+                    Assert.Equal("https://github.com/joukevandermaas/saule/wiki",
+                        error["links"]["about"].Value<string>());
+
+                    Assert.Equal("Saule.JsonApiException",
+                        error["code"].Value<string>());
+
+                    Assert.Equal("Saule.JsonApiException: You must add a [ReturnsResourceAttribute] to action methods.",
+                        error["detail"].Value<string>());
+                }
             }
         }
 
-        [Fact(DisplayName = "Url builder constructor generates those urls (obsolete)")]
-        public async Task UrlBuilderConstructorObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter(
-                new CanonicalUrlPathBuilder());
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/people/");
-                _output.WriteLine(result.ToString());
-
-                var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
-                    .Value<string>();
-                Assert.Equal("http://localhost/corporations/456/", relatedUrl);
-            }
-        }
-
-        [Fact(DisplayName = "Converter constructor uses that converter (obsolete)")]
-        public async Task ConverterConstructorObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter(
-                new StringEnumConverter());
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
-                _output.WriteLine(result.ToString());
-
-                Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
-            }
-        }
-
-        [Fact(DisplayName = "Builder and converter constructor uses both of those (obsolete)")]
-        public async Task BuilderAndConverterConstructorObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter(
-                new CanonicalUrlPathBuilder(),
-                new StringEnumConverter());
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
-                _output.WriteLine(result.ToString());
-
-                Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
-
-                result = await client.GetJsonResponseAsync("/people/");
-                _output.WriteLine(result.ToString());
-
-                var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
-                    .Value<string>();
-                Assert.Equal("http://localhost/corporations/456/", relatedUrl);
-            }
-        }
-
-        [Fact(DisplayName = "Default constructor uses DefaultUrlPathBuilder and no converters (new)")]
+        [Fact(DisplayName = "Default constructor finds correct path namespace and uses no converters")]
         public async Task DefaultConstructor()
         {
             using (var server = new NewSetupJsonApiServer())
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
+                var result = await client.GetJsonResponseAsync("api/companies/456/");
                 _output.WriteLine(result.ToString());
 
                 Assert.Equal(1, result["data"]["attributes"]["location"].Value<int>());
 
-                result = await client.GetJsonResponseAsync("/people/");
+                result = await client.GetJsonResponseAsync("api/people/");
                 _output.WriteLine(result.ToString());
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
                     .Value<string>();
-                Assert.Equal("http://localhost/people/0/employer/", relatedUrl);
+                Assert.Equal("http://localhost/api/people/0/employer/", relatedUrl);
             }
         }
 
-        [Fact(DisplayName = "Url builder constructor generates those urls (new)")]
+        [Fact(DisplayName = "Url builder constructor generates those urls")]
         public async Task UrlBuilderConstructor()
         {
             var config = new JsonApiConfiguration
@@ -131,7 +269,7 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(config))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/people/");
+                var result = await client.GetJsonResponseAsync("api/people/");
                 _output.WriteLine(result.ToString());
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
@@ -140,7 +278,7 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Converter constructor uses that converter (new)")]
+        [Fact(DisplayName = "Converter constructor uses that converter")]
         public async Task ConverterConstructor()
         {
             var config = new JsonApiConfiguration
@@ -151,14 +289,14 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(config))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
+                var result = await client.GetJsonResponseAsync("api/companies/456/");
                 _output.WriteLine(result.ToString());
 
                 Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
             }
         }
 
-        [Fact(DisplayName = "Builder and converter constructor uses both of those (new)")]
+        [Fact(DisplayName = "Builder and converter constructor uses both of those")]
         public async Task BuilderAndConverterConstructor()
         {
             var config = new JsonApiConfiguration
@@ -170,12 +308,12 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(config))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/456/");
+                var result = await client.GetJsonResponseAsync("api/companies/456/");
                 _output.WriteLine(result.ToString());
 
                 Assert.Equal("National", result["data"]["attributes"]["location"].Value<string>());
 
-                result = await client.GetJsonResponseAsync("/people/");
+                result = await client.GetJsonResponseAsync("api/people/");
                 _output.WriteLine(result.ToString());
 
                 var relatedUrl = result["data"][0]["relationships"]["job"]["links"]["related"]
@@ -183,155 +321,26 @@ namespace Tests.Integration
                 Assert.Equal("http://localhost/corporations/456/", relatedUrl);
             }
         }
-
-        [Fact(DisplayName = "Applies pagination when appropriate (obsolete)")]
-        public async Task AppliesPaginationObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/");
-                _output.WriteLine(result.ToString());
-
-                Assert.Equal(12, (result["data"] as JArray)?.Count);
-            }
-        }
-
-        [Fact(DisplayName = "Applies sorting when appropriate (obsolete)")]
-        public async Task AppliesSortingObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/query/people?sort=age");
-                _output.WriteLine(result.ToString());
-
-                var ages = ((JArray)result["data"])
-                    .Select(p => p["attributes"]["age"].Value<int>())
-                    .ToList();
-                var sorted = ages.OrderBy(a => a).ToList();
-
-                Assert.Equal(sorted, ages);
-            }
-        }
-
-        [Fact(DisplayName = "Applies filtering when appropriate (obsolete)")]
-        public async Task AppliesFilteringObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/query/people?filter[last-name]=Russel");
-                _output.WriteLine(result.ToString());
-
-                var names = ((JArray)result["data"])
-                    .Select(p => p["attributes"]["last-name"].Value<string>())
-                    .ToList();
-
-                var filtered = names.Where(a => a == "Russel").ToList();
-
-                Assert.Equal(filtered.Count, names.Count);
-            }
-        }
-
-        [Fact(DisplayName = "Does not apply sorting when not allowed (obsolete)")]
-        public async Task AppliesSortingConditionallyObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/people?sort=age");
-                _output.WriteLine(result.ToString());
-
-                var ages = ((JArray)result["data"])
-                    .Select(p => p["attributes"]["age"].Value<int>())
-                    .ToList();
-                var sorted = ages.OrderBy(a => a).ToList();
-
-                Assert.NotEqual(sorted, ages);
-            }
-        }
-
-        [Theory(DisplayName = "Always does sorting before pagination (obsolete)")]
-        [InlineData("/query/paginate")]
-        [InlineData("/paginate/query")]
-        public async Task AppliesSortingBeforePaginationObsolete(string path)
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result1 = await client.GetJsonResponseAsync($"{path}/people?sort=age");
-                var result2 = await client.GetJsonResponseAsync($"{path}/people?sort=age&page[number]=1");
-                _output.WriteLine(result1.ToString());
-                _output.WriteLine(result2.ToString());
-
-                var ages1 = ((JArray)result1["data"])
-                    .Select(p => p["attributes"]["age"].Value<int>())
-                    .ToList();
-                var ages2 = ((JArray)result2["data"])
-                    .Select(p => p["attributes"]["age"].Value<int>())
-                    .ToList();
-
-                var sorted = ages1.Concat(ages2).OrderBy(a => a).ToList();
-
-                Assert.Equal(sorted, ages1.Concat(ages2).ToList());
-            }
-        }
-
-        [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute (obsolete)")]
-        public async Task GivesUsefulErrorObsolete()
-        {
-            var formatter = new JsonApiMediaTypeFormatter();
-
-            using (var server = new ObsoleteSetupJsonApiServer(formatter))
-            {
-                var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/broken/123/");
-                _output.WriteLine(result.ToString());
-
-                var error = result["errors"][0];
-
-                Assert.Equal("https://github.com/joukevandermaas/saule/wiki",
-                    error["links"]["about"].Value<string>());
-
-                Assert.Equal("Saule.JsonApiException",
-                    error["code"].Value<string>());
-
-                Assert.Equal("Saule.JsonApiException: You must add a [ReturnsResourceAttribute] to action methods.",
-                    error["detail"].Value<string>());
-            }
-        }
-
-        [Fact(DisplayName = "Applies pagination when appropriate (new)")]
+        [Fact(DisplayName = "Applies pagination when appropriate")]
         public async Task AppliesPagination()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/companies/");
+                var result = await client.GetJsonResponseAsync("api/companies/");
                 _output.WriteLine(result.ToString());
 
                 Assert.Equal(12, (result["data"] as JArray)?.Count);
             }
         }
 
-        [Fact(DisplayName = "Applies sorting when appropriate (new)")]
+        [Fact(DisplayName = "Applies sorting when appropriate")]
         public async Task AppliesSorting()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/query/people?sort=age");
+                var result = await client.GetJsonResponseAsync("api/query/people?sort=age");
                 _output.WriteLine(result.ToString());
 
                 var ages = ((JArray)result["data"])
@@ -343,13 +352,13 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Applies filtering when appropriate (new)")]
+        [Fact(DisplayName = "Applies filtering when appropriate")]
         public async Task AppliesFiltering()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/query/people?filter[last-name]=Russel");
+                var result = await client.GetJsonResponseAsync("api/query/people?filter[last-name]=Russel");
                 _output.WriteLine(result.ToString());
 
                 var names = ((JArray)result["data"])
@@ -362,13 +371,13 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Does not apply sorting when not allowed (new)")]
+        [Fact(DisplayName = "Does not apply sorting when not allowed")]
         public async Task AppliesSortingConditionally()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/people?sort=age");
+                var result = await client.GetJsonResponseAsync("api/people?sort=age");
                 _output.WriteLine(result.ToString());
 
                 var ages = ((JArray)result["data"])
@@ -380,16 +389,16 @@ namespace Tests.Integration
             }
         }
 
-        [Theory(DisplayName = "Always does sorting before pagination (new)")]
-        [InlineData("/query/paginate")]
-        [InlineData("/paginate/query")]
+        [Theory(DisplayName = "Always does sorting before pagination")]
+        [InlineData("query/paginate")]
+        [InlineData("paginate/query")]
         public async Task AppliesSortingBeforePagination(string path)
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result1 = await client.GetJsonResponseAsync($"{path}/people?sort=age");
-                var result2 = await client.GetJsonResponseAsync($"{path}/people?sort=age&page[number]=1");
+                var result1 = await client.GetJsonResponseAsync($"api/{path}/people?sort=age");
+                var result2 = await client.GetJsonResponseAsync($"api/{path}/people?sort=age&page[number]=1");
                 _output.WriteLine(result1.ToString());
                 _output.WriteLine(result2.ToString());
 
@@ -406,13 +415,13 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute (new)")]
+        [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute")]
         public async Task GivesUsefulError()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var response = await client.GetFullJsonResponseAsync("/broken/123/");
+                var response = await client.GetFullJsonResponseAsync("api/broken/123/");
                 _output.WriteLine(response.ToString());
 
                 var result = response.Content;
@@ -431,6 +440,18 @@ namespace Tests.Integration
             }
         }
 
+        [Fact(DisplayName = "Passes through 4xx errors")]
+        public async Task PassesThrough400Errors()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                var response = await client.GetAsync("does/not/exist");
+
+                Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+            }
+        }
+
         [Fact(DisplayName = "Uses user specified query filter expression for filtering")]
         public async Task UsesQueryFilterExpression()
         {
@@ -440,7 +461,7 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(config))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("/query/people?filter[last-name]=Russel");
+                var result = await client.GetJsonResponseAsync("api/query/people?filter[last-name]=Russel");
                 _output.WriteLine(result.ToString());
 
                 var names = ((JArray)result["data"])

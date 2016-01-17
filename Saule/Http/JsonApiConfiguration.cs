@@ -12,7 +12,7 @@ namespace Saule.Http
         /// <summary>
         /// Determines how to generate urls for links.
         /// </summary>
-        public IUrlPathBuilder UrlPathBuilder { get; set; } = new DefaultUrlPathBuilder();
+        public IUrlPathBuilder UrlPathBuilder { get; set; } = null;
 
         /// <summary>
         /// Json converters to manipulate the serialization process.

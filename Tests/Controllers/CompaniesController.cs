@@ -10,7 +10,7 @@ namespace Tests.Controllers
     public class CompaniesController : ApiController
     {
         [HttpGet]
-        [Route("companies/{id}")]
+        [Route("api/companies/{id}")]
         public Company GetCompany(string id)
         {
             var company = Get.Company(id);
@@ -21,7 +21,7 @@ namespace Tests.Controllers
 
         [HttpGet]
         [Paginated(PerPage = 12)]
-        [Route("companies")]
+        [Route("api/companies")]
         public IEnumerable<Company> GetCompanies()
         {
             return Get.Companies(100);
