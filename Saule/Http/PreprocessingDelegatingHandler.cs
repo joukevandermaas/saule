@@ -43,7 +43,7 @@ namespace Saule.Http
                 };
             }
 
-            PrepareUrlPathBuilder(jsonApi, request, config, resource);
+            PrepareUrlPathBuilder(jsonApi, request, config);
 
             return jsonApi.PreprocessContent(content, resource, request.RequestUri);
         }
@@ -77,27 +77,26 @@ namespace Saule.Http
         private static void PrepareUrlPathBuilder(
             JsonApiSerializer jsonApiSerializer,
             HttpRequestMessage request,
-            JsonApiConfiguration config,
-            ApiResource resource)
+            JsonApiConfiguration config)
         {
-            var result = config.UrlPathBuilder;
-            if (resource == null)
+            if (config.UrlPathBuilder != null)
             {
-                result = result ?? new DefaultUrlPathBuilder();
+                jsonApiSerializer.UrlPathBuilder = config.UrlPathBuilder;
             }
-            else if (!request.Properties.ContainsKey("MS_RequestContext"))
+            else if (!request.Properties.ContainsKey(Constants.WebApiRequestContextPropertyName))
             {
-                result = result ?? new DefaultUrlPathBuilder();
+                jsonApiSerializer.UrlPathBuilder = new DefaultUrlPathBuilder();
             }
             else
             {
-                var routeTemplate = (request.Properties["MS_RequestContext"] as HttpRequestContext)
-                    ?.RouteData.Route.RouteTemplate;
-                result = result ?? new DefaultUrlPathBuilder(
-                    routeTemplate, resource);
-            }
+                var requestContext = request.Properties[Constants.WebApiRequestContextPropertyName]
+                    as HttpRequestContext;
+                var routeTemplate = requestContext?.RouteData.Route.RouteTemplate;
+                var virtualPathRoot = requestContext?.VirtualPathRoot ?? "/";
 
-            jsonApiSerializer.UrlPathBuilder = result;
+                jsonApiSerializer.UrlPathBuilder = new DefaultUrlPathBuilder(
+                    virtualPathRoot, routeTemplate);
+            }
         }
 
         private static void PrepareQueryContext(

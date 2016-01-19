@@ -29,7 +29,7 @@ namespace Tests.Serialization
             {
                 "/api",
                 "/two/parts",
-                ""
+                "/"
             };
             var templates = new[]
             {
@@ -45,20 +45,36 @@ namespace Tests.Serialization
                    select new object[] { prefix, template };
         }
 
-        [Theory(DisplayName = "Finds correct prefix from template & url/")]
+        [Theory(DisplayName = "Finds correct prefix from template & url")]
         [MemberData("GetPrefixData")]
         public void FindsCorrectPrefix(string prefix, string template)
         {
             var resource = new PersonResource();
             template = $"{prefix}/{template}";
 
-            var builder = new DefaultUrlPathBuilder(template, resource);
+            var builder = new DefaultUrlPathBuilder("/", template);
 
             var url = builder.BuildCanonicalPath(resource);
 
             _output.WriteLine($"template: {template}\ngenerated result: {url}");
 
-            Assert.Equal($"{prefix}/people/", builder.BuildCanonicalPath(resource));
+            Assert.Equal($"{prefix.TrimEnd('/')}/people/", builder.BuildCanonicalPath(resource));
+        }
+
+        [Theory(DisplayName = "Finds correct prefix from template, virtual path root & url")]
+        [MemberData("GetPrefixData")]
+        public void FindsCorrectPrefixWithVirtualPath(string prefix, string template)
+        {
+            var resource = new PersonResource();
+            template = $"test/{template}";
+
+            var builder = new DefaultUrlPathBuilder(prefix, template);
+
+            var url = builder.BuildCanonicalPath(resource);
+
+            _output.WriteLine($"template: {template}\ngenerated result: {url}");
+
+            Assert.Equal($"{prefix.TrimEnd('/')}/test/people/", builder.BuildCanonicalPath(resource));
         }
 
         [Fact(DisplayName = "Collection uses ApiResource.UrlPath")]
