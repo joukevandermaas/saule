@@ -1,4 +1,4 @@
-$isTag = $Env:APPVEYOR_REPO_TAG;
+$isRelease = $Env:APPVEYOR_REPO_BRANCH -match 'release-v.+';
 
 $project = 'Saule';
 $path = Resolve-Path "$project/$project.nuspec";
@@ -6,7 +6,7 @@ $path = Resolve-Path "$project/$project.nuspec";
 Write-Host "Updating nuget version for project $project";
 
 [xml]$nuspec = Get-Content $path;
-if ($isTag -eq 'true') {
+if ($isRelease) {
   $nuspec.package.metadata.version = '$version$';
   Write-Host 'Set version to "$version$"';
 } else {
