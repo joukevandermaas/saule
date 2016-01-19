@@ -29,7 +29,7 @@ namespace Saule.Serialization
             _prefix = prefix;
         }
 
-        internal DefaultUrlPathBuilder(string template, ApiResource resource)
+        internal DefaultUrlPathBuilder(string virtualPathRoot, string template)
         {
             var templateParts = template.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             var dynamicCount = templateParts.Count(t => t.StartsWith("{"));
@@ -40,7 +40,7 @@ namespace Saule.Serialization
                 preDynamic = preDynamic.Take(preDynamic.Count - 1).ToList();
             }
 
-            _prefix = '/'.TrimJoin(preDynamic.ToArray());
+            _prefix = '/'.TrimJoin(virtualPathRoot.ToEnumerable().Concat(preDynamic).ToArray());
         }
 
         /// <summary>
