@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -31,16 +29,21 @@ namespace Saule.Http
             PrepareQueryContext(jsonApi, request, config);
 
             ApiResource resource = null;
-            if (request.Properties.ContainsKey(Constants.RequestPropertyName))
+            var httpError = content as HttpError;
+            if (httpError == null)
             {
-                resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
-            }
-            else
-            {
-                content = new JsonApiException(ErrorType.Server, "You must add a [ReturnsResourceAttribute] to action methods.")
+                if (request.Properties.ContainsKey(Constants.RequestPropertyName))
                 {
-                    HelpLink = "https://github.com/joukevandermaas/saule/wiki"
-                };
+                    resource = (ApiResource) request.Properties[Constants.RequestPropertyName];
+                }
+                else
+                {
+                    content = new JsonApiException(ErrorType.Server,
+                        "You must add a [ReturnsResourceAttribute] to action methods.")
+                    {
+                        HelpLink = "https://github.com/joukevandermaas/saule/wiki"
+                    };
+                }
             }
 
             PrepareUrlPathBuilder(jsonApi, request, config);
@@ -48,13 +51,15 @@ namespace Saule.Http
             return jsonApi.PreprocessContent(content, resource, request.RequestUri);
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
             var result = await base.SendAsync(request, cancellationToken);
 
-            var statusCode = (int)result.StatusCode;
+            var statusCode = (int) result.StatusCode;
             if (statusCode >= 400 && statusCode < 500)
-            { // probably malformed request or not found
+            {
+                // probably malformed request or not found
                 return result;
             }
 
@@ -109,7 +114,7 @@ namespace Saule.Http
                 return;
             }
 
-            var queryContext = (QueryContext)request.Properties[Constants.QueryContextPropertyName];
+            var queryContext = (QueryContext) request.Properties[Constants.QueryContextPropertyName];
 
             if (queryContext.Filtering != null)
             {
