@@ -35,9 +35,11 @@ namespace Saule.Http
             {
                 resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
             }
-            else
+            else if (!(content is HttpError))
             {
-                content = new JsonApiException(ErrorType.Server, "You must add a [ReturnsResourceAttribute] to action methods.")
+                content = new JsonApiException(
+                    ErrorType.Server,
+                    "You must add a [ReturnsResourceAttribute] to action methods.")
                 {
                     HelpLink = "https://github.com/joukevandermaas/saule/wiki"
                 };
