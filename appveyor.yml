@@ -1,5 +1,6 @@
-version: 1.4.0.{build}
+version: 1.4.1.{build}
 configuration: Release
+skip_tags: true
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -18,6 +19,7 @@ deploy:
   api_key:
     secure: dtP6YFOY3quvyRlH0DYG/i4AbOegM/5oT8Q+IcpKMqKZgBiAmm+XRs2TN9+ju9oe
   on:
+    appveyor_repo_tag: false
     branch: /(master|release-v.+)/
 - release: saule-v$(appveyor_build_version)
   description: ''
