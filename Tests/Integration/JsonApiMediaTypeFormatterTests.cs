@@ -448,7 +448,24 @@ namespace Tests.Integration
                 var client = server.GetClient();
                 var response = await client.GetAsync("does/not/exist");
 
-                Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+                Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            }
+        }
+
+        [Fact(DisplayName = "Passes through HttpError")]
+        public async Task PassesThroughHttpErrors()
+        {
+            using (var server = new NewSetupJsonApiServer())
+            {
+                var client = server.GetClient();
+                var response = await client.GetFullJsonResponseAsync("api/broken");
+
+                _output.WriteLine(response.Content.ToString());
+
+                var errorText = response.Content["errors"][0]["title"].Value<string>();
+
+                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+                Assert.Equal("Authorization has been denied for this request.", errorText);
             }
         }
 
