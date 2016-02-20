@@ -6,12 +6,12 @@ using Tests.Models;
 
 namespace Tests.Controllers
 {
-    [ReturnsResource(typeof(CompanyResource))]
     [RoutePrefix("api")]
     public class CompaniesController : ApiController
     {
         [HttpGet]
         [Route("companies/{id}")]
+        [ReturnsResource(typeof(CompanyResource))]
         public Company GetCompany(string id)
         {
             var company = Get.Company(id);
@@ -20,9 +20,18 @@ namespace Tests.Controllers
             return company;
         }
 
+        // note: no ReturnsResource!
+        [HttpDelete]
+        [Route("companies/{id}")]
+        public void DeleteCompany(string id)
+        {
+            
+        }
+
         [HttpGet]
         [Paginated(PerPage = 12)]
         [Route("companies")]
+        [ReturnsResource(typeof(CompanyResource))]
         public IEnumerable<Company> GetCompanies()
         {
             return Get.Companies(100);
