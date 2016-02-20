@@ -35,7 +35,7 @@ namespace Saule.Http
             {
                 resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
             }
-            else if (!(content is HttpError))
+            else if (content != null && !(content is HttpError))
             {
                 content = new JsonApiException(
                     ErrorType.Server,

@@ -469,6 +469,18 @@ namespace Tests.Integration
             }
         }
 
+        [Fact(DisplayName = "Works with delete/no content")]
+        public async Task WorksForNoContent()
+        {
+            using (var server = new NewSetupJsonApiServer())
+            {
+                var client = server.GetClient();
+                var result = await client.DeleteAsync("/api/companies/123");
+
+                Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+            }
+        }
+
         [Fact(DisplayName = "Uses user specified query filter expression for filtering")]
         public async Task UsesQueryFilterExpression()
         {
