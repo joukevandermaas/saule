@@ -77,12 +77,16 @@ namespace Saule.Serialization
 
         private ExceptionRenderer GetRenderer()
         {
-            var validationException =
+            if (_exception != null && _exception.InnerException != null)
+            {
+                var validationException =
                 _exception.InnerException as System.Data.Entity.Validation.DbEntityValidationException;
 
-            if (validationException != null)
-            {
-                return new DbEntityValidationExceptionRenderer(validationException);
+                if (validationException != null)
+                {
+                    return new DbEntityValidationExceptionRenderer(validationException);
+                }
+
             }
 
 

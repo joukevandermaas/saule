@@ -105,6 +105,8 @@
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />
+    <Compile Include="Serialization\ErrorRenderers\DbEntityValidationExceptionRenderer.cs" />
+    <Compile Include="Serialization\ErrorRenderers\ExceptionRenderer.cs" />
     <Compile Include="Serialization\IUrlPathBuilder.cs" />
     <Compile Include="Http\PaginatedAttribute.cs" />
     <Compile Include="Http\ReturnsResourceAttribute.cs" />
