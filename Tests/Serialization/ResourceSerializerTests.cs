@@ -315,6 +315,33 @@ namespace Tests.Serialization
             Assert.Equal(guid.Id, guidResult["data"].Value<Guid>("id"));
         }
 
+        [Fact(DisplayName = "Supports Guids for ids in collections")]
+        public void SupportsGuidIdsInCollections()
+        {
+            var guids = new [] { new GuidAsId(), new GuidAsId() };
+            var serializer = new ResourceSerializer(guids, new PersonWithDefaultIdResource(),
+                GetUri(id: "123"), DefaultPathBuilder, null);
+
+            var guidsResult = serializer.Serialize();
+            _output.WriteLine(guidsResult.ToString());
+
+            Assert.NotEmpty(guidsResult["data"]);
+        }
+
+        [Fact(DisplayName = "Supports Guids for id in relations")]
+        public void SupportsGuidsAsRelations()
+        {
+            var relatedToGuidId = new GuidAsRelation();
+            var serializer = new ResourceSerializer( relatedToGuidId, new PersonWithGuidAsRelationsResource(),
+                GetUri(id: "123"), DefaultPathBuilder, null);
+
+            var result = serializer.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.NotNull(result["data"]["relationships"]["relation"]);
+            Assert.NotNull(result["data"]["relationships"]["relations"]);
+        }
+
         [Fact(DisplayName = "Does not serialize attributes that are not found")]
         public void SerializeOnlyWhatYouHave()
         {
