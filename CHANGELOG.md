@@ -1,3 +1,7 @@
+## Version 1.4.2
+
+- [**BUGFIX**] GUID ids do not work for relationships (#96)
+
 ## Version 1.4.1
 
 - [**REGRESSION**] `HttpError` not passed through; Saule specific error is serialized instead.
