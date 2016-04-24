@@ -183,7 +183,7 @@ namespace Saule.Serialization
                 data["links"] = AddUrl(
                     new JObject(),
                     "self",
-                    _urlBuilder.BuildCanonicalPath(_resource, EnsureHasId(properties, _resource).Value<string>()));
+                    _urlBuilder.BuildCanonicalPath(_resource, (string)EnsureHasId(properties, _resource)));
             }
 
             return data;
@@ -221,7 +221,7 @@ namespace Saule.Serialization
             var relToken = GetMinimumRelationship(
                 objId.ToString(),
                 relationship,
-                relationshipProperties != null ? GetId(relationshipProperties, relationship.RelatedResource).Value<string>() : null);
+                relationshipProperties != null ? (string)GetId(relationshipProperties, relationship.RelatedResource) : null);
             if (relationshipValues == null)
             {
                 return relToken;
@@ -247,7 +247,7 @@ namespace Saule.Serialization
                     var includedData = values.DeepClone();
                     var url = _urlBuilder.BuildCanonicalPath(
                         relationship.RelatedResource,
-                        EnsureHasId(props, relationship.RelatedResource).Value<string>());
+                        (string)EnsureHasId(props, relationship.RelatedResource));
 
                     includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
                     includedData["links"] = AddUrl(new JObject(), "self", url);
@@ -276,8 +276,8 @@ namespace Saule.Serialization
         private bool IsResourceIncluded(JToken includedData)
         {
             return _includedSection.Any(t =>
-                t.Value<string>("type") == includedData.Value<string>("type") &&
-                t.Value<string>("id") == includedData.Value<string>("id"));
+                (string)t["type"] == (string)includedData["type"] &&
+                (string)t["id"] == (string)includedData["id"]);
         }
 
         private JObject AddUrl(JObject @object, string name, string path)
