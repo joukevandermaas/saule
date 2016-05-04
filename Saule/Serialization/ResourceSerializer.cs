@@ -17,6 +17,8 @@ namespace Saule.Serialization
         private readonly IUrlPathBuilder _urlBuilder;
         private bool _isCollection;
 
+        internal object Value => _value;
+
         public ResourceSerializer(
             object value,
             ApiResource type,

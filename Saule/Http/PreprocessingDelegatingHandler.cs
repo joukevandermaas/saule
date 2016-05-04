@@ -62,6 +62,11 @@ namespace Saule.Http
 
             var value = result.Content as ObjectContent;
 
+            if (value?.Value is Newtonsoft.Json.Linq.JObject)
+            {
+                return result;
+            }
+
             var content = PreprocessRequest(value?.Value, request, _config);
 
             if (content.ErrorContent != null)
