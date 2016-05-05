@@ -11,10 +11,17 @@ using Saule.Serialization;
 
 namespace Saule.Http
 {
-    internal class PreprocessingDelegatingHandler : DelegatingHandler
+    /// <summary>
+    /// Processes JSON API responses to enable filtering, pagination and sorting.
+    /// </summary>
+    public class PreprocessingDelegatingHandler : DelegatingHandler
     {
         private readonly JsonApiConfiguration _config;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PreprocessingDelegatingHandler"/> class.
+        /// </summary>
+        /// <param name="config">The configuration parameters for JSON API serialization.</param>
         public PreprocessingDelegatingHandler(JsonApiConfiguration config)
         {
             _config = config;
@@ -50,6 +57,7 @@ namespace Saule.Http
             return jsonApi.PreprocessContent(content, resource, request.RequestUri);
         }
 
+        /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var result = await base.SendAsync(request, cancellationToken);
