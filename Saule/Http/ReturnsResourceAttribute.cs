@@ -53,7 +53,7 @@ namespace Saule.Http
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.UnsupportedMediaType);
             }
 
-            actionContext.Request.Properties.Add(Constants.RequestPropertyName, Resource);
+            actionContext.Request.Properties.Add(Constants.PropertyNames.ResourceDescriptor, Resource);
             base.OnActionExecuting(actionContext);
         }
     }

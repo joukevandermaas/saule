@@ -23,13 +23,13 @@ namespace Saule.Queries.Pagination
 
         private int GetNumber()
         {
-            if (!ClientFilters.ContainsKey(Constants.PageNumberQueryName))
+            if (!ClientFilters.ContainsKey(Constants.QueryNames.PageNumber))
             {
                 return 0;
             }
 
             int result;
-            var isNumber = int.TryParse(ClientFilters[Constants.PageNumberQueryName], out result);
+            var isNumber = int.TryParse(ClientFilters[Constants.QueryNames.PageNumber], out result);
 
             return isNumber ? result : 0;
         }

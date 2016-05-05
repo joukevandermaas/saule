@@ -156,7 +156,7 @@ namespace Tests.Queries
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(IEnumerable<string> properties, IEnumerable<string> values)
         {
             return properties.Zip(values, (property, value) => new KeyValuePair<string, string>(
-                $"{Constants.FilteringQueryName}.{property}", value));
+                $"{Constants.QueryNames.Filtering}.{property}", value));
         }
     }
 }

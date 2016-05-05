@@ -99,9 +99,9 @@ namespace Saule.Http
             TransportContext transportContext)
         {
             PreprocessResult preprocessed;
-            if (_request.Properties.ContainsKey(Constants.PreprocessResultPropertyName))
+            if (_request.Properties.ContainsKey(Constants.PropertyNames.PreprocessResult))
             {
-                preprocessed = _request.Properties[Constants.PreprocessResultPropertyName]
+                preprocessed = _request.Properties[Constants.PropertyNames.PreprocessResult]
                     as PreprocessResult;
             }
             else

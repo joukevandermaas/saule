@@ -31,9 +31,9 @@ namespace Saule.Http
             PrepareQueryContext(jsonApi, request, config);
 
             ApiResource resource = null;
-            if (request.Properties.ContainsKey(Constants.RequestPropertyName))
+            if (request.Properties.ContainsKey(Constants.PropertyNames.ResourceDescriptor))
             {
-                resource = (ApiResource)request.Properties[Constants.RequestPropertyName];
+                resource = (ApiResource)request.Properties[Constants.PropertyNames.ResourceDescriptor];
             }
             else if (content != null && !(content is HttpError))
             {
@@ -71,7 +71,7 @@ namespace Saule.Http
                     : HttpStatusCode.InternalServerError;
             }
 
-            request.Properties.Add(Constants.PreprocessResultPropertyName, content);
+            request.Properties.Add(Constants.PropertyNames.PreprocessResult, content);
 
             return result;
         }
@@ -85,13 +85,13 @@ namespace Saule.Http
             {
                 jsonApiSerializer.UrlPathBuilder = config.UrlPathBuilder;
             }
-            else if (!request.Properties.ContainsKey(Constants.WebApiRequestContextPropertyName))
+            else if (!request.Properties.ContainsKey(Constants.PropertyNames.WebApiRequestContext))
             {
                 jsonApiSerializer.UrlPathBuilder = new DefaultUrlPathBuilder();
             }
             else
             {
-                var requestContext = request.Properties[Constants.WebApiRequestContextPropertyName]
+                var requestContext = request.Properties[Constants.PropertyNames.WebApiRequestContext]
                     as HttpRequestContext;
                 var routeTemplate = requestContext?.RouteData.Route.RouteTemplate;
                 var virtualPathRoot = requestContext?.VirtualPathRoot ?? "/";
@@ -106,12 +106,12 @@ namespace Saule.Http
             HttpRequestMessage request,
             JsonApiConfiguration config)
         {
-            if (!request.Properties.ContainsKey(Constants.QueryContextPropertyName))
+            if (!request.Properties.ContainsKey(Constants.PropertyNames.QueryContext))
             {
                 return;
             }
 
-            var queryContext = (QueryContext)request.Properties[Constants.QueryContextPropertyName];
+            var queryContext = (QueryContext)request.Properties[Constants.PropertyNames.QueryContext];
 
             if (queryContext.Filtering != null)
             {

@@ -13,13 +13,13 @@ namespace Saule.Queries.Pagination
                 return;
             }
 
-            if (!context.ClientFilters.ContainsKey(Constants.PageNumberQueryName))
+            if (!context.ClientFilters.ContainsKey(Constants.QueryNames.PageNumber))
             {
-                context.ClientFilters.Add(Constants.PageNumberQueryName, null);
+                context.ClientFilters.Add(Constants.QueryNames.PageNumber, null);
             }
 
             int page;
-            var isNumber = int.TryParse(context.ClientFilters[Constants.PageNumberQueryName] ?? string.Empty, out page);
+            var isNumber = int.TryParse(context.ClientFilters[Constants.QueryNames.PageNumber] ?? string.Empty, out page);
 
             FirstPage = CreateQueryString(context.ClientFilters, 0);
             NextPage = CreateQueryString(context.ClientFilters, isNumber ? page + 1 : 1);
@@ -44,7 +44,7 @@ namespace Saule.Queries.Pagination
             var queries = clientFilters.Select(kv =>
             {
                 var key = kv.Key;
-                var value = kv.Key == Constants.PageNumberQueryName ? page.ToString() : kv.Value;
+                var value = kv.Key == Constants.QueryNames.PageNumber ? page.ToString() : kv.Value;
 
                 if (string.IsNullOrEmpty(value))
                 {

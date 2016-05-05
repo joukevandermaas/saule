@@ -100,7 +100,7 @@ namespace Tests.Queries
 
         private static IEnumerable<KeyValuePair<string, string>> GetQueryForPage(int number)
         {
-            yield return new KeyValuePair<string, string>(Constants.PageNumberQueryName, number.ToString());
+            yield return new KeyValuePair<string, string>(Constants.QueryNames.PageNumber, number.ToString());
         }
     }
 }

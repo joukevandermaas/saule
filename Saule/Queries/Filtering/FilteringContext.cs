@@ -10,8 +10,8 @@ namespace Saule.Queries.Filtering
         {
             Properties =
                 from query in queryParams
-                where query.Key.StartsWith(Constants.FilteringQueryName)
-                let name = query.Key.Substring(Constants.FilteringQueryName.Length + 1)
+                where query.Key.StartsWith(Constants.QueryNames.Filtering)
+                let name = query.Key.Substring(Constants.QueryNames.Filtering.Length + 1)
                 let value = query.Value
                 select new FilteringProperty(name, value);
         }
