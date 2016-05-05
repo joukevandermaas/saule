@@ -133,7 +133,7 @@ namespace Saule.Serialization
             return GetValue(resource.IdProperty, properties);
         }
 
-        private static object EnsureHasId(object properties, ApiResource resource)
+        private static string EnsureHasId(object properties, ApiResource resource)
         {
             var id = GetId(properties, resource);
             if (id == null)
@@ -141,7 +141,7 @@ namespace Saule.Serialization
                 throw new JsonApiException(ErrorType.Server, "Resources must have an id");
             }
 
-            return id;
+            return id.ToString();
         }
 
         private JObject SerializeNull()
@@ -194,7 +194,7 @@ namespace Saule.Serialization
                 data["links"] = AddUrl(
                     new JObject(),
                     "self",
-                    _urlBuilder.BuildCanonicalPath(_resource, (string)EnsureHasId(properties, _resource)));
+                    _urlBuilder.BuildCanonicalPath(_resource, EnsureHasId(properties, _resource)));
             }
 
             return data;
@@ -228,10 +228,15 @@ namespace Saule.Serialization
 
             // serialize the links part (so the data can be fetched)
             var objId = EnsureHasId(properties, _resource);
+            var relationshipId = relationshipValue != null
+                                     ? GetId(relationshipValue, relationship.RelatedResource).
+                                           ToString()
+                                     : null;
             var relToken = GetMinimumRelationship(
                 objId.ToString(),
                 relationship,
-                relationshipValue != null ? GetId(relationshipValue, relationship.RelatedResource).ToString() : null);
+                relationshipId);
+
             if (relationshipValue == null)
             {
                 return relToken;
