@@ -115,11 +115,12 @@ namespace Saule.Serialization
             return attributes;
         }
 
-        private static object GetValue(string name, object properties)
+        private static object GetValue(string name, dynamic obj)
         {
             try
             {
-                return properties.Send(name.ToPascalCase());
+                var propertyName = name.ToPascalCase();
+                return obj.Send(propertyName);
             }
             catch
             {
