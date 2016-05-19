@@ -110,6 +110,17 @@ namespace Saule.Http
                 preprocessed = PreprocessingDelegatingHandler.PreprocessRequest(value, _request, _config);
             }
 
+            if (preprocessed.ErrorContent == null)
+            {
+                var preSerializedJson = preprocessed.ResourceSerializer.Value as JObject;
+                if (preSerializedJson != null)
+                {
+                    await WriteJsonToStream(preSerializedJson, writeStream);
+                    return;
+                }
+
+            }
+
             var json = JsonApiSerializer.Serialize(preprocessed);
             await WriteJsonToStream(json, writeStream);
         }

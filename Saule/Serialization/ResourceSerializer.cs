@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using csharp_extensions.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries.Pagination;
@@ -16,6 +17,8 @@ namespace Saule.Serialization
         private readonly JArray _includedSection;
         private readonly IUrlPathBuilder _urlBuilder;
         private bool _isCollection;
+
+        internal object Value => _value;
 
         public ResourceSerializer(
             object value,
@@ -44,18 +47,18 @@ namespace Saule.Serialization
                 return SerializeNull();
             }
 
-            var objectJson = JToken.FromObject(_value, serializer);
-            _isCollection = objectJson is JArray;
+            //var objectJson = JToken.FromObject(_value, serializer);
+            //_isCollection = objectJson is JArray;
 
             var result = new JObject
             {
-                ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
+                ["data"] = SerializeArrayOrObject(_value, SerializeData),
                 ["links"] = new JObject
                 {
                     ["self"] = new JValue(_baseUrl)
                 }
 
-                ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
+                //["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
 
             if (_includedSection.Count > 0)
@@ -66,19 +69,19 @@ namespace Saule.Serialization
             return result;
         }
 
-        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
+        private static JToken SerializeArrayOrObject(object token, Func<object, JToken> serializeObj)
         {
-            var dataArray = token as JArray;
+            var dataArray = token as IEnumerable<object>;
 
             // single thing, just serialize it
             if (dataArray == null)
             {
-                return token is JObject ? serializeObj((JObject)token) : null;
+                return serializeObj(token);
             }
 
             // serialize each element separately
             var data = new JArray();
-            foreach (var obj in dataArray.OfType<JObject>())
+            foreach (var obj in dataArray)
             {
                 data.Add(serializeObj(obj));
             }
@@ -86,18 +89,18 @@ namespace Saule.Serialization
             return data;
         }
 
-        private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
+        private static JToken SerializeMinimalData(object properties, ApiResource resource)
         {
             var data = new JObject
             {
                 ["type"] = resource.ResourceType.ToDashed(),
-                ["id"] = EnsureHasId(properties, resource)
+                ["id"] = JToken.FromObject(EnsureHasId(properties, resource))
             };
 
             return data;
         }
 
-        private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
+        private static JToken SerializeAttributes(object properties, ApiResource resource)
         {
             var attributes = new JObject();
             foreach (var attr in resource.Attributes)
@@ -105,24 +108,33 @@ namespace Saule.Serialization
                 var value = GetValue(attr.Name, properties);
                 if (value != null)
                 {
-                    attributes.Add(attr.Name, value);
+                    attributes.Add(attr.Name, JToken.FromObject(value));
                 }
             }
 
             return attributes;
         }
 
-        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
+        private static object GetValue(string name, dynamic obj)
         {
-            return properties[name.ToPascalCase()];
+            try
+            {
+                var propertyName = name.ToPascalCase();
+                return obj.Send(propertyName);
+            }
+            catch
+            {
+                return null;
+            }
+
         }
 
-        private static JToken GetId(IDictionary<string, JToken> properties, ApiResource resource)
+        private static object GetId(object properties, ApiResource resource)
         {
             return GetValue(resource.IdProperty, properties);
         }
 
-        private static JToken EnsureHasId(IDictionary<string, JToken> properties, ApiResource resource)
+        private static string EnsureHasId(object properties, ApiResource resource)
         {
             var id = GetId(properties, resource);
             if (id == null)
@@ -130,7 +142,7 @@ namespace Saule.Serialization
                 throw new JsonApiException(ErrorType.Server, "Resources must have an id");
             }
 
-            return id;
+            return id.ToString();
         }
 
         private JObject SerializeNull()
@@ -171,7 +183,7 @@ namespace Saule.Serialization
             return result;
         }
 
-        private JToken SerializeData(IDictionary<string, JToken> properties)
+        private JToken SerializeData(object properties)
         {
             var data = SerializeMinimalData(properties);
 
@@ -183,23 +195,23 @@ namespace Saule.Serialization
                 data["links"] = AddUrl(
                     new JObject(),
                     "self",
-                    _urlBuilder.BuildCanonicalPath(_resource, (string)EnsureHasId(properties, _resource)));
+                    _urlBuilder.BuildCanonicalPath(_resource, EnsureHasId(properties, _resource)));
             }
 
             return data;
         }
 
-        private JToken SerializeMinimalData(IDictionary<string, JToken> properties)
+        private JToken SerializeMinimalData(object properties)
         {
             return SerializeMinimalData(properties, _resource);
         }
 
-        private JToken SerializeAttributes(IDictionary<string, JToken> properties)
+        private JToken SerializeAttributes(object properties)
         {
             return SerializeAttributes(properties, _resource);
         }
 
-        private JToken SerializeRelationships(IDictionary<string, JToken> properties)
+        private JToken SerializeRelationships(object properties)
         {
             var relationships = new JObject();
 
@@ -211,24 +223,28 @@ namespace Saule.Serialization
             return relationships;
         }
 
-        private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
+        private JToken SerializeRelationship(ResourceRelationship relationship, object properties)
         {
-            var relationshipValues = GetValue(relationship.Name, properties);
-            var relationshipProperties = relationshipValues as JObject;
+            var relationshipValue = GetValue(relationship.Name, properties);
 
             // serialize the links part (so the data can be fetched)
             var objId = EnsureHasId(properties, _resource);
+            var relationshipId = relationshipValue != null
+                                     ? GetId(relationshipValue, relationship.RelatedResource).
+                                           ToString()
+                                     : null;
             var relToken = GetMinimumRelationship(
                 objId.ToString(),
                 relationship,
-                relationshipProperties != null ? (string)GetId(relationshipProperties, relationship.RelatedResource) : null);
-            if (relationshipValues == null)
+                relationshipId);
+
+            if (relationshipValue == null)
             {
                 return relToken;
             }
 
             // only include data if it exists, otherwise just assume it should be fetched later
-            var data = GetRelationshipData(relationship, relationshipValues);
+            var data = GetRelationshipData(relationship, relationshipValue);
             if (data != null)
             {
                 relToken["data"] = data;
@@ -237,7 +253,7 @@ namespace Saule.Serialization
             return relToken;
         }
 
-        private JToken GetRelationshipData(ResourceRelationship relationship, JToken relationshipValues)
+        private JToken GetRelationshipData(ResourceRelationship relationship, object relationshipValues)
         {
             var data = SerializeArrayOrObject(
                 relationshipValues,
