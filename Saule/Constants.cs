@@ -1,16 +1,22 @@
 ﻿namespace Saule
 {
-    internal class Constants
+    internal static class Constants
     {
-        public const string RequestPropertyName = "Saule_ResourceDescriptor";
-        public const string QueryContextPropertyName = "Saule_QueryContext";
-        public const string PreprocessResultPropertyName = "Saule_PreprocessedResult";
-        public const string WebApiRequestContextPropertyName = "MS_RequestContext";
-
         public const string MediaType = "application/vnd.api+json";
 
-        public const string PageNumberQueryName = "page.number";
-        public const string SortingQueryName = "sort";
-        public const string FilteringQueryName = "filter";
+        public static class PropertyNames
+        {
+            public const string ResourceDescriptor = "Saule_ResourceDescriptor";
+            public const string QueryContext = "Saule_QueryContext";
+            public const string PreprocessResult = "Saule_PreprocessedResult";
+            public const string WebApiRequestContext = "MS_RequestContext";
+        }
+
+        public static class QueryNames
+        {
+            public const string PageNumber = "page.number";
+            public const string Sorting = "sort";
+            public const string Filtering = "filter";
+        }
     }
 }

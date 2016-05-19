@@ -91,7 +91,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -99,7 +99,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "2"), perPage: 4));
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), perPage: 4));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
@@ -112,7 +112,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "0"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "0"), perPage: 10));
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -120,7 +120,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.PageNumberQueryName, "1"), perPage: 10));
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), perPage: 10));
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);

@@ -118,7 +118,7 @@ namespace Tests.Queries
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(string query)
         {
             yield return new KeyValuePair<string, string>(
-                Constants.SortingQueryName, query);
+                Constants.QueryNames.Sorting, query);
         }
     }
 }
