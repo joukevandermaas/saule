@@ -49,7 +49,7 @@ namespace Saule.Serialization
 
             var result = new JObject
             {
-                ["data"] = SerializeArrayOrObject(objectJson, SerializeData),
+                ["data"] = SerializeArrayOrObject(_resource, objectJson, SerializeData),
                 ["links"] = new JObject
                 {
                     ["self"] = new JValue(_baseUrl)
@@ -66,21 +66,21 @@ namespace Saule.Serialization
             return result;
         }
 
-        private static JToken SerializeArrayOrObject(JToken token, Func<IDictionary<string, JToken>, JToken> serializeObj)
+        private static JToken SerializeArrayOrObject(ApiResource resource, JToken token, Func<ApiResource, IDictionary<string, JToken>, JToken> serializeObj)
         {
             var dataArray = token as JArray;
 
             // single thing, just serialize it
             if (dataArray == null)
             {
-                return token is JObject ? serializeObj((JObject)token) : null;
+                return token is JObject ? serializeObj(resource, (JObject)token) : null;
             }
 
             // serialize each element separately
             var data = new JArray();
             foreach (var obj in dataArray.OfType<JObject>())
             {
-                data.Add(serializeObj(obj));
+                data.Add(serializeObj(resource, obj));
             }
 
             return data;
@@ -171,12 +171,12 @@ namespace Saule.Serialization
             return result;
         }
 
-        private JToken SerializeData(IDictionary<string, JToken> properties)
+        private JToken SerializeData(ApiResource resource, IDictionary<string, JToken> properties)
         {
             var data = SerializeMinimalData(properties);
 
             data["attributes"] = SerializeAttributes(properties);
-            data["relationships"] = SerializeRelationships(properties);
+            data["relationships"] = SerializeRelationships(resource, properties);
 
             if (_isCollection)
             {
@@ -199,11 +199,11 @@ namespace Saule.Serialization
             return SerializeAttributes(properties, _resource);
         }
 
-        private JToken SerializeRelationships(IDictionary<string, JToken> properties)
+        private JToken SerializeRelationships(ApiResource resource, IDictionary<string, JToken> properties)
         {
             var relationships = new JObject();
 
-            foreach (var rel in _resource.Relationships)
+            foreach (var rel in resource.Relationships)
             {
                 relationships[rel.Name] = SerializeRelationship(rel, properties);
             }
@@ -240,8 +240,9 @@ namespace Saule.Serialization
         private JToken GetRelationshipData(ResourceRelationship relationship, JToken relationshipValues)
         {
             var data = SerializeArrayOrObject(
+                relationship.RelatedResource,
                 relationshipValues,
-                props =>
+                (resource, props) =>
                 {
                     var values = SerializeMinimalData(props, relationship.RelatedResource);
                     var includedData = values.DeepClone();
@@ -250,6 +251,7 @@ namespace Saule.Serialization
                         (string)EnsureHasId(props, relationship.RelatedResource));
 
                     includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
+                    includedData["relationships"] = SerializeRelationships(resource, props);
                     includedData["links"] = AddUrl(new JObject(), "self", url);
                     if (!IsResourceIncluded(includedData))
                     {

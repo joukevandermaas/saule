@@ -4,32 +4,64 @@ namespace Tests.Models
 {
     internal static class Recursion
     {
-        public class Resource : ApiResource
+        public class FirstModelResource : ApiResource
         {
-            public Resource()
+            public FirstModelResource()
             {
-                BelongsTo<Second>("Model");
+                BelongsTo<SecondModelResource>("Child");
             }
+        }
 
-            private class Second : ApiResource
+        public class SecondModelResource : ApiResource
+        {
+            public SecondModelResource()
             {
-                public Second()
-                {
-                    BelongsTo<Resource>("Model");
-                }
+                BelongsTo<FirstModelResource>("Parent");
+                BelongsTo<ThirdModelResource>("Child");
+            }
+        }
+
+        public class ThirdModelResource : ApiResource
+        {
+            public ThirdModelResource()
+            {
+                BelongsTo<SecondModelResource>("Parent");
+                BelongsTo<FourthModelResource>("Child");
+            }
+        }
+
+        public class FourthModelResource : ApiResource
+        {
+            public FourthModelResource()
+            {
+                BelongsTo<ThirdModelResource>("Parent");
             }
         }
 
         public class FirstModel
         {
-            public string Id => "123";
-            public SecondModel Model { get; set; }
+            public string Id = "1";
+            public SecondModel Child { get; set; }
         }
 
         public class SecondModel
         {
-            public string Id => "456";
-            public FirstModel Model { get; set; }
+            public string Id = "2";
+            public FirstModel Parent { get; set; }
+            public ThirdModel Child { get; set; }
+        }
+
+        public class ThirdModel
+        {
+            public string Id = "3";
+            public SecondModel Parent { get; set; }
+            public FourthModel Child { get; set; }
+        }
+
+        public class FourthModel
+        {
+            public string Id = "4";
+            public ThirdModel Parent { get; set; }
         }
     }
 }

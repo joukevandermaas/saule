@@ -31,11 +31,17 @@ namespace Tests.Serialization
         {
             var firstModel = new Recursion.FirstModel();
             var secondModel = new Recursion.SecondModel();
-            firstModel.Model = secondModel;
-            secondModel.Model = firstModel;
+            var thirdModel = new Recursion.ThirdModel();
+            var fourthModel = new Recursion.FourthModel();
+            firstModel.Child = secondModel;
+            secondModel.Parent = firstModel;
+            secondModel.Child = thirdModel;
+            thirdModel.Parent = secondModel;
+            thirdModel.Child = fourthModel;
+            fourthModel.Parent = thirdModel;
 
-            var target = new ResourceSerializer(firstModel, new Recursion.Resource(), 
-                GetUri(id: "123"), DefaultPathBuilder, null);
+            var target = new ResourceSerializer(firstModel, new Recursion.FirstModelResource(), 
+                GetUri(id: firstModel.Id), DefaultPathBuilder, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -43,6 +49,7 @@ namespace Tests.Serialization
             var id = result["data"].Value<string>("id");
 
             Assert.Equal(firstModel.Id, id);
+            Assert.Equal(3, (result["included"] as JArray).Count);
         }
 
         [Fact(DisplayName = "Uses a property called 'Id' when none is specified for Ids")]
