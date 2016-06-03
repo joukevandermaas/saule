@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
+using Saule.Serialization.ErrorRenderers;
 
 namespace Saule.Serialization
 {
     internal class ApiError
     {
         private readonly JsonApiException _exception;
+        private ExceptionRenderer _renderer;
 
         public ApiError(Exception ex)
         {
@@ -25,6 +28,26 @@ namespace Saule.Serialization
             Title = GetRecursiveExceptionMessage(ex);
             Detail = ex.StackTrace;
             Code = ex.ExceptionType;
+        }
+
+        internal ExceptionRenderer Renderer
+        {
+            get
+            {
+                if (_renderer != null)
+                {
+                    return _renderer;
+                }
+
+                _renderer = GetRenderer();
+                return _renderer;
+            }
+        }
+
+
+        public JArray ToJObject()
+        {
+            return Renderer.ToJObject();
         }
 
         public string Title { get; }
@@ -50,6 +73,26 @@ namespace Saule.Serialization
             }
 
             return msg;
+        }
+
+        private ExceptionRenderer GetRenderer()
+        {
+            if (_exception != null && _exception.InnerException != null)
+            {
+                var validationException =
+                _exception.InnerException as System.Data.Entity.Validation.DbEntityValidationException;
+
+                if (validationException != null)
+                {
+                    return new DbEntityValidationExceptionRenderer(validationException);
+                }
+
+            }
+
+
+            return new ExceptionRenderer(this);
+
+
         }
     }
 }

@@ -14,4 +14,9 @@
     <copyright>Copyright 2015</copyright>
     <tags>web api serialization media formatter json api jsonapi ember data</tags>
   </metadata>
+  <files>
+    <file src="..\Saule\bin\Debug\Saule.dll" target="lib\net46\"></file>
+    <file src="..\Saule\bin\Debug\Saule.pdb" target="lib\net46\"></file>
+    <file src="..\Saule\**\*.cs"></file>
+  </files>
 </package>
