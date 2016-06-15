@@ -106,6 +106,7 @@
     <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
+    <Compile Include="Controllers\StaticController.cs" />
     <Compile Include="Helpers\Get.cs" />
     <Compile Include="Helpers\HttpClientExtensions.cs" />
     <Compile Include="Helpers\NewSetupJsonApiServer.cs" />

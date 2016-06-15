@@ -11,6 +11,8 @@ using Saule.Serialization;
 
 namespace Saule.Http
 {
+    using System.Linq;
+
     /// <summary>
     /// Processes JSON API responses to enable filtering, pagination and sorting.
     /// </summary>
@@ -61,10 +63,12 @@ namespace Saule.Http
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var result = await base.SendAsync(request, cancellationToken);
+            var hasMediaType = request.Headers.Accept.Any(x => x.MediaType == Constants.MediaType);
 
             var statusCode = (int)result.StatusCode;
-            if (statusCode >= 400 && statusCode < 500)
-            { // probably malformed request or not found
+            if (!hasMediaType || (statusCode >= 400 && statusCode < 500))
+            {
+                // probably malformed request or not found
                 return result;
             }
 
