@@ -6,6 +6,7 @@
     [RoutePrefix("static")]
     public class StaticController : ApiController
     {
+        [HttpGet]
         [Route("text")]
         public IHttpActionResult GetStaticFile()
         {

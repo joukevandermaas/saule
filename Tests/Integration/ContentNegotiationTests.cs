@@ -165,7 +165,7 @@ namespace Tests.Integration
 
 
             [Fact(DisplayName = "Should return OK for a static content request that does not have media type parameters")]
-            public async Task MustReturn200OkForOneValidAccep1t()
+            public async Task MustReturn200OkForStaticContent()
             {
                 var target = _server.GetClient();
 
