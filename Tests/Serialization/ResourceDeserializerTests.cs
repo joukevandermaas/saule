@@ -19,7 +19,7 @@ namespace Tests.Serialization
         {
             _person = Get.Person(id: "hello");
             _person.Friends = Get.People(1);
-
+            _person.FamilyMembers = Get.People(2);
             _people = Get.People(5).ToArray();
             var singleSerializer = new ResourceSerializer(
             _person, new PersonResource(), new Uri("http://example.com/people/1"),
@@ -69,21 +69,32 @@ namespace Tests.Serialization
             Assert.Equal(0, job?.NumberOfEmployees);
         }
 
-        [Fact(DisplayName = "Deserializes hasMany relationships")]
+        [Fact( DisplayName = "Deserializes hasMany relationships" )]
         public void DeserializesHasManyRelationship()
         {
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
             var result = target.Deserialize() as Person;
 
-            var expected = _person.Friends.Single();
-            var actual = result?.Friends.Single();
+            var expectedFriend = _person.Friends.Single();
+            var actualFriend = result?.Friends.Single();
 
-            Assert.Equal(expected.Identifier, actual?.Identifier);
-            Assert.Null(actual?.FirstName);
-            Assert.Null(actual?.LastName);
-            Assert.Equal(default(int?), actual?.Age);
-            Assert.Null(actual?.Job);
-            Assert.Null(actual?.Friends);
+            Assert.Equal(expectedFriend.Identifier, actualFriend?.Identifier);
+            Assert.Null(actualFriend?.FirstName);
+            Assert.Null(actualFriend?.LastName);
+            Assert.Equal(default(int?), actualFriend?.Age);
+            Assert.Null(actualFriend?.Job);
+            Assert.Null(actualFriend?.Friends);
+
+            var expectedFamilyMembers = _person.FamilyMembers.ToArray();
+            var actualFamilyMembers = result?.FamilyMembers?.ToArray();
+
+            Assert.NotNull(actualFamilyMembers);
+            Assert.Equal(expectedFamilyMembers.Length, actualFamilyMembers.Length);
+            expectedFamilyMembers.Zip(actualFamilyMembers, (expected, actual) =>
+            {
+                Assert.Equal(expected.Identifier, actual.Identifier);
+                return true;
+            } );
         }
 
         [Fact(DisplayName = "Deserializes enumerables properly")]
