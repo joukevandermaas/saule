@@ -162,6 +162,19 @@ namespace Tests.Integration
 
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
+
+
+            [Fact(DisplayName = "Should return OK for a static content request that does not have media type parameters")]
+            public async Task MustReturn200OkForStaticContent()
+            {
+                var target = _server.GetClient();
+
+                target.DefaultRequestHeaders.Accept.Clear();
+
+                var result = await target.GetAsync(Paths.StaticText);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
         }
     }
 }
