@@ -1,4 +1,4 @@
-version: 1.5.0.{build}
+version: 1.6.0.{build}
 configuration: Release
 skip_tags: true
 assembly_info:
