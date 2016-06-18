@@ -14,6 +14,7 @@ namespace Tests.Models
 
             BelongsTo<CompanyResource>(nameof(Person.Job), "/employer");
             HasMany<PersonResource>(nameof(Person.Friends));
+            HasMany<PersonResource>( nameof( Person.FamilyMembers));
         }
     }
 }

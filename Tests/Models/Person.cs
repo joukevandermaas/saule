@@ -15,6 +15,7 @@ namespace Tests.Models
             Age = 34;
             NumberOfLegs = 4;
             Job = Get.Company();
+            FamilyMembers = new List<Person>();
             Friends = new List<Person>();
         }
 
@@ -24,6 +25,7 @@ namespace Tests.Models
         public int? Age { get; set; }
         public int NumberOfLegs { get; set; }
         public Company Job { get; set; }
+        public IEnumerable<Person> FamilyMembers { get; set; }
         public IEnumerable<Person> Friends { get; set; }
     }
 }
