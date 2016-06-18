@@ -54,7 +54,7 @@ namespace Saule.Serialization
             foreach (var rel in child["relationships"] ?? new JArray())
             {
                 var prop = rel as JProperty;
-                result.Add(prop?.Name, ToFlatStructure(prop?.Value));
+                result.Add(prop?.Name.ToPascalCase(), ToFlatStructure(prop?.Value));
             }
 
             return result;
