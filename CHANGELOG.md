@@ -1,3 +1,7 @@
+## Version 1.5.1
+
+- [**BUGFIX**] Convert case for relationship as well in ResourceDeserializer (#117 by @bxh)
+
 ## Version 1.5
 
 - [**FEATURE**] Make configuration more convenient & flexible (#101)
