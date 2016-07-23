@@ -27,7 +27,9 @@ namespace Saule.Serialization
             {
                 var obj = json["data"] as JObject;
 
-                if (obj == null) { return null; }
+                if (obj == null) {
+                    return null;
+                }
 
                 return SingleToFlatStructure(json["data"] as JObject);
             }
