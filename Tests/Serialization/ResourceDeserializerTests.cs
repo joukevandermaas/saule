@@ -69,6 +69,18 @@ namespace Tests.Serialization
             Assert.Equal(0, job?.NumberOfEmployees);
         }
 
+        [Fact(DisplayName = "Deserializes belongsTo relationships with data: null")]
+        public void DeserializesBelongsToRelationshipsWithNullData()
+        {
+            var person = JToken.Parse("{'data': {'relationships': {'job': {data: null}}}}");
+            var target = new ResourceDeserializer(person, typeof(Person));
+            var result = target.Deserialize() as Person;
+
+            var job = result?.Job;
+
+            Assert.Null(job);
+        }
+
         [Fact( DisplayName = "Deserializes hasMany relationships" )]
         public void DeserializesHasManyRelationship()
         {
