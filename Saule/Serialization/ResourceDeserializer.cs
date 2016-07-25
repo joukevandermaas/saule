@@ -25,6 +25,13 @@ namespace Saule.Serialization
 
             if (array == null)
             {
+                var obj = json["data"] as JObject;
+
+                if (obj == null)
+                {
+                    return null;
+                }
+
                 return SingleToFlatStructure(json["data"] as JObject);
             }
 
