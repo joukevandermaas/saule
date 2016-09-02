@@ -205,21 +205,22 @@ namespace Saule.Serialization
 
             foreach (var rel in resource.Relationships)
             {
-                relationships[rel.Name] = SerializeRelationship(rel, properties);
+                relationships[rel.Name] = SerializeRelationship(resource, rel, properties);
             }
 
             return relationships;
         }
 
-        private JToken SerializeRelationship(ResourceRelationship relationship, IDictionary<string, JToken> properties)
+        private JToken SerializeRelationship(ApiResource resource, ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
             var relationshipValues = GetValue(relationship.Name, properties);
             var relationshipProperties = relationshipValues as JObject;
 
             // serialize the links part (so the data can be fetched)
-            var objId = EnsureHasId(properties, _resource);
+            var objId = EnsureHasId(properties, resource);
             var relToken = GetMinimumRelationship(
                 objId.ToString(),
+                resource,
                 relationship,
                 relationshipProperties != null ? (string)GetId(relationshipProperties, relationship.RelatedResource) : null);
             if (relationshipValues == null)
@@ -263,11 +264,11 @@ namespace Saule.Serialization
             return data;
         }
 
-        private JToken GetMinimumRelationship(string id, ResourceRelationship relationship, string relationshipId)
+        private JToken GetMinimumRelationship(string id, ApiResource resource, ResourceRelationship relationship, string relationshipId)
         {
             var links = new JObject();
-            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(_resource, id, relationship));
-            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(_resource, id, relationship, relationshipId));
+            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(resource, id, relationship));
+            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(resource, id, relationship, relationshipId));
 
             return new JObject
             {
