@@ -237,6 +237,24 @@ namespace Tests.Serialization
             Assert.NotNull(job?["attributes"]);
         }
 
+        [Fact(DisplayName = "Relationships of included resources have correct URLs")]
+        public void IncludedResourceRelationshipURLsAreCorrect()
+        {
+            var person = new Person(true)
+            {
+                Job = new CompanyWithCustomers(true)
+            };
+
+            var target = new ResourceSerializer(person, new PersonWithCompanyWithCustomersResource(),
+                GetUri(id: "123"), DefaultPathBuilder, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Equal("http://example.com/api/corporations/456/relationships/customers/", included?[0]?["relationships"]?["customers"]?["links"]?.Value<Uri>("self")?.ToString()); 
+        }
+
         [Fact(DisplayName = "Handles null relationships and attributes correctly")]
         public void HandlesNullValues()
         {

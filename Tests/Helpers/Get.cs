@@ -41,6 +41,16 @@ namespace Tests.Helpers
             }
         }
 
+        public static IEnumerable<Customer> Customers()
+        {
+            var i = 0;
+
+            while (true)
+            {
+                yield return Customer(i++.ToString());
+            }
+        }
+
         public static IEnumerable<Person> People(int count)
         {
             return People().Take(count);
@@ -48,6 +58,11 @@ namespace Tests.Helpers
         public static IEnumerable<Company> Companies(int count)
         {
             return Companies().Take(count);
+        }
+
+        public static IEnumerable<Customer> Customers(int count)
+        {
+            return Customers().Take(count);
         }
 
         public static Person Person(string id = "123")
@@ -65,6 +80,10 @@ namespace Tests.Helpers
             {
                 Location = (LocationType)random.Next(Enum.GetNames(typeof(LocationType)).Length)
             };
+        }
+        public static Customer Customer(string id = "789")
+        {
+            return new Customer(prefill: true, id: id);
         }
     }
 }
