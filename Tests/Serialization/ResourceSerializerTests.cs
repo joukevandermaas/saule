@@ -41,7 +41,7 @@ namespace Tests.Serialization
             fourthModel.Parent = thirdModel;
 
             var target = new ResourceSerializer(firstModel, new Recursion.FirstModelResource(), 
-                GetUri(id: firstModel.Id), DefaultPathBuilder, null);
+                GetUri(id: firstModel.Id), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -57,7 +57,7 @@ namespace Tests.Serialization
         {
             var data = new PersonWithNoJob();
             var target = new ResourceSerializer(data, new PersonWithDefaultIdResource(), 
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -71,7 +71,7 @@ namespace Tests.Serialization
         public void UsesSpecifiedPropertyId()
         {
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
-                GetUri(id: "abc"), DefaultPathBuilder, null);
+                GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -86,7 +86,7 @@ namespace Tests.Serialization
         {
             var person = Get.Person(id: "abc");
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "abc"), DefaultPathBuilder, null);
+                GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -123,7 +123,7 @@ namespace Tests.Serialization
             };
 
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "abc"), DefaultPathBuilder, null);
+                GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -140,7 +140,7 @@ namespace Tests.Serialization
             var person = new PersonWithDifferentId(id: "abc", prefill: true);
             var resource = new PersonWithDifferentIdResource();
             var target = new ResourceSerializer(person, resource,
-                GetUri(id: "abc"), DefaultPathBuilder, null);
+                GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -154,7 +154,7 @@ namespace Tests.Serialization
         public void AttributesComplete()
         {
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -170,12 +170,12 @@ namespace Tests.Serialization
         public void AttributesSufficient()
         {
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var attributes = result["data"]["attributes"];
-            Assert.True(attributes["numberOfLegs"] == null);
+            Assert.True(attributes["numberOfLegs"] == null, null);
             Assert.Equal(4, attributes.Count());
         }
 
@@ -185,7 +185,7 @@ namespace Tests.Serialization
             var company = Get.Company();
             var target = new ResourceSerializer(company, new CompanyResource(),
                 GetUri("/corporations", "456"),
-                DefaultPathBuilder, null);
+                DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -197,7 +197,7 @@ namespace Tests.Serialization
         {
             var person = new PersonWithNoId();
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             Assert.Throws<JsonApiException>(() =>
             {
@@ -210,7 +210,7 @@ namespace Tests.Serialization
         {
             var person = new PersonWithNoJob();
             var target = new ResourceSerializer(person, new PersonWithDefaultIdResource(), 
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -226,13 +226,13 @@ namespace Tests.Serialization
         public void IncludesRelationshipData()
         {
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var included = result["included"] as JArray;
             var job = included?[0];
-            Assert.Equal(1, included?.Count);
+            Assert.Equal(2, included?.Count);
             Assert.Equal("http://example.com/api/corporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
 
             Assert.Equal(DefaultObject.Job.Id, job?["id"]);
@@ -248,7 +248,7 @@ namespace Tests.Serialization
             };
 
             var target = new ResourceSerializer(person, new PersonWithCompanyWithCustomersResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -262,7 +262,7 @@ namespace Tests.Serialization
         {
             var person = new Person(id: "45");
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "45"), DefaultPathBuilder, null);
+                GetUri(id: "45"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -282,14 +282,14 @@ namespace Tests.Serialization
         {
             var people = Get.People(5);
             var target = new ResourceSerializer(people, DefaultResource,
-                GetUri(), DefaultPathBuilder, null);
+                GetUri(), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var included = result["included"] as JArray;
             var jobLinks = (result["data"] as JArray)?[0]["relationships"]["job"]["links"];
 
-            Assert.Equal(1, included?.Count);
+            Assert.Equal(2, included?.Count);
             Assert.Equal("/api/people/0/employer/", jobLinks?.Value<Uri>("related").AbsolutePath);
         }
 
@@ -298,7 +298,7 @@ namespace Tests.Serialization
         {
             var people = new Person[] { };
             var target = new ResourceSerializer(people, DefaultResource,
-                GetUri(), DefaultPathBuilder, null);
+                GetUri(), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -310,7 +310,7 @@ namespace Tests.Serialization
         {
             var people = new Person[0];
             var target = new ResourceSerializer(people, DefaultResource,
-                GetUri(), DefaultPathBuilder, null);
+                GetUri(), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -321,7 +321,7 @@ namespace Tests.Serialization
         public void HandlesNullResources()
         {
             var target = new ResourceSerializer(null, DefaultResource,
-                GetUri(), DefaultPathBuilder, null);
+                GetUri(), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -333,7 +333,7 @@ namespace Tests.Serialization
         {
             var guid = new GuidAsId();
             var serializer = new ResourceSerializer(guid, new PersonWithDefaultIdResource(), 
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             var guidResult = serializer.Serialize();
             _output.WriteLine(guidResult.ToString());
@@ -347,7 +347,7 @@ namespace Tests.Serialization
         {
             var guids = new [] { new GuidAsId(), new GuidAsId() };
             var serializer = new ResourceSerializer(guids, new PersonWithDefaultIdResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             var guidsResult = serializer.Serialize();
             _output.WriteLine(guidsResult.ToString());
@@ -360,7 +360,7 @@ namespace Tests.Serialization
         {
             var relatedToGuidId = new GuidAsRelation();
             var serializer = new ResourceSerializer( relatedToGuidId, new PersonWithGuidAsRelationsResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             var result = serializer.Serialize();
             _output.WriteLine(result.ToString());
@@ -374,7 +374,7 @@ namespace Tests.Serialization
         {
             var company = new GuidAsId();
             var serializer = new ResourceSerializer(company, new CompanyResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
 
             var result = serializer.Serialize();
             _output.WriteLine(result.ToString());

@@ -72,7 +72,8 @@ namespace Saule
                     type: resource,
                     baseUrl: requestUri,
                     urlBuilder: UrlPathBuilder,
-                    paginationContext: QueryContext?.Pagination);
+                    paginationContext: QueryContext?.Pagination,
+                    includingContext: QueryContext?.Including);
 
                 result.ResourceSerializer = serializer;
             }

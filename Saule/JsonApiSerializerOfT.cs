@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
 using Saule.Queries.Filtering;
+using Saule.Queries.Including;
 using Saule.Queries.Pagination;
 using Saule.Queries.Sorting;
 using Saule.Serialization;
@@ -44,6 +45,11 @@ namespace Saule
         /// True if responses should be paginated, otherwise false.
         /// </summary>
         public bool Paginate { get; set; } = false;
+
+        /// <summary>
+        /// True if responses should be paginated, otherwise false.
+        /// </summary>
+        public bool Include { get; set; } = true;
 
         /// <summary>
         /// True if users are allowed to query this response, otherwise false.
@@ -104,6 +110,7 @@ namespace Saule
             {
                 context.Sorting = new SortingContext(keyValuePairs);
                 context.Filtering = new FilteringContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
+                context.Including = new IncludingContext(keyValuePairs);
             }
 
             return context;
