@@ -23,7 +23,7 @@ namespace Saule
 
         public static string TrimJoin(this char separator, params string[] parts)
         {
-            return string.Join(separator.ToString(), parts.Select(p => p.Trim(separator)));
+            return string.Join(separator.ToString(), parts.Select(p => p?.Trim(separator)));
         }
 
         public static string ToDashed(this string source)
