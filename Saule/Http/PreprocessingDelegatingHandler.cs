@@ -38,7 +38,6 @@ namespace Saule.Http
             jsonApi.JsonConverters.AddRange(config.JsonConverters);
 
             PrepareQueryContext(jsonApi, request, config);
-            //jsonApi.QueryContext.Including = new Queries.Including.IncludingContext();
 
             ApiResource resource = null;
             if (request.Properties.ContainsKey(Constants.PropertyNames.ResourceDescriptor))

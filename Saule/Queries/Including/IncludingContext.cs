@@ -8,7 +8,7 @@ namespace Saule.Queries.Including
 {
     internal class IncludingContext
     {
-        public IncludingContext(IEnumerable<KeyValuePair<string,string>> includes)
+        public IncludingContext(IEnumerable<KeyValuePair<string, string>> includes)
         {
             var dict = includes.ToDictionary(kv => kv.Key, kv => kv.Value);
             if (dict.ContainsKey(Constants.QueryNames.Including))

@@ -12,6 +12,7 @@ namespace Saule.Queries
         public SortingContext Sorting { get; set; }
 
         public FilteringContext Filtering { get; set; }
+
         public IncludingContext Including { get; set; }
     }
 }
