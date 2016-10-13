@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Saule.Queries;
+using Saule.Queries.Filtering;
+using Saule.Queries.Including;
+using Saule.Queries.Sorting;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Saule.Queries;
-using Saule.Queries.Filtering;
-using Saule.Queries.Sorting;
 
 namespace Saule.Http
 {
@@ -26,11 +27,13 @@ namespace Saule.Http
             var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
             var sorting = new SortingContext(queryParams);
             var filtering = new FilteringContext(queryParams);
+            var including = new IncludingContext(queryParams);
 
             var queryContext = GetQueryContext(actionContext);
 
             queryContext.Sorting = sorting;
             queryContext.Filtering = filtering;
+            queryContext.Including = including;
 
             base.OnActionExecuting(actionContext);
         }

@@ -56,7 +56,9 @@ namespace Tests.Helpers
             {
                 Age = random.Next(80),
                 FirstName = FirstNames[random.Next(FirstNames.Length)],
-                LastName = LastNames[random.Next(LastNames.Length)]
+                LastName = LastNames[random.Next(LastNames.Length)],
+                Job = Company(),
+                Car = Car()
             };
         }
         public static Company Company(string id = "456")
@@ -65,6 +67,11 @@ namespace Tests.Helpers
             {
                 Location = (LocationType)random.Next(Enum.GetNames(typeof(LocationType)).Length)
             };
+        }
+
+        public static Car Car(string id = "12")
+        {
+            return new Car(prefill: true, id: id);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Tests.Models
             Attribute(nameof(Person.Age));
 
             BelongsTo<CompanyResource>(nameof(Person.Job), "/employer");
+            BelongsTo<CarResource>(nameof(Person.Car));
             HasMany<PersonResource>(nameof(Person.Friends));
             HasMany<PersonResource>( nameof( Person.FamilyMembers));
         }

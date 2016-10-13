@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Queries.Pagination;
+using Saule.Queries.Including;
 
 namespace Saule.Serialization
 {
@@ -11,6 +12,7 @@ namespace Saule.Serialization
     {
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
+        private readonly IncludingContext _includingContext;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly JArray _includedSection;
@@ -22,13 +24,15 @@ namespace Saule.Serialization
             ApiResource type,
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
-            PaginationContext paginationContext)
+            PaginationContext paginationContext,
+            IncludingContext includingContext)
         {
             _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
+            _includingContext = includingContext;
             _includedSection = new JArray();
         }
 
@@ -253,7 +257,16 @@ namespace Saule.Serialization
                     includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
                     includedData["relationships"] = SerializeRelationships(resource, props);
                     includedData["links"] = AddUrl(new JObject(), "self", url);
-                    if (!IsResourceIncluded(includedData))
+
+                    var includes = _includingContext?.Includes?.Select(x => x.Name).ToList();
+                    if (includes != null && includes?.Count() != 0)
+                    {
+                        if (includes.Contains(relationship.Name.ToPascalCase()) && !IsResourceIncluded(includedData))
+                        {
+                            _includedSection.Add(includedData);
+                        }
+                    }
+                    else if (!IsResourceIncluded(includedData))
                     {
                         _includedSection.Add(includedData);
                     }
