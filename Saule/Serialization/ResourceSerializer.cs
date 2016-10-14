@@ -259,6 +259,17 @@ namespace Saule.Serialization
                     includedData["links"] = AddUrl(new JObject(), "self", url);
 
                     var includes = _includingContext?.Includes?.Select(x => x.Name).ToList();
+                    if (includes != null)
+                    {
+                        var newIncludes = new List<string>();
+                        foreach (var include in includes)
+                        {
+                            var temp = include.Split('.');
+                            newIncludes.AddRange(temp);
+                        }
+                        includes.AddRange(newIncludes.Except(includes));
+                    }
+
                     if (includes != null && includes?.Count() != 0)
                     {
                         if (includes.Contains(relationship.Name.ToPascalCase()) && !IsResourceIncluded(includedData))
