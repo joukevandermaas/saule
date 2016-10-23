@@ -25,7 +25,14 @@ namespace Tests.Models
         public int? Age { get; set; }
         public int NumberOfLegs { get; set; }
         public Company Job { get; set; }
+        public Address Address { get; set; }
         public IEnumerable<Person> FamilyMembers { get; set; }
         public IEnumerable<Person> Friends { get; set; }
+    }
+
+    public class Address
+    {
+        public string StreetName { get; set; }
+        public string ZipCode { get; set; }
     }
 }

@@ -162,6 +162,8 @@ namespace Tests.Serialization
             Assert.Equal(DefaultObject.FirstName, attributes.Value<string>("first-name"));
             Assert.Equal(DefaultObject.LastName, attributes.Value<string>("last-name"));
             Assert.Equal(DefaultObject.Age, attributes.Value<int>("age"));
+            Assert.Equal(DefaultObject.Address.StreetName, attributes["address"].Value<string>("street-name"));
+            Assert.Equal(DefaultObject.Address.ZipCode, attributes["address"].Value<string>("zip-code"));
         }
 
         [Fact(DisplayName = "Serializes no extra properties")]
@@ -174,7 +176,7 @@ namespace Tests.Serialization
 
             var attributes = result["data"]["attributes"];
             Assert.True(attributes["numberOfLegs"] == null);
-            Assert.Equal(3, attributes.Count());
+            Assert.Equal(4, attributes.Count());
         }
 
         [Fact(DisplayName = "Uses type name from model definition")]

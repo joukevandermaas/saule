@@ -94,6 +94,7 @@
     <Compile Include="Queries\Sorting\SortingProperty.cs" />
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
+    <Compile Include="Serialization\JsonApiContractResolver.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilder.cs" />
     <Compile Include="Serialization\IUrlPathBuilder.cs" />
     <Compile Include="Http\PaginatedAttribute.cs" />

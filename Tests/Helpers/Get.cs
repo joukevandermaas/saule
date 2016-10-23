@@ -22,6 +22,15 @@ namespace Tests.Helpers
             "Yadon", "Holliday", "Paniagua", "Hofstetter", "Vasques", "Russel"
         };
 
+        private static readonly string[] StreetNames =
+        {
+            "Buttonwood Drive", "Cottage Street", "12th Street", "Dogwood Lane",
+            "Atlantic Avenue", "Lincoln Avenue", "Route 10", "Water Street",
+            "Brookside Drive", "Hillcrest Drive", "Madison Avenue", "Union Street",
+            "Lake Avenue", "6th Street", "Broad Street West", "Market Street",
+            "North Street", "Heritage Drive", "Cooper Street", "Route 44"
+        };
+
         public static IEnumerable<Person> People()
         {
             var i = 0;
@@ -69,9 +78,14 @@ namespace Tests.Helpers
         {
             return new Person(prefill: true, id: id)
             {
-                Age = random.Next(80),
+                Age = random.Next(maxValue: 80),
                 FirstName = FirstNames[random.Next(FirstNames.Length)],
-                LastName = LastNames[random.Next(LastNames.Length)]
+                LastName = LastNames[random.Next(LastNames.Length)],
+                Address = new Address
+                {
+                    StreetName = StreetNames[random.Next(StreetNames.Length)],
+                    ZipCode = random.Next(minValue: 10000, maxValue: 99999).ToString()
+                }
             };
         }
         public static Company Company(string id = "456")
