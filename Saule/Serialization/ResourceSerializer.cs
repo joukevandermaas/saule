@@ -39,6 +39,7 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
+            serializer.ContractResolver = new JsonApiContractResolver();
             if (_value == null)
             {
                 return SerializeNull();
@@ -114,7 +115,7 @@ namespace Saule.Serialization
 
         private static JToken GetValue(string name, IDictionary<string, JToken> properties)
         {
-            return properties[name.ToPascalCase()];
+            return properties[name.ToDashed()];
         }
 
         private static JToken GetId(IDictionary<string, JToken> properties, ApiResource resource)
