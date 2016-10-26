@@ -161,6 +161,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Assets\invalid-json-api.json" />
+    <None Include="Assets\invalid-top-level.json" />
+    <None Include="Assets\errors-and-data.json" />
+    <None Include="Assets\no-object-root.json" />
+    <None Include="Assets\no-data-errors-meta.json" />
+    <None Include="Assets\invalid-json.json" />
+    <None Include="Assets\included-no-data.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

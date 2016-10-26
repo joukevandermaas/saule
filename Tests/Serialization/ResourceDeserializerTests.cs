@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System.Linq;
+using Saule;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
@@ -81,7 +83,7 @@ namespace Tests.Serialization
             Assert.Null(job);
         }
 
-        [Fact( DisplayName = "Deserializes hasMany relationships" )]
+        [Fact(DisplayName = "Deserializes hasMany relationships")]
         public void DeserializesHasManyRelationship()
         {
             var target = new ResourceDeserializer(_singleJson, typeof(Person));
@@ -106,7 +108,7 @@ namespace Tests.Serialization
             {
                 Assert.Equal(expected.Identifier, actual.Identifier);
                 return true;
-            } );
+            });
         }
 
         [Fact(DisplayName = "Deserializes enumerables properly")]
@@ -121,5 +123,52 @@ namespace Tests.Serialization
                 Assert.Equal(_people[i].Identifier, result?[i].Identifier);
             }
         }
+
+        [Fact(DisplayName = "A document MUST contain at least one of the following top-level members: 'data', 'errors', 'meta'")]
+        public void ValidatesRequiredTopLevelMembers()
+        {
+            var content = FileAsJson("no-data-errors-meta.json");
+            var target = new ResourceDeserializer(content, typeof(Person));
+
+            Assert.Throws<JsonApiException>(() => target.Deserialize());
+        }
+
+        [Fact(DisplayName = "The members 'data' and 'errors' MUST NOT coexist in the same document")]
+        public void ValidatesMutuallyExclusiveTopLevelMembers()
+        {
+            var content = FileAsJson("errors-and-data.json");
+            var target = new ResourceDeserializer(content, typeof(Person));
+
+            Assert.Throws<JsonApiException>(() => target.Deserialize());
+        }
+
+        [Fact(DisplayName = "If a document does not contain a top-level 'data' key, the 'included' member MUST NOT be present either")]
+        public void ValidatesNoIncludedWithoutData()
+        {
+            var content = FileAsJson("included-no-data.json");
+            var target = new ResourceDeserializer(content, typeof(Person));
+
+            Assert.Throws<JsonApiException>(() => target.Deserialize());
+        }
+
+        [Fact(DisplayName = "No other top-level members are allowed")]
+        public void ValidatesTopLevelMemberExclusivity()
+        {
+            var content = FileAsJson("invalid-top-level.json");
+            var target = new ResourceDeserializer(content, typeof(Person));
+
+            Assert.Throws<JsonApiException>(() => target.Deserialize());
+        }
+
+        [Fact(DisplayName = "A JSON object MUST be at the root of every JSON API request containing data")]
+        public void ValidatesRootIsObject()
+        {
+            var content = FileAsJson("no-object-root.json");
+            var target = new ResourceDeserializer(content, typeof(Person));
+
+            Assert.Throws<JsonApiException>(() => target.Deserialize());
+        }
+
+        private static JToken FileAsJson(string filename) => JToken.Parse(File.ReadAllText($"../../Assets/{filename}"));
     }
 }

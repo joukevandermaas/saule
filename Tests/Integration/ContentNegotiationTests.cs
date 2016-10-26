@@ -1,10 +1,15 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Saule;
+using Saule.Http;
 using Tests.Helpers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tests.Integration
 {
@@ -93,7 +98,7 @@ namespace Tests.Integration
 
             private readonly string _personContent = Properties.Resources.PersonResourceString;
 
-            public NewSetup(NewSetupJsonApiServer server)
+            public NewSetup(NewSetupJsonApiServer server, ITestOutputHelper output)
             {
                 _server = server;
             }
@@ -163,7 +168,6 @@ namespace Tests.Integration
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
-
             [Fact(DisplayName = "Should return OK for a static content request that does not have media type parameters")]
             public async Task MustReturn200OkForStaticContent()
             {
@@ -174,6 +178,29 @@ namespace Tests.Integration
                 var result = await target.GetAsync(Paths.StaticText);
 
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+
+            [Theory(DisplayName = "Should respond 400 Bad Request to invalid json api")]
+            [InlineData("invalid-json-api.json")]
+            [InlineData("invalid-json.json")]
+            public async Task MustRespond400ForBadJsonApi(string filename)
+            {
+                using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+                {
+                    var client = server.GetClient();
+                    var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                    HttpContent content = GetFileAsString(filename);
+                    content.Headers.ContentType = mediaType;
+
+                    var result = await client.PostAsync("api/people/123", content);
+
+                    Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+                }
+            }
+
+            private static StringContent GetFileAsString(string filename)
+            {
+                return new StringContent(File.ReadAllText($"../../Assets/{filename}"));
             }
         }
     }

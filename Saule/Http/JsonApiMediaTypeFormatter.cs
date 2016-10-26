@@ -6,6 +6,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Serialization;
@@ -123,8 +124,25 @@ namespace Saule.Http
         {
             using (var reader = new StreamReader(readStream))
             {
-                var json = JToken.Parse(await reader.ReadToEndAsync());
-                return new ResourceDeserializer(json, type).Deserialize();
+                try
+                {
+                    var json = JToken.Parse(await reader.ReadToEndAsync());
+                    return new ResourceDeserializer(json, type).Deserialize();
+                }
+                catch (JsonApiException ex)
+                {
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        ReasonPhrase = ex.Message
+                    });
+                }
+                catch (JsonReaderException)
+                {
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        ReasonPhrase = "Request content is not valid JSON."
+                    });
+                }
             }
         }
 
