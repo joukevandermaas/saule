@@ -4,11 +4,11 @@ using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Serialization;
 using System.Linq;
-using System.Threading;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
+using Saule.Queries.Including;
 
 namespace Tests.Serialization
 {
@@ -85,6 +85,7 @@ namespace Tests.Serialization
         public void UsesCustomIdInUrls()
         {
             var person = Get.Person(id: "abc");
+            person.Friends = Get.People(1);
             var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
@@ -219,7 +220,7 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Null(job["data"]);
-            Assert.NotNull(friends["data"]);
+            Assert.Null(friends);
         }
 
         [Fact(DisplayName = "Serializes relationship data into 'included' key")]
@@ -245,10 +246,14 @@ namespace Tests.Serialization
             var person = new Person(true)
             {
                 Job = new CompanyWithCustomers(true)
+                {
+                    Customers = Get.Customers(1)
+                }
             };
 
+            var include = new IncludingContext(GetQuery("include", "job"));
             var target = new ResourceSerializer(person, new PersonWithCompanyWithCustomersResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null, null);
+                GetUri(id: "123"), DefaultPathBuilder, null, include);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -273,8 +278,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Null(relationships["job"]["data"]);
-            Assert.Null(relationships["friends"]["data"]);
+            Assert.Null(relationships["job"]);
+            Assert.Null(relationships["friends"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]
@@ -382,6 +387,11 @@ namespace Tests.Serialization
             Assert.Null(result["data"]["attributes"]["name"]);
             Assert.Null(result["data"]["attributes"]["location"]);
             Assert.Null(result["data"]["attributes"]["number-of-employees"]);
+        }
+
+        private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
+        {
+            yield return new KeyValuePair<string, string>(key, value);
         }
 
         private static Uri GetUri(string path = "/people/", string id = null, string query = null)

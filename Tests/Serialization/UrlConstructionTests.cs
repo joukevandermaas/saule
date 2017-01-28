@@ -160,26 +160,32 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var person = Get.Person();
+            person.Friends = Get.People(1);
+
+            var target = new ResourceSerializer(person, new PersonResource(),
                 GetUri("123"), DefaultPathBuilder, null, null);
+            
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
-            var friends = relationships["friends"];
+            var friendsRel = relationships["friends"];
 
             Assert.Equal("/api/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
             Assert.Equal("/api/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
 
-            Assert.Equal("/api/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/api/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/friends/", friendsRel["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/123/relationships/friends/", friendsRel["links"].Value<Uri>("self").AbsolutePath);
         }
 
         [Fact(DisplayName = "Supports multiple url builders")]
         public void SerializeDifferentBuilder()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var person = Get.Person();
+            person.Friends = Get.People(1);
+            var target = new ResourceSerializer(person, new PersonResource(),
                 GetUri("123"), new CanonicalUrlPathBuilder(), null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
