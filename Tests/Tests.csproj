@@ -115,6 +115,8 @@
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Http\QueryFilterExpressionCollectionTests.cs" />
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
+    <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\CarResource.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyResource.cs" />
     <Compile Include="Models\CompanyWithDifferentId.cs" />
