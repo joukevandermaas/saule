@@ -86,7 +86,6 @@
     <Compile Include="Http\QueryFilterExpressionCollection.cs" />
     <Compile Include="Queries\Filtering\TypeCorrectingVisitor.cs" />
     <Compile Include="Queries\Including\IncludingContext.cs" />
-    <Compile Include="Queries\Including\IncludingInterpreter.cs" />
     <Compile Include="Queries\Including\IncludingProperty.cs" />
     <Compile Include="Queries\Lambda.cs" />
     <Compile Include="Queries\Query.cs" />

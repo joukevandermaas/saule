@@ -47,11 +47,6 @@ namespace Saule
         public bool Paginate { get; set; } = false;
 
         /// <summary>
-        /// True if responses should be paginated, otherwise false.
-        /// </summary>
-        public bool Include { get; set; } = true;
-
-        /// <summary>
         /// True if users are allowed to query this response, otherwise false.
         /// </summary>
         public bool AllowQuery
