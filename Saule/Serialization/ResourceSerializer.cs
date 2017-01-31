@@ -13,6 +13,7 @@ namespace Saule.Serialization
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
         private readonly IncludingContext _includingContext;
+        private readonly bool _includedDefault;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly JArray _includedSection;
@@ -25,7 +26,8 @@ namespace Saule.Serialization
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
-            IncludingContext includingContext)
+            IncludingContext includingContext,
+            bool includedDefault = true)
         {
             _urlBuilder = urlBuilder;
             _resource = type;
@@ -33,6 +35,7 @@ namespace Saule.Serialization
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includingContext = includingContext;
+            _includedDefault = includedDefault;
             _includedSection = new JArray();
         }
 
@@ -279,7 +282,7 @@ namespace Saule.Serialization
                             _includedSection.Add(includedData);
                         }
                     }
-                    else if (!IsResourceIncluded(includedData))
+                    else if (!IsResourceIncluded(includedData) && _includedDefault)
                     {
                         _includedSection.Add(includedData);
                     }

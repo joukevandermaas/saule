@@ -240,20 +240,30 @@ namespace Tests.Serialization
             Assert.NotNull(job?["attributes"]);
         }
 
+        [Fact(DisplayName = "Do not serialize relationship data into 'included' key when marked with NoDefaultIncluded")]
+        public void NoIncludedRelationshipData()
+        {
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, null, false);
+            
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Null(included);
+        }
+
         [Fact(DisplayName = "Relationships of included resources have correct URLs")]
         public void IncludedResourceRelationshipURLsAreCorrect()
         {
             var person = new Person(true)
             {
                 Job = new CompanyWithCustomers(true)
-                {
-                    Customers = Get.Customers(1)
-                }
             };
 
-            var include = new IncludingContext(GetQuery("include", "job"));
             var target = new ResourceSerializer(person, new PersonWithCompanyWithCustomersResource(),
-                GetUri(id: "123"), DefaultPathBuilder, null, include);
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -278,8 +288,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.NotNull(relationships["job"]);
-            Assert.NotNull(relationships["friends"]);
+            Assert.Null(relationships["job"]["data"]);
+            Assert.Null(relationships["friends"]["data"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]

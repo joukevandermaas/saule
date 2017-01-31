@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\NoDefaultIncludedAttribute.cs" />
     <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="Http\HttpConfigExtensions.cs" />
     <Compile Include="Http\JsonApiConfiguration.cs" />
