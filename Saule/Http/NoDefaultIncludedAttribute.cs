@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Saule.Queries;
-using Saule.Queries.Filtering;
-using Saule.Queries.Including;
-using Saule.Queries.Sorting;
 
 namespace Saule.Http
 {
@@ -16,5 +10,16 @@ namespace Saule.Http
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class NoDefaultIncludedAttribute : ActionFilterAttribute
     {
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <param name="actionContext">The action context.</param>
+        public override void OnActionExecuting(HttpActionContext actionContext)
+        {
+            var queryContext = QueryContextUtils.GetQueryContext(actionContext);
+            queryContext.IncludedDefault = false;
+
+            base.OnActionExecuting(actionContext);
+        }
     }
 }

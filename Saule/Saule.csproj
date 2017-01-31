@@ -77,6 +77,7 @@
     <Compile Include="Http\FilterExpressions\LambdaQueryFilterExpression.cs" />
     <Compile Include="Http\IQueryFilterExpression.cs" />
     <Compile Include="Http\PreprocessingDelegatingHandler.cs" />
+    <Compile Include="Http\QueryContextUtils.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />

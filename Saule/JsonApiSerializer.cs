@@ -73,7 +73,8 @@ namespace Saule
                     baseUrl: requestUri,
                     urlBuilder: UrlPathBuilder,
                     paginationContext: QueryContext?.Pagination,
-                    includingContext: QueryContext?.Including);
+                    includingContext: QueryContext?.Including,
+                    includedDefault: QueryContext != null ? QueryContext.IncludedDefault : true);
 
                 result.ResourceSerializer = serializer;
             }
