@@ -240,7 +240,7 @@ namespace Tests.Serialization
             Assert.NotNull(job?["attributes"]);
         }
 
-        [Fact(DisplayName = "Do not serialize relationship data into 'included' key when marked with NoDefaultIncluded")]
+        [Fact(DisplayName = "Do not serialize relationship data into 'included' key when includedDefault set to false")]
         public void NoIncludedRelationshipData()
         {
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
