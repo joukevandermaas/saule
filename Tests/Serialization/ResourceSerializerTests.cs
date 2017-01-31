@@ -220,7 +220,7 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Null(job["data"]);
-            Assert.Null(friends);
+            Assert.NotNull(friends);
         }
 
         [Fact(DisplayName = "Serializes relationship data into 'included' key")]
@@ -278,8 +278,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Null(relationships["job"]);
-            Assert.Null(relationships["friends"]);
+            Assert.NotNull(relationships["job"]);
+            Assert.NotNull(relationships["friends"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]
