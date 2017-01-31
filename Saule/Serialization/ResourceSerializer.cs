@@ -210,22 +210,15 @@ namespace Saule.Serialization
 
             foreach (var rel in resource.Relationships)
             {
-                var relationshipValues = GetValue(rel.Name, properties);
-                if (relationshipValues?.Count() != 0)
-                {
-                    relationships[rel.Name] = SerializeRelationship(resource, rel, properties, relationshipValues);
-                }
+                relationships[rel.Name] = SerializeRelationship(resource, rel, properties);
             }
 
             return relationships;
         }
 
-        private JToken SerializeRelationship(
-            ApiResource resource,
-            ResourceRelationship relationship,
-            IDictionary<string, JToken> properties,
-            JToken relationshipValues)
+        private JToken SerializeRelationship(ApiResource resource, ResourceRelationship relationship, IDictionary<string, JToken> properties)
         {
+            var relationshipValues = GetValue(relationship.Name, properties);
             var relationshipProperties = relationshipValues as JObject;
 
             // serialize the links part (so the data can be fetched)
