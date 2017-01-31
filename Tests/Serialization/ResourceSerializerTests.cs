@@ -272,6 +272,34 @@ namespace Tests.Serialization
             Assert.Equal("http://example.com/api/corporations/456/relationships/customers/", included?[0]?["relationships"]?["customers"]?["links"]?.Value<Uri>("self")?.ToString()); 
         }
 
+        [Fact(DisplayName = "Explicitly included resource referenced in multiple resources is only included once")]
+        public void IncludedResourceOnlyOnce()
+        {
+            var job = new CompanyWithCustomers(id: "457", prefill: true);
+            var person = new Person(true)
+            {
+                Friends = new List<Person>
+                {
+                    new Person(id: "124", prefill: true) {
+                        Job = job
+                    },
+                    new Person(id: "125", prefill: true) {
+                        Job = job
+                    }
+                }
+            };
+
+            var include = new IncludingContext(GetQuery("include", "friends.job"));
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, include);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Equal(4, included.Count);
+        }
+
         [Fact(DisplayName = "Handles null relationships and attributes correctly")]
         public void HandlesNullValues()
         {
