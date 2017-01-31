@@ -160,10 +160,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
-            var person = Get.Person();
-            person.Friends = Get.People(1);
-
-            var target = new ResourceSerializer(person, new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
                 GetUri("123"), DefaultPathBuilder, null, null);
             
             var result = target.Serialize();
@@ -171,13 +168,13 @@ namespace Tests.Serialization
 
             var relationships = result["data"]["relationships"];
             var job = relationships["job"];
-            var friendsRel = relationships["friends"];
+            var friends = relationships["friends"];
 
             Assert.Equal("/api/people/123/employer/", job["links"].Value<Uri>("related").AbsolutePath);
             Assert.Equal("/api/people/123/relationships/employer/", job["links"].Value<Uri>("self").AbsolutePath);
 
-            Assert.Equal("/api/people/123/friends/", friendsRel["links"].Value<Uri>("related").AbsolutePath);
-            Assert.Equal("/api/people/123/relationships/friends/", friendsRel["links"].Value<Uri>("self").AbsolutePath);
+            Assert.Equal("/api/people/123/friends/", friends["links"].Value<Uri>("related").AbsolutePath);
+            Assert.Equal("/api/people/123/relationships/friends/", friends["links"].Value<Uri>("self").AbsolutePath);
         }
 
         [Fact(DisplayName = "Supports multiple url builders")]
