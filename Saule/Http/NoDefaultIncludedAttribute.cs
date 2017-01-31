@@ -11,11 +11,10 @@ using Saule.Queries.Sorting;
 namespace Saule.Http
 {
     /// <summary>
-    /// Indicates that the resource should not include related data by default.
+    /// Indicates that the action should not include related data by default.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class NoDefaultIncludedAttribute : ActionFilterAttribute
     {
-
     }
 }
