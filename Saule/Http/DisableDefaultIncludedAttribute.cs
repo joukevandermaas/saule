@@ -6,9 +6,12 @@ namespace Saule.Http
 {
     /// <summary>
     /// Indicates that the action should not include related data by default.
+    ///
+    /// This attribute is only relevant when requesting a resource without an
+    /// explicit include parameter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class NoDefaultIncludedAttribute : ActionFilterAttribute
+    public sealed class DisableDefaultIncludedAttribute : ActionFilterAttribute
     {
         /// <summary>
         /// See base class documentation.
