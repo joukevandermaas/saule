@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Saule.Queries.Including;
 
 namespace Saule.Http
 {
@@ -20,7 +21,13 @@ namespace Saule.Http
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
-            queryContext.IncludedDefault = false;
+
+            if (queryContext.Including == null)
+            {
+                queryContext.Including = new IncludingContext();
+            }
+
+            queryContext.Including.DisableDefaultIncluded = true;
 
             base.OnActionExecuting(actionContext);
         }

@@ -14,7 +14,5 @@ namespace Saule.Queries
         public FilteringContext Filtering { get; set; }
 
         public IncludingContext Including { get; set; }
-
-        public bool IncludedDefault { get; set; }
     }
 }

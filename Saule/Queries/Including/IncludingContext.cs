@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Saule.Queries.Including
 {
     internal class IncludingContext
     {
+        public IncludingContext()
+        {
+            DisableDefaultIncluded = false;
+        }
+
         public IncludingContext(IEnumerable<KeyValuePair<string, string>> includes)
+            : this()
+        {
+            SetIncludes(includes);
+        }
+
+        public IEnumerable<IncludingProperty> Includes { get; set; }
+
+        public bool DisableDefaultIncluded { get; set; }
+
+        public void SetIncludes(IEnumerable<KeyValuePair<string, string>> includes)
         {
             var dict = includes.ToDictionary(kv => kv.Key, kv => kv.Value);
             if (dict.ContainsKey(Constants.QueryNames.Including))
@@ -21,7 +33,5 @@ namespace Saule.Queries.Including
                 Includes = new IncludingProperty[0];
             }
         }
-
-        public IEnumerable<IncludingProperty> Includes { get; }
     }
 }

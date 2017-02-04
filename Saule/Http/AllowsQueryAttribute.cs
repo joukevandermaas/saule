@@ -24,15 +24,19 @@ namespace Saule.Http
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
-            var sorting = new SortingContext(queryParams);
-            var filtering = new FilteringContext(queryParams);
-            var including = new IncludingContext(queryParams);
-
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
 
-            queryContext.Sorting = sorting;
-            queryContext.Filtering = filtering;
-            queryContext.Including = including;
+            queryContext.Sorting = new SortingContext(queryParams);
+            queryContext.Filtering = new FilteringContext(queryParams);
+
+            if (queryContext.Including == null)
+            {
+                queryContext.Including = new IncludingContext(queryParams);
+            }
+            else
+            {
+                queryContext.Including.SetIncludes(queryParams);
+            }
 
             base.OnActionExecuting(actionContext);
         }

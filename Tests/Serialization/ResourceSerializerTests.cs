@@ -243,8 +243,10 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Do not serialize relationship data into 'included' key when includedDefault set to false")]
         public void NoIncludedRelationshipData()
         {
+            var includes = new IncludingContext();
+            includes.DisableDefaultIncluded = true;
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
-                GetUri(id: "123"), DefaultPathBuilder, null, null, false);
+                GetUri(id: "123"), DefaultPathBuilder, null, includes);
             
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
