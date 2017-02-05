@@ -85,7 +85,9 @@ namespace Tests.Helpers
                 {
                     StreetName = StreetNames[random.Next(StreetNames.Length)],
                     ZipCode = random.Next(minValue: 10000, maxValue: 99999).ToString()
-                }
+                },
+                Job = Company(),
+                Car = Car()
             };
         }
         public static Company Company(string id = "456")
@@ -95,9 +97,15 @@ namespace Tests.Helpers
                 Location = (LocationType)random.Next(Enum.GetNames(typeof(LocationType)).Length)
             };
         }
+
         public static Customer Customer(string id = "789")
         {
             return new Customer(prefill: true, id: id);
+        }
+        
+        public static Car Car(string id = "12")
+        {
+            return new Car(prefill: true, id: id);
         }
     }
 }

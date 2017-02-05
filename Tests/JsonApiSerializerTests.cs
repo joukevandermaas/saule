@@ -162,6 +162,27 @@ namespace Tests
             Assert.Equal(expected, props);
         }
 
+        [Fact(DisplayName = "Applies including when includes specified")]
+        public void AppliesIncluding()
+        {
+            var target = new JsonApiSerializer<PersonResource>()
+            {
+                AllowQuery = true
+            };
+            var people = Get.People(2).AsQueryable();
+
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?include=job,car"));
+            _output.WriteLine(result.ToString());
+
+            var included = ((JArray)result["included"])
+                .Where(x => 
+                    x["type"].Value<string>() == "corporation" ||
+                    x["type"].Value<string>() == "car")
+                .ToList();
+
+            Assert.Equal(2, included.Count);
+        }
+
         [Fact(DisplayName = "Uses converters")]
         public void UsesConverters()
         {

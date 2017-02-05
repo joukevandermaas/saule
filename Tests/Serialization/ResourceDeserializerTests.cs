@@ -25,10 +25,10 @@ namespace Tests.Serialization
             _people = Get.People(5).ToArray();
             var singleSerializer = new ResourceSerializer(
             _person, new PersonResource(), new Uri("http://example.com/people/1"),
-            new DefaultUrlPathBuilder(), null);
+            new DefaultUrlPathBuilder(), null, null);
             var multiSerializer = new ResourceSerializer(
                 _people, new PersonResource(), new Uri("http://example.com/people/"),
-                new DefaultUrlPathBuilder(), null);
+                new DefaultUrlPathBuilder(), null, null);
 
             _singleJson = JToken.Parse(singleSerializer.Serialize().ToString());
             _collectionJson = JToken.Parse(multiSerializer.Serialize().ToString());

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Saule.Queries;
 using Saule.Queries.Filtering;
+using Saule.Queries.Including;
 using Saule.Queries.Sorting;
 
 namespace Saule.Http
@@ -24,34 +24,21 @@ namespace Saule.Http
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
-            var sorting = new SortingContext(queryParams);
-            var filtering = new FilteringContext(queryParams);
+            var queryContext = QueryContextUtils.GetQueryContext(actionContext);
 
-            var queryContext = GetQueryContext(actionContext);
+            queryContext.Sorting = new SortingContext(queryParams);
+            queryContext.Filtering = new FilteringContext(queryParams);
 
-            queryContext.Sorting = sorting;
-            queryContext.Filtering = filtering;
-
-            base.OnActionExecuting(actionContext);
-        }
-
-        private static QueryContext GetQueryContext(HttpActionContext actionContext)
-        {
-            var hasQuery = actionContext.Request.Properties.ContainsKey(Constants.PropertyNames.QueryContext);
-            QueryContext query;
-
-            if (hasQuery)
+            if (queryContext.Including == null)
             {
-                query = actionContext.Request.Properties[Constants.PropertyNames.QueryContext]
-                    as QueryContext;
+                queryContext.Including = new IncludingContext(queryParams);
             }
             else
             {
-                query = new QueryContext();
-                actionContext.Request.Properties.Add(Constants.PropertyNames.QueryContext, query);
+                queryContext.Including.SetIncludes(queryParams);
             }
 
-            return query;
+            base.OnActionExecuting(actionContext);
         }
     }
 }

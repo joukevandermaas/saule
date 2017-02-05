@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\DisableDefaultIncludedAttribute.cs" />
     <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="Http\HttpConfigExtensions.cs" />
     <Compile Include="Http\JsonApiConfiguration.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Http\FilterExpressions\LambdaQueryFilterExpression.cs" />
     <Compile Include="Http\IQueryFilterExpression.cs" />
     <Compile Include="Http\PreprocessingDelegatingHandler.cs" />
+    <Compile Include="Http\QueryContextUtils.cs" />
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
@@ -85,6 +87,8 @@
     <Compile Include="Queries\Filtering\FilteringProperty.cs" />
     <Compile Include="Http\QueryFilterExpressionCollection.cs" />
     <Compile Include="Queries\Filtering\TypeCorrectingVisitor.cs" />
+    <Compile Include="Queries\Including\IncludingContext.cs" />
+    <Compile Include="Queries\Including\IncludingProperty.cs" />
     <Compile Include="Queries\Lambda.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryContext.cs" />

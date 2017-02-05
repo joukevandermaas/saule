@@ -26,6 +26,7 @@ namespace Tests.Models
         public int NumberOfLegs { get; set; }
         public Company Job { get; set; }
         public Address Address { get; set; }
+        public Car Car { get; set; }
         public IEnumerable<Person> FamilyMembers { get; set; }
         public IEnumerable<Person> Friends { get; set; }
     }
