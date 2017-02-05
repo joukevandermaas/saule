@@ -1,3 +1,15 @@
+## `master` (upcoming 1.6)
+
+- [**BUGFIX**] Support belongsTo relationships when data is null (#124 by @goo32)
+- [**BUGFIX**] Use included resource when serialising its links (#130 by @laurence79)
+- [**BUGFIX**] Serialize everything with kebab case by default (#132)
+- [**BUGFIX**] Return reasonable errors for invalid content (#133)
+- [**FEATURE**] Related resources (#137 by @bjornharrtell and @yohanmishkin)
+
+## Version 1.5.1
+
+- [**BUGFIX**] Convert case for relationship as well in ResourceDeserializer (#117 by @bxh)
+
 ## Version 1.5
 
 - [**FEATURE**] Make configuration more convenient & flexible (#101)
