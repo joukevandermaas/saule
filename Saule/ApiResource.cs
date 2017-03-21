@@ -43,11 +43,11 @@ namespace Saule
         /// </summary>
         public string ResourceType { get; private set; }
 
-        internal IEnumerable<ResourceAttribute> Attributes => _attributes;
+        public IEnumerable<ResourceAttribute> Attributes => _attributes;
 
-        internal IEnumerable<ResourceRelationship> Relationships => _relationships;
+        public IEnumerable<ResourceRelationship> Relationships => _relationships;
 
-        internal string IdProperty { get; private set; }
+        public string IdProperty { get; private set; }
 
         /// <summary>
         /// Customize the type name of this resource. The default value
