@@ -18,7 +18,7 @@ namespace Saule.Http
         private int _perPage = 10;
 
         /// <summary>
-        /// The number of items to return per response.
+        /// Gets or sets the number of items to return per response.
         /// </summary>
         public int PerPage
         {

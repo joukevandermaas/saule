@@ -28,7 +28,7 @@ namespace Saule.Http
         }
 
         /// <summary>
-        /// The type of the resource this controller action returns.
+        /// Gets the type of the resource this controller action returns.
         /// </summary>
         public ApiResource Resource { get; }
 

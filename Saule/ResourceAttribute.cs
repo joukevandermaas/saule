@@ -15,7 +15,7 @@
         }
 
         /// <summary>
-        /// The name of the attribute.
+        /// Gets the name of the attribute.
         /// </summary>
         public string Name { get; }
     }

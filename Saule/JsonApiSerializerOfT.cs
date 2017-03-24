@@ -37,17 +37,17 @@ namespace Saule
         }
 
         /// <summary>
-        /// Contains converters to influence the serialization process.
+        /// Gets the converters to influence the serialization process.
         /// </summary>
         public ICollection<JsonConverter> JsonConverters => _serializer.JsonConverters;
 
         /// <summary>
-        /// True if responses should be paginated, otherwise false.
+        /// Gets or sets a value indicating whether responses should be paginated.
         /// </summary>
         public bool Paginate { get; set; } = false;
 
         /// <summary>
-        /// True if users are allowed to query this response, otherwise false.
+        /// Gets or sets a value indicating whether users are allowed to query this response.
         /// </summary>
         public bool AllowQuery
         {
@@ -56,17 +56,17 @@ namespace Saule
         }
 
         /// <summary>
-        /// Used to execute filters specified through query parameters in the request url.
+        /// Gets the expressions used to execute filters specified through query parameters in the request url.
         /// </summary>
         public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
 
         /// <summary>
-        /// The number of items per page, if the responses are paginated.
+        /// Gets or sets the number of items per page, if the responses are paginated.
         /// </summary>
         public int ItemsPerPage { get; set; } = 10;
 
         /// <summary>
-        /// The url path builder to use during serialization.
+        /// Gets or sets the url path builder to use during serialization.
         /// </summary>
         public IUrlPathBuilder UrlPathBuilder
         {
