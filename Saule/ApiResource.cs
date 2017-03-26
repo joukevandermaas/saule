@@ -44,17 +44,17 @@ namespace Saule
         public string ResourceType { get; private set; }
 
         /// <summary>
-        /// The defined attributes of this resource.
+        /// Gets the defined attributes of this resource.
         /// </summary>
         public IEnumerable<ResourceAttribute> Attributes => _attributes;
 
         /// <summary>
-        /// The defined relationships of this resource.
+        /// Gets the defined relationships of this resource.
         /// </summary>
         public IEnumerable<ResourceRelationship> Relationships => _relationships;
 
         /// <summary>
-        /// The defined identifier of this resource.
+        /// Gets the defined identifier of this resource.
         /// </summary>
         public string IdProperty { get; private set; }
 
