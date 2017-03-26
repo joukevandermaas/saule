@@ -28,22 +28,22 @@
         }
 
         /// <summary>
-        /// The name of this relationship.
+        /// Gets the name of this relationship.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// The definition of the related resource
+        /// Gets the definition of the related resource
         /// </summary>
         public ApiResource RelatedResource { get; }
 
         /// <summary>
-        /// The pathspec of this relationship.
+        /// Gets the pathspec of this relationship.
         /// </summary>
         public string UrlPath { get; }
 
         /// <summary>
-        /// The kind of relationship.
+        /// Gets the kind of relationship.
         /// </summary>
         public RelationshipKind Kind { get; }
     }

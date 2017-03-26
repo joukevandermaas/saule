@@ -34,12 +34,12 @@ namespace Saule
         }
 
         /// <summary>
-        /// The url path of this resource.
+        /// Gets the url path of this resource.
         /// </summary>
         public string UrlPath { get; private set; }
 
         /// <summary>
-        /// The type name of this resource.
+        /// Gets the type name of this resource.
         /// </summary>
         public string ResourceType { get; private set; }
 

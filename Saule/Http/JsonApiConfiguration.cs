@@ -10,17 +10,17 @@ namespace Saule.Http
     public class JsonApiConfiguration
     {
         /// <summary>
-        /// Determines how to generate urls for links.
+        /// Gets or sets the UrlPathBuilder which determines how to generate urls for links.
         /// </summary>
         public IUrlPathBuilder UrlPathBuilder { get; set; } = null;
 
         /// <summary>
-        /// Json converters to manipulate the serialization process.
+        /// Gets the JsonConverters to manipulate the serialization process.
         /// </summary>
         public List<JsonConverter> JsonConverters { get; } = new List<JsonConverter>();
 
         /// <summary>
-        /// Determines the expressions that are used to evaluate filter queries on a per-type basis.
+        /// Gets the expressions that are used to evaluate filter queries on a per-type basis.
         /// </summary>
         public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
     }
