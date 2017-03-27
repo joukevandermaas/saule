@@ -12,11 +12,17 @@
         public ResourceAttribute(string name)
         {
             Name = name.ToDashed();
+            PropertyName = name.ToPascalCase();
         }
 
         /// <summary>
-        /// Gets the name of the attribute.
+        /// Gets the name of the attribute in dashed JSON API format.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the name of the attribute in PascalCase.
+        /// </summary>
+        public string PropertyName { get; }
     }
 }
