@@ -446,6 +446,9 @@ namespace Tests.Serialization
             var data = result["data"] as JArray;
             var included = result["included"] as JArray;
 
+            if (included == null)
+                return;
+
             var combined = data.Concat(included);
 
             var duplicates = combined
