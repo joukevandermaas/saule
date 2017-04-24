@@ -63,6 +63,17 @@ namespace Saule.Serialization
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
 
+            if (result["data"] is JArray && _includedSection.Count > 0)
+            {
+                result["data"].Join(
+                    _includedSection,
+                    r => new { id = r["id"], type = r["type"] },
+                    i => new { id = i["id"], type = i["type"] },
+                    (r, i) => i)
+                .ToList()
+                .ForEach(i => _includedSection.Remove(i));
+            }
+
             if (_includedSection.Count > 0)
             {
                 result["included"] = _includedSection;

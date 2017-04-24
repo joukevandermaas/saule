@@ -429,6 +429,37 @@ namespace Tests.Serialization
             Assert.Null(result["data"]["attributes"]["number-of-employees"]);
         }
 
+        [Fact(DisplayName = "A compound document MUST NOT include more than one resource object for each type and id pair")]
+        public void ResourceObjectsAreNotDuplicated()
+        {
+            var personA = new Person(false, "1");
+            var personB = new Person(false, "2");
+            personA.Friends = new Person[] { personB };
+            personB.Friends = new Person[] { personA };
+
+            var people = new Person[] { personA, personB };
+
+            var target = new ResourceSerializer(people, DefaultResource,
+                GetUri(), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+            var data = result["data"] as JArray;
+            var included = result["included"] as JArray;
+
+            if (included == null)
+                return;
+
+            var combined = data.Concat(included);
+
+            var duplicates = combined
+                .GroupBy(t => new { type = t["type"], id = t["id"] })
+                .Where(g => g.Count() > 1)
+                .Select(g => new { resource = g.Key, count = g.Count() })
+                .ToList();
+
+            Assert.Equal(0, duplicates.Count);
+        }
+
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
         {
             yield return new KeyValuePair<string, string>(key, value);
