@@ -26,21 +26,22 @@ public static void Register(HttpConfiguration config)
 
 [Learn to customize the serialization process](Customizing-the-serialization-process)
 
-
 ---
 > **Note**: if you are using an older (< 1.4) version of Saule, add the following lines instead:
 >
-> ```csharp
+> 
+
+```csharp
 public static void Register(HttpConfiguration config)
 {
     // ...
 
->     config.Formatters.Clear();
->     config.Formatters.Add(new JsonApiMediaTypeFormatter());
+     config.Formatters.Clear();
+     config.Formatters.Add(new JsonApiMediaTypeFormatter());
 
->     // ...
+    // ...
 }
-> ```
+ ```
 
 Saule requires you to define models for the resources you want to return from
 your api.  This allows for you to customize the data your api returns without
@@ -90,15 +91,14 @@ and receiving Json Api!
 
 __For more information, see links below.__
 
+[Learn more about defining resource models](Resource-models)
+
 [Learn to customize the serialization process](Customizing-the-serialization-process)
 
 [Generating links](Generating-links)
-
-[Including (or not including) resources](Including-(or-not-including)-resource)
 
 [Pagination](Pagination)
 
 [Queryable endpoints](Queryable-endpoints)
 
-[Learn more about defining resource models](Resource-models)
-
+[Including (or not including) resources](Including-(or-not-including)-resources)

@@ -1,3 +1,10 @@
+
+## Customizing the serialization process
+
+[Back to home](index)
+
+----
+
 To add serialization and deserialization to your Web Api project,
 add the following lines to your `Startup.cs`:
 
@@ -13,15 +20,16 @@ public static void Register(HttpConfiguration config)
 ```
 
 > **Note**: if you are using an older (< 1.4) version of Saule, add the following lines instead:
+
 ```csharp
 public static void Register(HttpConfiguration config)
 {
     // ...
 
->     config.Formatters.Clear();
+    config.Formatters.Clear();
     config.Formatters.Add(new JsonApiMediaTypeFormatter());
 
->     // ...
+    // ...
 }
 ```
 
@@ -32,6 +40,7 @@ and outgoing request.
 
 Saule allows you to specify any number of `JsonConverters`.
 To e.g. serialize enums as strings, use:
+
 ```csharp
 config.ConfigureJsonApi(new JsonApiConfiguration {
     JsonConverters = { new StringEnumConverter() }

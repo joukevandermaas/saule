@@ -1,3 +1,9 @@
+## Including (or not including) resources
+
+[Back to home](index)
+
+----
+
 > **Note**: You need at least Saule 1.6 for this to work.
 
 By default, Saule includes all related resources into the generated JSON. If you do not want this, you can add the `DisableDefaultIncludedAttribute` to your action method:

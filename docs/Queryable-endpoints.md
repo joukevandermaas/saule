@@ -1,3 +1,7 @@
+## Queryable endpoints
+
+[Back to home](index)
+
 > **Note**: You need at least Saule 1.3 for this to work.
 
 Saule supports queryable endpoints. These endpoints allow users of

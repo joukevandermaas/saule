@@ -1,3 +1,9 @@
+## Generating links
+
+[Back to home](index)
+
+----
+
 > **Note**: You need at least Saule 1.2 for this to work.
 
 Saule lets you customize the links that are generated during serialization. It

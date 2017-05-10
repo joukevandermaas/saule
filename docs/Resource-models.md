@@ -1,3 +1,7 @@
+## Resource Models
+
+[Back to home](index)
+
 ## Attributes
 Saule uses resource models to serialize any object into a
 a set of predefined resources. To define such a model, create

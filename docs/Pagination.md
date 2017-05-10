@@ -1,3 +1,9 @@
+## Pagination
+
+[Back to home](index)
+
+----
+
 > **Note**: You need at least Saule 1.1 for this to work.
 
 Adding pagination to an action method's results is as easy as adding an attribute:
