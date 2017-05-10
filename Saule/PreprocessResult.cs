@@ -8,7 +8,7 @@ namespace Saule
     {
         public ApiError ErrorContent { get; set; }
 
-        public ResourceSerializer ResourceSerializer { get; set; }
+        public IResourceSerializer ResourceSerializer { get; set; }
 
         public IEnumerable<JsonConverter> JsonConverters { get; set; }
     }

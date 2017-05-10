@@ -8,7 +8,7 @@ using Saule.Queries.Pagination;
 
 namespace Saule.Serialization
 {
-    internal class ResourceSerializer
+    internal class ResourceSerializer : IResourceSerializer
     {
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
