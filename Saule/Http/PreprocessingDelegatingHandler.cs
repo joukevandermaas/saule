@@ -36,6 +36,7 @@ namespace Saule.Http
         {
             var jsonApi = new JsonApiSerializer();
             jsonApi.JsonConverters.AddRange(config.JsonConverters);
+            jsonApi.UseGraphSerializer = config.UseGraphSerializer;
 
             PrepareQueryContext(jsonApi, request, config);
 
