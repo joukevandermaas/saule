@@ -57,6 +57,12 @@ namespace Saule
             return string.Join(string.Empty, cased.ToArray());
         }
 
+        public static string SubstringToSeperator(this string source, string seperator)
+        {
+            var to = source.IndexOf(seperator);
+            return to != -1 ? source.Substring(0, to) : source;
+        }
+
         private static IEnumerable<string> SplitAndLower(string source)
         {
             var strings = new List<string>();

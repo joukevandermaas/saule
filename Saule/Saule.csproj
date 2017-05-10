@@ -80,6 +80,8 @@
     <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
+    <Compile Include="NullGuardExtensions.cs" />
+    <Compile Include="ObjectExtensions.cs" />
     <Compile Include="PreprocessResult.cs" />
     <Compile Include="Queries\Filtering\FilteringContext.cs" />
     <Compile Include="Queries\Filtering\FilteringInterpreter.cs" />
@@ -96,6 +98,12 @@
     <Compile Include="Queries\Sorting\SortingDirection.cs" />
     <Compile Include="Queries\Sorting\SortingProperty.cs" />
     <Compile Include="Serialization\IResourceSerializer.cs" />
+    <Compile Include="Serialization\ResourceGraphPathSet.cs" />
+    <Compile Include="Serialization\ResourceGraphRelationship.cs" />
+    <Compile Include="Serialization\ResourceGraph.cs" />
+    <Compile Include="Serialization\ResourceGraphSerializer.cs" />
+    <Compile Include="Serialization\ResourceGraphNodeKey.cs" />
+    <Compile Include="Serialization\ResourceGraphNode.cs" />
     <Compile Include="ResourceRelationshipOfT.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilder.cs" />
     <Compile Include="Serialization\JsonApiContractResolver.cs" />
