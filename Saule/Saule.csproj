@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -77,8 +77,8 @@
     <Compile Include="Http\IQueryFilterExpression.cs" />
     <Compile Include="Http\PreprocessingDelegatingHandler.cs" />
     <Compile Include="Http\QueryContextUtils.cs" />
-    <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="JsonApiSerializer.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="NullGuardExtensions.cs" />
     <Compile Include="ObjectExtensions.cs" />
