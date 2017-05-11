@@ -1,4 +1,6 @@
-## `master` (upcoming 1.6)
+## `master` (upcoming 1.7)
+
+## Version 1.6
 
 - [**BUGFIX**] Support belongsTo relationships when data is null (#124 by @goo32)
 - [**BUGFIX**] Use included resource when serialising its links (#130 by @laurence79)
