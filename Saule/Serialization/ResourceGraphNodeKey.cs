@@ -20,7 +20,7 @@ namespace Saule.Serialization
             Type = resource.ResourceType.ToDashed();
             if (obj != null)
             {
-                Id = obj.GetValueOfProperty(resource.IdProperty);
+                Id = obj.GetValueOfProperty(resource.IdProperty)?.ToString();
             }
 
             if (Id == null)
@@ -31,7 +31,7 @@ namespace Saule.Serialization
 
         public ResourceGraphNodeKey(
             string type,
-            object id)
+            string id)
         {
             type.ThrowIfNull(nameof(type));
             id.ThrowIfNull(nameof(id));
@@ -44,7 +44,7 @@ namespace Saule.Serialization
         public string Type { get; private set; }
 
         [JsonProperty("id")]
-        public object Id { get; private set; }
+        public string Id { get; private set; }
 
         public static bool operator ==(ResourceGraphNodeKey k1, ResourceGraphNodeKey k2)
         {

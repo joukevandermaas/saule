@@ -145,7 +145,24 @@ namespace Tests.Serialization
 
             Assert.True(areFriends);
         }
-        
+
+
+        [Fact(DisplayName = "All Ids are serialized as strings")]
+        public virtual void AllIdsAreSerializedAsStrings()
+        {
+            var w = new Widget
+            {
+                Id = 1,
+                Title = "Title"
+            };
+
+            var target = GetSerializer(w, new WidgetResource(),
+                GetUri(), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+
+            Assert.True(result["data"]?["id"]?.Type == JTokenType.String);
+        }
+
         public override void HandlesRecursiveProperties()
         {
             /**

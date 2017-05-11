@@ -398,7 +398,7 @@ namespace Tests.Serialization
             _output.WriteLine(guidResult.ToString());
 
             Assert.NotNull(guidResult["data"]["id"]);
-            Assert.Equal(guid.Id, guidResult["data"].Value<Guid>("id"));
+            Assert.Equal(JToken.FromObject(guid.Id), guidResult["data"]["id"]);
         }
 
         [Fact(DisplayName = "Supports Guids for ids in collections")]
