@@ -5,6 +5,10 @@
 - [**BUGFIX**] Serialize everything with kebab case by default (#132)
 - [**BUGFIX**] Return reasonable errors for invalid content (#133)
 - [**FEATURE**] Related resources (#137 by @bjornharrtell and @yohanmishkin)
+- [**FEATURE**] Expose properties of resource (#142 by @bjornharrtell)
+- [**MAINTENANCE**] Upgrade dependencies (#143 by @bjornharrtell)
+- [**BUGFIX**] Prevent a resource being included in both the data and included sections (#147 by @laurence79)
+- [**MAINTENANCE**] Move documentation to Github Pages (#148 by @adamalesandro)
 
 ## Version 1.5.1
 
