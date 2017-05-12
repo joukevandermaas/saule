@@ -40,7 +40,7 @@ namespace Saule.Http
         {
             var accept = actionContext.Request.Headers.Accept
                 .Where(a => a.MediaType == Constants.MediaType);
-            if (accept.All(a => a.Parameters.Any()))
+            if (accept.Count() > 0 && accept.All(a => a.Parameters.Any()))
             {
                 // no json api media type without parameters
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.NotAcceptable);
