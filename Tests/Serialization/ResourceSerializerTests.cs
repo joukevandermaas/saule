@@ -237,7 +237,7 @@ namespace Tests.Serialization
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Equal(job["data"].Type.ToString(), "Null");
+            Assert.Equal(job["data"].Type, JTokenType.Null);
 
             Assert.NotNull(friends);
         }
