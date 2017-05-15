@@ -29,6 +29,15 @@ namespace Saule.Http
             queryContext.Sorting = new SortingContext(queryParams);
             queryContext.Filtering = new FilteringContext(queryParams);
 
+            if (queryContext.Including == null)
+            {
+                queryContext.Including = new IncludingContext(queryParams);
+            }
+            else
+            {
+                queryContext.Including.SetIncludes(queryParams);
+            }
+
             base.OnActionExecuting(actionContext);
         }
     }
