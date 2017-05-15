@@ -55,6 +55,17 @@ namespace Tests.Integration
                 Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
             }
 
+            [Fact(DisplayName = "Servers should not require Accept header")]
+            public async Task DoNotRequireAcceptWithoutBody()
+            {
+                var target = _server.GetClient();
+                target.DefaultRequestHeaders.Remove("Accept");
+
+                var result = await target.GetAsync(Paths.SingleResource);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+
             [Theory(DisplayName = "Servers MUST respond with '406 Not acceptable' to media type parameters in accept header")]
             [InlineData("version", "1")]
             [InlineData("charset", "utf-8")]
