@@ -29,7 +29,7 @@ namespace Saule
             }
 
             var jsonSerializer = GetJsonSerializer(result.JsonConverters);
-            return result.ResourceSerializer.Serialize(jsonSerializer);
+            return result.ResourceGraphSerializer.Serialize(jsonSerializer);
         }
 
         public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri)
@@ -69,29 +69,13 @@ namespace Saule
                     dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
                 }
 
-                IResourceSerializer serializer;
-                if (UseGraphSerializer)
-                {
-                    serializer = new ResourceGraphSerializer(
+                result.ResourceGraphSerializer = new ResourceSerializer(
                         value: dataObject,
                         type: resource,
                         baseUrl: requestUri,
                         urlBuilder: UrlPathBuilder,
                         paginationContext: QueryContext?.Pagination,
                         includingContext: QueryContext?.Including);
-                }
-                else
-                {
-                    serializer = new ResourceSerializer(
-                        value: dataObject,
-                        type: resource,
-                        baseUrl: requestUri,
-                        urlBuilder: UrlPathBuilder,
-                        paginationContext: QueryContext?.Pagination,
-                        includingContext: QueryContext?.Including);
-                }
-
-                result.ResourceSerializer = serializer;
             }
             catch (Exception ex)
             {

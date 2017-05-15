@@ -23,10 +23,5 @@ namespace Saule.Http
         /// Gets the expressions that are used to evaluate filter queries on a per-type basis.
         /// </summary>
         public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the new experimental graph serializer is used.
-        /// </summary>
-        public bool UseGraphSerializer { get; set; } = false;
     }
 }
