@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Saule.Serialization
 {
-    internal class ResourceGraphNodeKey : IEquatable<ResourceGraphNodeKey>
+    internal struct ResourceGraphNodeKey : IEquatable<ResourceGraphNodeKey>
     {
         public ResourceGraphNodeKey(
             object obj,
@@ -21,6 +21,13 @@ namespace Saule.Serialization
             if (obj != null)
             {
                 Id = obj.GetValueOfProperty(resource.IdProperty)?.ToString();
+            }
+            else
+            {
+                /* To silence compiler warning about returning with Id unassigned,
+                 * despite us throwing an exception before that ever happens.
+                 */
+                Id = null;
             }
 
             if (Id == null)
