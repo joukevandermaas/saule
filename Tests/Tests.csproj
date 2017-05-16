@@ -132,6 +132,7 @@
     <Compile Include="Models\GuidAsId.cs" />
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
+    <Compile Include="Models\LazyPerson.cs" />
     <Compile Include="Models\PersonWithCompanyWithCustomersResource.cs" />
     <Compile Include="Models\PersonWithGuidAsRelationsResource.cs" />
     <Compile Include="Models\PersonResource.cs" />

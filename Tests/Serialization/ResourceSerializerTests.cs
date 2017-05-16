@@ -588,7 +588,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Only serializes attributes in the resource")]
         public void OnlySerializesAttributesInTheResource()
         {
-            var personMock = new Mock<Person>();
+            var personMock = new Mock<LazyPerson>();
             personMock.SetupGet(p => p.Identifier).Returns("123");
 
             var target = new ResourceSerializer(personMock.Object, DefaultResource,
