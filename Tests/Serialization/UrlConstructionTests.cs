@@ -85,6 +85,17 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/123", selfLink);
         }
 
+        [Fact(DisplayName = "Omits top level links if so requested")]
+        public void NoTopLevelLinks()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonNoLinksResource(),
+                GetUri("123"), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Null(result["links"]);
+        }
+
         [Fact(DisplayName = "Adds next link only if needed")]
         public void NextLink()
         {
@@ -214,6 +225,19 @@ namespace Tests.Serialization
                 job["links"].Value<Uri>("self").ToString());
         }
 
+        [Fact(DisplayName = "Omits relationship links if so requested")]
+        public void NoRelLinks()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonNoJobLinksResource(),
+                GetUri("123"), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var job = result["data"]["relationships"]["job"];
+
+            Assert.Null(job["links"]);
+        }
+
         [Fact(DisplayName = "Does not generate links when url builder returns nothing")]
         public void UrlBuilder()
         {
@@ -225,9 +249,7 @@ namespace Tests.Serialization
             var job = result["data"]["relationships"]["job"];
 
             Assert.Equal(null,
-                job["links"]["related"]);
-            Assert.Equal(null,
-                job["links"]["self"]);
+               job["links"]);
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)

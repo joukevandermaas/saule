@@ -6,6 +6,38 @@ using Humanizer;
 namespace Saule
 {
     /// <summary>
+    /// Describes one or more link types to be generated.
+    /// </summary>
+    [Flags]
+    public enum LinkType
+    {
+        /// <summary>
+        /// No links
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Only self links
+        /// </summary>
+        Self = 1,
+
+        /// <summary>
+        /// Only related links
+        /// </summary>
+        Related = 2,
+
+        /// <summary>
+        /// Only ? links
+        /// </summary>
+        RelatedCanonical = 4,
+
+        /// <summary>
+        /// Generate all possible links
+        /// </summary>
+        All = ~None
+    }
+
+    /// <summary>
     /// Represents a resource that can be consumed by clients.
     /// </summary>
     public abstract class ApiResource
@@ -59,6 +91,11 @@ namespace Saule
         public string IdProperty { get; private set; }
 
         /// <summary>
+        /// Gets the defined <see cref="LinkType"/> to be generated for this resource.
+        /// </summary>
+        public LinkType LinkType { get; private set; } = LinkType.All;
+
+        /// <summary>
         /// Customize the type name of this resource. The default value
         /// is the name of the class (without 'Resource', if it exists).
         /// </summary>
@@ -94,6 +131,19 @@ namespace Saule
             IdProperty = name.ToPascalCase();
 
             return IdProperty;
+        }
+
+        /// <summary>
+        /// Customize the LinkType property of this resource. The default value
+        /// is <see cref="LinkType.All"/>.
+        /// </summary>
+        /// <param name="withLinks">The desired <see cref="LinkType"/> to generate for this resource.</param>
+        /// <returns>Value that was set.</returns>
+        protected LinkType WithLinks(LinkType withLinks)
+        {
+            LinkType = withLinks;
+
+            return LinkType;
         }
 
         /// <summary>
@@ -135,10 +185,25 @@ namespace Saule
         protected ResourceRelationship BelongsTo<T>(string name, string path)
                     where T : ApiResource, new()
         {
+            return BelongsTo<T>(name, path, LinkType.All);
+        }
+
+        /// <summary>
+        /// Specify a to-one relationship of this resource.
+        /// </summary>
+        /// <param name="name">The name of the relationship.</param>
+        /// <param name="path">The url pathspec of this relationship (default
+        /// is the name)</param>
+        /// <param name="withLinks">The defined <see cref="LinkType"/> to be generated for this relationship.</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship BelongsTo<T>(string name, string path, LinkType withLinks)
+                    where T : ApiResource, new()
+        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
-            var result = new ResourceRelationship<T>(name, path, RelationshipKind.BelongsTo, resource);
+            var result = new ResourceRelationship<T>(name, path, RelationshipKind.BelongsTo, resource, withLinks);
 
             _relationships.Add(result);
 
@@ -167,10 +232,24 @@ namespace Saule
         protected ResourceRelationship HasMany<T>(string name, string path)
                     where T : ApiResource, new()
         {
+            return HasMany<T>(name, name, LinkType.All);
+        }
+
+        /// <summary>
+        /// Specify a to-many relationship of this resource.
+        /// </summary>
+        /// <param name="name">The name of the relationship.</param>
+        /// <param name="path">The url pathspec of this relationship (default is the name).</param>
+        /// <param name="withLinks">The defined <see cref="LinkType"/> to be generated for this relationship.</param>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
+        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        protected ResourceRelationship HasMany<T>(string name, string path, LinkType withLinks)
+                    where T : ApiResource, new()
+        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
-            var result = new ResourceRelationship<T>(name, path, RelationshipKind.HasMany, resource);
+            var result = new ResourceRelationship<T>(name, path, RelationshipKind.HasMany, resource, withLinks);
 
             _relationships.Add(result);
 
