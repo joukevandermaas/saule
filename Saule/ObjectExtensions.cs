@@ -29,5 +29,27 @@ namespace Saule
 
             return null;
         }
+
+        public static bool IncludesProperty(this object obj, string propertyName)
+        {
+            if (obj == null || propertyName == null)
+            {
+                return false;
+            }
+
+            var propertyInfo = obj.GetType().GetProperty(propertyName);
+            if (propertyInfo != null)
+            {
+                return true;
+            }
+
+            var fieldInfo = obj.GetType().GetField(propertyName);
+            if (fieldInfo != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

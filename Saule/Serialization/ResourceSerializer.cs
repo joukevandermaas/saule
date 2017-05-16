@@ -208,21 +208,20 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
-            return JObject.FromObject(
-                node.SourceObject.GetType()
-                    .GetProperties().Join(
-                        node.Resource.Attributes,
-                        pi => pi.Name,
-                        a => a.PropertyName,
-                        (pi, a) => new
-                        {
-                            Property = pi,
-                            Attribute = a
-                        })
-                    .ToDictionary(
-                        j => j.Attribute.Name,
-                        j => j.Property.GetValue(node.SourceObject)),
-                 _serializer);
+            var attributeHash = node.Resource.Attributes
+                .Where(a =>
+                    node.SourceObject.IncludesProperty(a.PropertyName))
+                .Select(a =>
+                    new
+                    {
+                        Key = a.Name,
+                        Value = node.SourceObject.GetValueOfProperty(a.PropertyName)
+                    })
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value);
+
+            return JObject.FromObject(attributeHash, _serializer);
         }
 
         private JObject SerializeRelationships(ResourceGraphNode node)
