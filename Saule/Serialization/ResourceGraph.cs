@@ -59,7 +59,7 @@ namespace Saule.Serialization
                 return;
             }
 
-            if (obj is IEnumerable)
+            if (obj.IsCollectionType())
             {
                 foreach (var o in (IEnumerable)obj)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Serialization;
@@ -537,6 +538,50 @@ namespace Tests.Serialization
             var result = target.Serialize();
 
             Assert.True(result["data"]?["id"]?.Type == JTokenType.String);
+        }
+
+        [Fact(DisplayName = "Serializes dictionaries")]
+        public void SerializesDictionaries()
+        {
+            var person = new Dictionary<string, object>
+            {
+                ["Identifier"] = 1,
+                ["FirstName"] = "John",
+                ["LastName"] = "Smith",
+                ["Age"] = 34,
+                ["NumberOfLegs"] = 4
+            };
+
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal(result["data"]["id"], "1");
+            Assert.Equal(result["data"]["attributes"]["first-name"], "John");
+            Assert.Equal(result["data"]["attributes"]["age"], 34);
+        }
+
+        [Fact(DisplayName = "Serializes dynamics")]
+        public void SerializesDynamics()
+        {
+            dynamic person = new ExpandoObject();
+            person.Identifier = 1;
+            person.FirstName = "John";
+            person.LastName = "Smith";
+            person.Age = 34;
+            person.NumberOfLegs = 4;
+
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal(result["data"]["id"], "1");
+            Assert.Equal(result["data"]["attributes"]["first-name"], "John");
+            Assert.Equal(result["data"]["attributes"]["age"], 34);
         }
 
         internal static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)

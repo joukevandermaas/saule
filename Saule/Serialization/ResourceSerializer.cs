@@ -134,7 +134,7 @@ namespace Saule.Serialization
 
         private JToken SerializeData(ResourceGraph graph)
         {
-            var isCollection = _value is System.Collections.IEnumerable;
+            var isCollection = _value.IsCollectionType();
 
             var tokens = graph.DataNodes.Select(n => SerializeNode(n, isCollection));
 
