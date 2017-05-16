@@ -11,6 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
+using Moq;
 
 namespace Tests.Serialization
 {
@@ -582,6 +583,25 @@ namespace Tests.Serialization
             Assert.Equal(result["data"]["id"], "1");
             Assert.Equal(result["data"]["attributes"]["first-name"], "John");
             Assert.Equal(result["data"]["attributes"]["age"], 34);
+        }
+
+        [Fact(DisplayName = "Only serializes attributes in the resource")]
+        public void OnlySerializesAttributesInTheResource()
+        {
+            var personMock = new Mock<Person>();
+            personMock.SetupGet(p => p.Identifier).Returns("123");
+
+            var target = new ResourceSerializer(personMock.Object, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            personMock.VerifyGet(p => p.Identifier);
+            Assert.Throws<MockException>(() => 
+            {
+                personMock.VerifyGet(p => p.NumberOfLegs);
+            });
         }
 
         internal static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
