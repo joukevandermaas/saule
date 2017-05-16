@@ -55,11 +55,6 @@ namespace Saule.Serialization
             var result = new JObject
             {
                 ["data"] = SerializeArrayOrObject(_resource, objectJson, SerializeData),
-                ["links"] = new JObject
-                {
-                    ["self"] = new JValue(_baseUrl)
-                }
-
                 ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
             };
 
