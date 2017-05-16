@@ -19,8 +19,6 @@ namespace Saule
 
         public bool AllowUserQuery { get; set; } = false;
 
-        public bool UseGraphSerializer { get; set; } = false;
-
         public static JToken Serialize(PreprocessResult result)
         {
             if (result.ErrorContent != null)
@@ -29,7 +27,7 @@ namespace Saule
             }
 
             var jsonSerializer = GetJsonSerializer(result.JsonConverters);
-            return result.ResourceGraphSerializer.Serialize(jsonSerializer);
+            return result.ResourceSerializer.Serialize(jsonSerializer);
         }
 
         public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri)
@@ -69,7 +67,7 @@ namespace Saule
                     dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
                 }
 
-                result.ResourceGraphSerializer = new ResourceSerializer(
+                result.ResourceSerializer = new ResourceSerializer(
                         value: dataObject,
                         type: resource,
                         baseUrl: requestUri,
