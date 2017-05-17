@@ -67,15 +67,13 @@ namespace Saule
                     dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
                 }
 
-                var serializer = new ResourceSerializer(
-                    value: dataObject,
-                    type: resource,
-                    baseUrl: requestUri,
-                    urlBuilder: UrlPathBuilder,
-                    paginationContext: QueryContext?.Pagination,
-                    includingContext: QueryContext?.Including);
-
-                result.ResourceSerializer = serializer;
+                result.ResourceSerializer = new ResourceSerializer(
+                        value: dataObject,
+                        type: resource,
+                        baseUrl: requestUri,
+                        urlBuilder: UrlPathBuilder,
+                        paginationContext: QueryContext?.Pagination,
+                        includingContext: QueryContext?.Including);
             }
             catch (Exception ex)
             {

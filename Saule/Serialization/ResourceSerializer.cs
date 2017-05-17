@@ -15,9 +15,9 @@ namespace Saule.Serialization
         private readonly IncludingContext _includingContext;
         private readonly ApiResource _resource;
         private readonly object _value;
-        private readonly JArray _includedSection;
         private readonly IUrlPathBuilder _urlBuilder;
-        private bool _isCollection;
+        private readonly ResourceGraphPathSet _includedGraphPaths;
+        private JsonSerializer _serializer;
 
         public ResourceSerializer(
             object value,
@@ -33,7 +33,7 @@ namespace Saule.Serialization
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includingContext = includingContext;
-            _includedSection = new JArray();
+            _includedGraphPaths = IncludedGraphPathsFromContext(includingContext);
         }
 
         public JObject Serialize()
@@ -44,118 +44,54 @@ namespace Saule.Serialization
         public JObject Serialize(JsonSerializer serializer)
         {
             serializer.ContractResolver = new JsonApiContractResolver();
+            _serializer = serializer;
+
             if (_value == null)
             {
                 return SerializeNull();
             }
 
-            var objectJson = JToken.FromObject(_value, serializer);
-            _isCollection = objectJson is JArray;
+            var graph = new ResourceGraph(_value, _resource, _includedGraphPaths);
+            var dataSection = SerializeData(graph);
+            var includesSection = SerializeIncludes(graph);
 
             var result = new JObject
             {
-                ["data"] = SerializeArrayOrObject(_resource, objectJson, SerializeData),
+                ["data"] = dataSection,
                 ["links"] = new JObject
                 {
                     ["self"] = new JValue(_baseUrl)
                 }
 
-                ["links"] = CreateTopLevelLinks(_isCollection ? objectJson.Count() : 0)
+                ["links"] = CreateTopLevelLinks(dataSection is JArray ? dataSection.Count() : 0)
             };
 
-            if (result["data"] is JArray && _includedSection.Count > 0)
+            if (includesSection != null && includesSection.Count > 0)
             {
-                result["data"].Join(
-                    _includedSection,
-                    r => new { id = r["id"], type = r["type"] },
-                    i => new { id = i["id"], type = i["type"] },
-                    (r, i) => i)
-                .ToList()
-                .ForEach(i => _includedSection.Remove(i));
-            }
-
-            if (_includedSection.Count > 0)
-            {
-                result["included"] = _includedSection;
+                result["included"] = includesSection;
             }
 
             return result;
         }
 
-        private static JToken SerializeArrayOrObject(ApiResource resource, JToken token, Func<ApiResource, IDictionary<string, JToken>, JToken> serializeObj)
+        private ResourceGraphPathSet IncludedGraphPathsFromContext(IncludingContext context)
         {
-            var dataArray = token as JArray;
-
-            // single thing, just serialize it
-            if (dataArray == null)
+            if (context == null)
             {
-                return token is JObject ? serializeObj(resource, (JObject)token) : null;
+                return new ResourceGraphPathSet.All();
             }
-
-            // serialize each element separately
-            var data = new JArray();
-            foreach (var obj in dataArray.OfType<JObject>())
+            else if (context.Includes != null && context.Includes.Count() > 0)
             {
-                data.Add(serializeObj(resource, obj));
+                return new ResourceGraphPathSet(_includingContext.Includes.Select(i => i.Name));
             }
-
-            return data;
-        }
-
-        private static JToken SerializeMinimalData(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            var data = new JObject
+            else if (context.DisableDefaultIncluded)
             {
-                ["type"] = resource.ResourceType.ToDashed(),
-                ["id"] = EnsureHasId(properties, resource)
-            };
-
-            return data;
-        }
-
-        private static JToken SerializeAttributes(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            var attributes = new JObject();
-            foreach (var attr in resource.Attributes)
-            {
-                var value = GetValue(attr.Name, properties);
-                if (value != null)
-                {
-                    attributes.Add(attr.Name, value);
-                }
+                return new ResourceGraphPathSet.None();
             }
-
-            return attributes;
-        }
-
-        private static JToken GetValue(string name, IDictionary<string, JToken> properties)
-        {
-            return properties[name.ToDashed()];
-        }
-
-        private static JToken GetId(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            return GetValue(resource.IdProperty, properties);
-        }
-
-        private static JToken EnsureHasId(IDictionary<string, JToken> properties, ApiResource resource)
-        {
-            var id = GetId(properties, resource);
-            if (id == null)
+            else
             {
-                throw new JsonApiException(ErrorType.Server, "Resources must have an id");
+                return new ResourceGraphPathSet.All();
             }
-
-            return id;
-        }
-
-        private JObject SerializeNull()
-        {
-            return new JObject
-            {
-                ["data"] = null,
-                ["links"] = CreateTopLevelLinks(0)
-            };
         }
 
         private JToken CreateTopLevelLinks(int count)
@@ -187,136 +123,179 @@ namespace Saule.Serialization
             return result;
         }
 
-        private JToken SerializeData(ApiResource resource, IDictionary<string, JToken> properties)
+        private JObject SerializeNull()
         {
-            var data = SerializeMinimalData(properties);
-
-            data["attributes"] = SerializeAttributes(properties);
-            data["relationships"] = SerializeRelationships(resource, properties);
-
-            if (_isCollection)
-            {
-                data["links"] = AddUrl(
-                    new JObject(),
-                    "self",
-                    _urlBuilder.BuildCanonicalPath(_resource, (string)EnsureHasId(properties, _resource)));
-            }
-
-            return data;
-        }
-
-        private JToken SerializeMinimalData(IDictionary<string, JToken> properties)
-        {
-            return SerializeMinimalData(properties, _resource);
-        }
-
-        private JToken SerializeAttributes(IDictionary<string, JToken> properties)
-        {
-            return SerializeAttributes(properties, _resource);
-        }
-
-        private JToken SerializeRelationships(ApiResource resource, IDictionary<string, JToken> properties)
-        {
-            var relationships = new JObject();
-
-            foreach (var rel in resource.Relationships)
-            {
-                relationships[rel.Name] = SerializeRelationship(resource, rel, properties);
-            }
-
-            return relationships;
-        }
-
-        private JToken SerializeRelationship(ApiResource resource, ResourceRelationship relationship, IDictionary<string, JToken> properties)
-        {
-            var relationshipValues = GetValue(relationship.Name, properties);
-            var relationshipProperties = relationshipValues as JObject;
-
-            // serialize the links part (so the data can be fetched)
-            var objId = EnsureHasId(properties, resource);
-            var relToken = GetMinimumRelationship(
-                objId.ToString(),
-                resource,
-                relationship,
-                relationshipProperties != null ? (string)GetId(relationshipProperties, relationship.RelatedResource) : null);
-            if (relationshipValues == null)
-            {
-                return relToken;
-            }
-
-            // only include data if it exists, otherwise just assume it should be fetched later
-            var data = GetRelationshipData(relationship, relationshipValues);
-            if (data != null)
-            {
-                relToken["data"] = data;
-            }
-
-            return relToken;
-        }
-
-        private JToken GetRelationshipData(ResourceRelationship relationship, JToken relationshipValues)
-        {
-            var data = SerializeArrayOrObject(
-                relationship.RelatedResource,
-                relationshipValues,
-                (resource, props) =>
-                {
-                    var values = SerializeMinimalData(props, relationship.RelatedResource);
-                    var includedData = values.DeepClone();
-                    var url = _urlBuilder.BuildCanonicalPath(
-                        relationship.RelatedResource,
-                        (string)EnsureHasId(props, relationship.RelatedResource));
-
-                    includedData["attributes"] = SerializeAttributes(props, relationship.RelatedResource);
-                    includedData["relationships"] = SerializeRelationships(resource, props);
-                    includedData["links"] = AddUrl(new JObject(), "self", url);
-
-                    var includes = _includingContext?.Includes?.Select(x => x.Name).ToList();
-                    if (includes != null)
-                    {
-                        var newIncludes = new List<string>();
-                        foreach (var include in includes)
-                        {
-                            var temp = include.Split('.');
-                            newIncludes.AddRange(temp);
-                        }
-                        includes.AddRange(newIncludes.Except(includes));
-                    }
-
-                    if (includes != null && includes?.Count() != 0)
-                    {
-                        if (includes.Contains(relationship.Name.ToPascalCase()) && !IsResourceIncluded(includedData))
-                        {
-                            _includedSection.Add(includedData);
-                        }
-                    }
-                    else if (!IsResourceIncluded(includedData) && (_includingContext == null || !_includingContext.DisableDefaultIncluded))
-                    {
-                        _includedSection.Add(includedData);
-                    }
-
-                    return values;
-                });
-            return data;
-        }
-
-        private JToken GetMinimumRelationship(string id, ApiResource resource, ResourceRelationship relationship, string relationshipId)
-        {
-            var links = new JObject();
-            AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(resource, id, relationship));
-            AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(resource, id, relationship, relationshipId));
-
             return new JObject
             {
-                ["links"] = links
+                ["data"] = null,
+                ["links"] = CreateTopLevelLinks(0)
             };
         }
 
-        private bool IsResourceIncluded(JToken includedData)
+        private JToken SerializeData(ResourceGraph graph)
         {
-            return _includedSection.Any(t =>
-                (string)t["type"] == (string)includedData["type"] &&
-                (string)t["id"] == (string)includedData["id"]);
+            var isCollection = _value.IsCollectionType();
+
+            var tokens = graph.DataNodes.Select(n => SerializeNode(n, isCollection));
+
+            if (isCollection)
+            {
+                if (tokens.Count() == 0)
+                {
+                    return new JArray();
+                }
+                else
+                {
+                    return JArray.FromObject(tokens);
+                }
+            }
+            else
+            {
+                if (tokens.Count() == 0)
+                {
+                    return JValue.CreateNull();
+                }
+                else
+                {
+                    return tokens.First();
+                }
+            }
+        }
+
+        private JArray SerializeIncludes(ResourceGraph graph)
+        {
+            var tokens = graph.IncludedNodes.Select(n => SerializeNode(n, true));
+            if (tokens.Count() == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return JArray.FromObject(tokens);
+            }
+        }
+
+        private JObject SerializeNode(ResourceGraphNode node, bool isCollection)
+        {
+            var response = new JObject
+            {
+                ["type"] = node.Key.Type,
+                ["id"] = JToken.FromObject(node.Key.Id)
+            };
+
+            if (isCollection)
+            {
+                response["links"] = AddUrl(
+                    new JObject(),
+                    "self",
+                    _urlBuilder.BuildCanonicalPath(node.Resource, node.Key.Id.ToString()));
+            }
+
+            var attributes = SerializeAttributes(node);
+            if (attributes != null)
+            {
+                response["attributes"] = attributes;
+            }
+
+            var relationships = SerializeRelationships(node);
+            if (relationships != null)
+            {
+                response["relationships"] = relationships;
+            }
+
+            return response;
+        }
+
+        private JObject SerializeAttributes(ResourceGraphNode node)
+        {
+            var attributeHash = node.Resource.Attributes
+                .Where(a =>
+                    node.SourceObject.IncludesProperty(a.PropertyName))
+                .Select(a =>
+                    new
+                    {
+                        Key = a.Name,
+                        Value = node.SourceObject.GetValueOfProperty(a.PropertyName)
+                    })
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value);
+
+            return JObject.FromObject(attributeHash, _serializer);
+        }
+
+        private JObject SerializeRelationships(ResourceGraphNode node)
+        {
+            if (node.Relationships.Count == 0)
+            {
+                return null;
+            }
+
+            var response = new JObject();
+
+            foreach (var kv in node.Relationships)
+            {
+                var item = new JObject();
+
+                var data = SerializeRelationshipData(kv.Value);
+
+                var relationshipId = default(string);
+
+                if (data != null
+                    && kv.Value.Relationship.Kind == RelationshipKind.BelongsTo
+                    && kv.Value.SourceObject != null)
+                {
+                    relationshipId = (string)data["id"];
+                }
+
+                var links = new JObject();
+                AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), kv.Value.Relationship));
+                AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), kv.Value.Relationship, relationshipId));
+
+                item["links"] = links;
+
+                if (data != null)
+                {
+                    item["data"] = data;
+                }
+
+                response[kv.Key] = item;
+            }
+
+            return response;
+        }
+
+        private JToken SerializeRelationshipData(ResourceGraphRelationship relationship)
+        {
+            if (!relationship.Included)
+            {
+                return null;
+            }
+            else if (relationship.Relationship.Kind == RelationshipKind.BelongsTo)
+            {
+                if (relationship.SourceObject == null)
+                {
+                    return JValue.CreateNull();
+                }
+                else
+                {
+                    return JObject.FromObject(new ResourceGraphNodeKey(relationship.SourceObject, relationship.Relationship.RelatedResource));
+                }
+            }
+            else if (relationship.Relationship.Kind == RelationshipKind.HasMany)
+            {
+                var content = new JArray();
+                foreach (var o in (System.Collections.IEnumerable)relationship.SourceObject ?? new object[0])
+                {
+                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(o, relationship.Relationship.RelatedResource)));
+                }
+
+                return content;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private JObject AddUrl(JObject @object, string name, string path)

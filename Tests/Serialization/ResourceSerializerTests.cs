@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Serialization;
@@ -9,13 +10,14 @@ using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 using Saule.Queries.Including;
+using Saule.Queries.Pagination;
+using Moq;
 
 namespace Tests.Serialization
 {
     public class ResourceSerializerTests
     {
         private readonly ITestOutputHelper _output;
-
         private static Person DefaultObject { get; } = Get.Person();
         private static ApiResource DefaultResource { get; } = new PersonResource();
         private static Uri DefaultUrl { get; } = new Uri("http://example.com/");
@@ -40,16 +42,34 @@ namespace Tests.Serialization
             thirdModel.Child = fourthModel;
             fourthModel.Parent = thirdModel;
 
-            var target = new ResourceSerializer(firstModel, new Recursion.FirstModelResource(), 
+            var target = new ResourceSerializer(firstModel, new Recursion.FirstModelResource(),
                 GetUri(id: firstModel.Id), DefaultPathBuilder, null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
-            var id = result["data"].Value<string>("id");
 
-            Assert.Equal(firstModel.Id, id);
-            Assert.Equal(3, (result["included"] as JArray).Count);
+            var included = result["included"] as JArray;
+
+            Assert.NotNull(included);
+
+
+            var secondOutput = included
+                .Where(t => t["type"].Value<string>() == "second-model").FirstOrDefault();
+
+            Assert.NotNull(secondOutput);
+
+
+            var parentReference = secondOutput["relationships"]?["parent"]?["data"]?["type"];
+
+            Assert.NotNull(parentReference);
+            Assert.Equal(parentReference.Value<string>(), "first-model");
+
+
+            var childReference = secondOutput["relationships"]?["child"]?["data"]?["type"];
+
+            Assert.NotNull(childReference);
+            Assert.Equal(childReference.Value<string>(), "third-model");
         }
 
         [Fact(DisplayName = "Uses a property called 'Id' when none is specified for Ids")]
@@ -210,7 +230,7 @@ namespace Tests.Serialization
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
-            var target = new ResourceSerializer(person, new PersonWithDefaultIdResource(), 
+            var target = new ResourceSerializer(person, new PersonWithDefaultIdResource(),
                 GetUri(id: "123"), DefaultPathBuilder, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -219,7 +239,8 @@ namespace Tests.Serialization
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Null(job["data"]);
+            Assert.Equal(job["data"].Type, JTokenType.Null);
+
             Assert.NotNull(friends);
         }
 
@@ -299,7 +320,7 @@ namespace Tests.Serialization
 
             var included = result["included"] as JArray;
 
-            Assert.Equal(4, included.Count);
+            Assert.Equal(3, included.Count);
         }
 
         [Fact(DisplayName = "Handles null relationships and attributes correctly")]
@@ -307,7 +328,8 @@ namespace Tests.Serialization
         {
             var person = new Person(id: "45");
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "45"), DefaultPathBuilder, null, null);
+                GetUri(id: "45"), DefaultPathBuilder, null, new IncludingContext { DisableDefaultIncluded = true });
+
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -384,7 +406,7 @@ namespace Tests.Serialization
             _output.WriteLine(guidResult.ToString());
 
             Assert.NotNull(guidResult["data"]["id"]);
-            Assert.Equal(guid.Id, guidResult["data"].Value<Guid>("id"));
+            Assert.Equal(JToken.FromObject(guid.Id), guidResult["data"]["id"]);
         }
 
         [Fact(DisplayName = "Supports Guids for ids in collections")]
@@ -460,12 +482,134 @@ namespace Tests.Serialization
             Assert.Equal(0, duplicates.Count);
         }
 
-        private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
+        [Fact(DisplayName = "Serializes collections as such")]
+        public void SerializesCollectionsAsSuch()
+        {
+            var people = new[] { new Person(true, "123") };
+
+            var target = new ResourceSerializer(people, DefaultResource,
+                GetUri(), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+
+            Assert.True(result["data"] is JArray);
+            Assert.True((result["data"] as JArray)[0]["id"].Value<string>() == "123");
+        }
+
+        [Fact(DisplayName = "Included resources have correct relationship linkage")]
+        public void IncludedResourcesHaveCorrectRelationshipLinkage()
+        {
+            var personA = new Person(false, "1");
+            var personB = new Person(false, "2");
+            var personC = new Person(false, "3");
+            personA.Friends = new Person[] { personB };
+            personB.Friends = new Person[] { personA, personC };
+            personC.Friends = new Person[] { personB };
+
+            var somePeople = new Person[] { personA, personB };
+
+            var target = new ResourceSerializer(somePeople, DefaultResource,
+                GetUri(), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            var serialisedPersonB = included
+                .Where(i => i["id"].Value<string>() == "3")
+                .First();
+
+            var areFriends = serialisedPersonB["relationships"]["friends"]["data"]
+                .Any(d => d["id"].Value<string>() == "2");
+
+            Assert.True(areFriends);
+        }
+
+
+        [Fact(DisplayName = "All Ids are serialized as strings")]
+        public void AllIdsAreSerializedAsStrings()
+        {
+            var w = new Widget
+            {
+                Id = 1,
+                Title = "Title"
+            };
+
+            var target = new ResourceSerializer(w, new WidgetResource(),
+                GetUri(), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+
+            Assert.True(result["data"]?["id"]?.Type == JTokenType.String);
+        }
+
+        [Fact(DisplayName = "Serializes dictionaries")]
+        public void SerializesDictionaries()
+        {
+            var person = new Dictionary<string, object>
+            {
+                ["Identifier"] = 1,
+                ["FirstName"] = "John",
+                ["LastName"] = "Smith",
+                ["Age"] = 34,
+                ["NumberOfLegs"] = 4
+            };
+
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal(result["data"]["id"], "1");
+            Assert.Equal(result["data"]["attributes"]["first-name"], "John");
+            Assert.Equal(result["data"]["attributes"]["age"], 34);
+        }
+
+        [Fact(DisplayName = "Serializes dynamics")]
+        public void SerializesDynamics()
+        {
+            dynamic person = new ExpandoObject();
+            person.Identifier = 1;
+            person.FirstName = "John";
+            person.LastName = "Smith";
+            person.Age = 34;
+            person.NumberOfLegs = 4;
+
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal(result["data"]["id"], "1");
+            Assert.Equal(result["data"]["attributes"]["first-name"], "John");
+            Assert.Equal(result["data"]["attributes"]["age"], 34);
+        }
+
+        [Fact(DisplayName = "Only serializes attributes in the resource")]
+        public void OnlySerializesAttributesInTheResource()
+        {
+            var personMock = new Mock<LazyPerson>();
+            personMock.SetupGet(p => p.Identifier).Returns("123");
+
+            var target = new ResourceSerializer(personMock.Object, DefaultResource,
+                GetUri(id: "1"), DefaultPathBuilder, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            personMock.VerifyGet(p => p.Identifier);
+            Assert.Throws<MockException>(() => 
+            {
+                personMock.VerifyGet(p => p.NumberOfLegs);
+            });
+        }
+
+        internal static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
         {
             yield return new KeyValuePair<string, string>(key, value);
         }
 
-        private static Uri GetUri(string path = "/people/", string id = null, string query = null)
+        internal static Uri GetUri(string path = "/people/", string id = null, string query = null)
         {
             var combined = "/api" + path;
             if (id != null) combined += id;

@@ -22,15 +22,21 @@
             ApiResource relationshipResource)
         {
             Name = name.ToDashed();
+            PropertyName = name.ToPascalCase();
             UrlPath = urlPath.ToDashed();
             RelatedResource = relationshipResource;
             Kind = kind;
         }
 
         /// <summary>
-        /// Gets the name of this relationship.
+        /// Gets the name of the relationship in dashed JSON API format.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the name of the relationship in PascalCase.
+        /// </summary>
+        public string PropertyName { get; }
 
         /// <summary>
         /// Gets the definition of the related resource
