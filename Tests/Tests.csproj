@@ -133,6 +133,8 @@
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\LazyPerson.cs" />
+    <Compile Include="Models\PersonJobOnlyRelatedLinksResource.cs" />
+    <Compile Include="Models\PersonJobOnlySelfLinksResource.cs" />
     <Compile Include="Models\PersonNoJobLinksResource.cs" />
     <Compile Include="Models\PersonNoLinksResource.cs" />
     <Compile Include="Models\PersonWithCompanyWithCustomersResource.cs" />

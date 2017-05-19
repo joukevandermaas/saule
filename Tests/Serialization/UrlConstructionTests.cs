@@ -238,6 +238,36 @@ namespace Tests.Serialization
             Assert.Null(job["links"]);
         }
 
+        [Fact(DisplayName = "Omits relationship related links if so requested")]
+        public void NoRelRelLinks()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonJobOnlySelfLinksResource(),
+                GetUri("123"), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var job = result["data"]["relationships"]["job"];
+
+            Assert.Null(job["links"]["related"]);
+            Assert.Equal("http://example.com/api/person-job-only-self-links/123/relationships/employer/",
+                job["links"].Value<Uri>("self").ToString());
+        }
+
+        [Fact(DisplayName = "Omits relationship self links if so requested")]
+        public void NoRelSelfLinks()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonJobOnlyRelatedLinksResource(),
+                GetUri("123"), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var job = result["data"]["relationships"]["job"];
+
+            Assert.Null(job["links"]["self"]);
+            Assert.Equal("http://example.com/api/person-job-only-related-links/123/employer/",
+                job["links"].Value<Uri>("related").ToString());
+        }
+
         [Fact(DisplayName = "Does not generate links when url builder returns nothing")]
         public void UrlBuilder()
         {
