@@ -27,11 +27,6 @@ namespace Saule
         Related = 2,
 
         /// <summary>
-        /// Only ? links
-        /// </summary>
-        RelatedCanonical = 4,
-
-        /// <summary>
         /// Generate all possible links
         /// </summary>
         All = ~None
