@@ -17,11 +17,13 @@ By using the enumeration `LinkType` you can opt out of link generation for a
 specific `ApiResource` or `Relationship` by setting it as in the following examples:
 
 In your `ApiResource` constructor:
+
 ```csharp
 WithLinks(LinkType.None);
 ```
 
 When defining a `Relationship`:
+
 ```csharp
 BelongsTo<OtherResource>(nameof(Model.Other), "/other", LinkType.None);
 ```
