@@ -277,6 +277,24 @@ namespace Tests.Serialization
             Assert.Null(included);
         }
 
+        [Fact(DisplayName = "Serialize only included relationship data into 'included' key when includedDefault set to false")]
+        public void OnlyIncludedRelationshipData()
+        {
+            var includes = new IncludingContext();
+            includes.DisableDefaultIncluded = true;
+            var includeParam = new KeyValuePair<string, string>("include", "job");
+            includes.SetIncludes(new List<KeyValuePair<string, string>>() { includeParam });
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, includes);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Equal(1, included.Count());
+        }
+
         [Fact(DisplayName = "Serialize relationship identifier objects into 'data' key when includedDefault set to false")]
         public void IncludedRelationshipIdentifierObjects()
         {
