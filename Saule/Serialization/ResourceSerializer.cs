@@ -85,10 +85,6 @@ namespace Saule.Serialization
             {
                 return new ResourceGraphPathSet(_includingContext.Includes.Select(i => i.Name));
             }
-            else if (context.DisableDefaultIncluded)
-            {
-                return new ResourceGraphPathSet.All();
-            }
             else
             {
                 return new ResourceGraphPathSet.All();
