@@ -86,7 +86,7 @@ namespace Saule.Serialization
             }
             else if (context.DisableDefaultIncluded)
             {
-                return new ResourceGraphPathSet.None();
+                return new ResourceGraphPathSet.All();
             }
             else
             {
@@ -164,6 +164,11 @@ namespace Saule.Serialization
 
         private JArray SerializeIncludes(ResourceGraph graph)
         {
+            if (_includingContext != null && _includingContext.DisableDefaultIncluded)
+            {
+                return null;
+            }
+
             var tokens = graph.IncludedNodes.Select(n => SerializeNode(n, true));
             if (tokens.Count() == 0)
             {

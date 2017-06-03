@@ -357,8 +357,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Null(relationships["job"]["data"]);
-            Assert.Null(relationships["friends"]["data"]);
+            Assert.Equal(0, relationships["job"]["data"].Count());
+            Assert.Equal(0, relationships["friends"]["data"].Count());
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]
