@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Tests.Helpers;
 using Tests.Models;
@@ -50,6 +51,13 @@ namespace Tests.Controllers
         {
             person.Identifier = id;
             return person;
+        }
+
+        [HttpPost]
+        [Route("relationships/people")]
+        public JObject PostParams([FromBody] JObject bodyParams)
+        {
+            return bodyParams;
         }
 
         [HttpGet]

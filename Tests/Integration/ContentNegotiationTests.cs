@@ -179,6 +179,37 @@ namespace Tests.Integration
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
+            [Theory(DisplayName = "Actions should receive relationship data as well as attributes")]
+            [InlineData("version", "1")]
+            [InlineData("charset", "utf-8")]
+            public async Task ActionsMustBeAbleToAccessRelationshipData(string key, string value)
+            {
+                var target = _server.GetClient();
+
+                var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue(key, value));
+                var json = @"
+                    ""data"": {
+                      ""attributes"": {
+                        ""name"": ""so manay quotes""
+                      },
+                      ""relationships"": {
+                        ""some-relationship"": {
+                          ""data"": {
+                            ""id"": 1, ""type"": ""some-relationships""
+                          }
+                        }
+                      }
+                    }
+                ";
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = mediaType;
+
+                var result = await target.PostAsync("api/relationships/people", content);
+
+                Assert.Equal(json, result.Content.ToString());
+            }
+
             [Fact(DisplayName = "Should return OK for a static content request that does not have media type parameters")]
             public async Task MustReturn200OkForStaticContent()
             {
