@@ -7,8 +7,34 @@
 > **Note**: You need at least Saule 1.2 for this to work.
 
 Saule lets you customize the links that are generated during serialization. It
-uses the `IUrlPathBuilder` interface to generate all urls. You can provide an 
-implementation of this interface to the `ConfigureJsonApi` extension method on `HttpConfiguration`:
+uses the `IUrlPathBuilder` interface to generate all urls.
+
+There are two complementary methods to control the link generation.
+
+### Resource and relationship configuration
+
+By using the enumeration `LinkType` you can opt out of link generation for a
+specific `ApiResource` or `Relationship` by setting it as in the following examples:
+
+In your `ApiResource` constructor:
+
+```csharp
+WithLinks(LinkType.None);
+```
+
+When defining a `Relationship`:
+
+```csharp
+BelongsTo<OtherResource>(nameof(Model.Other), "/other", LinkType.None);
+```
+
+You can also use `LinkType.Self` or `LinkType.Related` to keep only these types of links
+where relevant.
+
+### UrlPathBuilder customization
+
+You can provide an implementation of the `IUrlPathBuilder` interface to the
+`ConfigureJsonApi` extension method on `HttpConfiguration`:
 
 ```csharp
 config.ConfigureJsonApi(new JsonApiConfiguration {

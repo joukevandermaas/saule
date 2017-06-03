@@ -13,7 +13,7 @@ namespace Tests.Serialization
         private static string Id => "123";
         private static ApiResource Resource => new PersonResource();
         private static ResourceRelationship Relationship => new ResourceRelationship<CompanyResource>(
-            "job", "/job", RelationshipKind.BelongsTo, new CompanyResource());
+            "job", "/job", RelationshipKind.BelongsTo, new CompanyResource(), LinkType.All);
 
         public CanonicalUrlPathBuilderTests(ITestOutputHelper output)
         {

@@ -57,14 +57,15 @@ namespace Saule.Serialization
 
             var result = new JObject
             {
-                ["data"] = dataSection,
-                ["links"] = new JObject
-                {
-                    ["self"] = new JValue(_baseUrl)
-                }
-
-                ["links"] = CreateTopLevelLinks(dataSection is JArray ? dataSection.Count() : 0)
+                ["data"] = dataSection
             };
+
+            var links = CreateTopLevelLinks(dataSection is JArray ? dataSection.Count() : 0);
+
+            if (links.HasValues)
+            {
+                result.Add("links", links);
+            }
 
             if (includesSection != null && includesSection.Count > 0)
             {
@@ -96,10 +97,12 @@ namespace Saule.Serialization
 
         private JToken CreateTopLevelLinks(int count)
         {
-            var result = new JObject
+            var result = new JObject();
+
+            if (_resource.LinkType.HasFlag(LinkType.Self))
             {
-                ["self"] = _baseUrl
-            };
+                result.Add("self", _baseUrl);
+            }
 
             var queryStrings = new PaginationQuery(_paginationContext);
 
@@ -125,11 +128,19 @@ namespace Saule.Serialization
 
         private JObject SerializeNull()
         {
-            return new JObject
+            var result = new JObject
             {
-                ["data"] = null,
-                ["links"] = CreateTopLevelLinks(0)
+                ["data"] = null
             };
+
+            var links = CreateTopLevelLinks(0);
+
+            if (links.HasValues)
+            {
+                result.Add("links", links);
+            }
+
+            return result;
         }
 
         private JToken SerializeData(ResourceGraph graph)
@@ -190,10 +201,12 @@ namespace Saule.Serialization
 
             if (isCollection)
             {
-                response["links"] = AddUrl(
-                    new JObject(),
-                    "self",
-                    _urlBuilder.BuildCanonicalPath(node.Resource, node.Key.Id.ToString()));
+                var self = _urlBuilder.BuildCanonicalPath(node.Resource, node.Key.Id.ToString());
+
+                if (!string.IsNullOrEmpty(self) && node.Resource.LinkType.HasFlag(LinkType.Self))
+                {
+                    response["links"] = AddUrl(new JObject(), "self", self);
+                }
             }
 
             var attributes = SerializeAttributes(node);
@@ -240,6 +253,8 @@ namespace Saule.Serialization
 
             foreach (var kv in node.Relationships)
             {
+                var relationship = kv.Value.Relationship;
+
                 var item = new JObject();
 
                 var data = SerializeRelationshipData(kv.Value);
@@ -247,17 +262,30 @@ namespace Saule.Serialization
                 var relationshipId = default(string);
 
                 if (data != null
-                    && kv.Value.Relationship.Kind == RelationshipKind.BelongsTo
+                    && relationship.Kind == RelationshipKind.BelongsTo
                     && kv.Value.SourceObject != null)
                 {
                     relationshipId = (string)data["id"];
                 }
 
                 var links = new JObject();
-                AddUrl(links, "self", _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), kv.Value.Relationship));
-                AddUrl(links, "related", _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), kv.Value.Relationship, relationshipId));
+                var self = _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), relationship);
+                var related = _urlBuilder.BuildRelationshipPath(node.Resource, node.Key.Id.ToString(), relationship, relationshipId);
 
-                item["links"] = links;
+                if (!string.IsNullOrEmpty(self) && relationship.LinkType.HasFlag(LinkType.Self))
+                {
+                    AddUrl(links, "self", self);
+                }
+
+                if (!string.IsNullOrEmpty(related) && relationship.LinkType.HasFlag(LinkType.Related))
+                {
+                    AddUrl(links, "related", related);
+                }
+
+                if (links.HasValues)
+                {
+                    item["links"] = links;
+                }
 
                 if (data != null)
                 {
