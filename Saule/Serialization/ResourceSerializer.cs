@@ -85,10 +85,6 @@ namespace Saule.Serialization
             {
                 return new ResourceGraphPathSet(_includingContext.Includes.Select(i => i.Name));
             }
-            else if (context.DisableDefaultIncluded)
-            {
-                return new ResourceGraphPathSet.None();
-            }
             else
             {
                 return new ResourceGraphPathSet.All();
@@ -175,7 +171,24 @@ namespace Saule.Serialization
 
         private JArray SerializeIncludes(ResourceGraph graph)
         {
-            var tokens = graph.IncludedNodes.Select(n => SerializeNode(n, true));
+            var nodes = graph.IncludedNodes;
+
+            // if we have an including context and DisableDefaultIncluded is set
+            if (_includingContext != null && _includingContext.DisableDefaultIncluded)
+            {
+                // if we have specific includes filter nodes otherwise bail with null
+                if (_includingContext.Includes != null)
+                {
+                    nodes = nodes.Where(n => _includingContext.Includes.Any(p => p.Name == n.PropertyName));
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            var tokens = nodes.Select(n => SerializeNode(n, true));
+
             if (tokens.Count() == 0)
             {
                 return null;

@@ -277,6 +277,41 @@ namespace Tests.Serialization
             Assert.Null(included);
         }
 
+        [Fact(DisplayName = "Serialize only included relationship data into 'included' key when includedDefault set to false")]
+        public void OnlyIncludedRelationshipData()
+        {
+            var includes = new IncludingContext();
+            includes.DisableDefaultIncluded = true;
+            var includeParam = new KeyValuePair<string, string>("include", "job");
+            includes.SetIncludes(new List<KeyValuePair<string, string>>() { includeParam });
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, includes);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Equal(1, included.Count());
+        }
+
+        [Fact(DisplayName = "Serialize relationship identifier objects into 'data' key when includedDefault set to false")]
+        public void IncludedRelationshipIdentifierObjects()
+        {
+            var includes = new IncludingContext();
+            includes.DisableDefaultIncluded = true;
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, includes);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var relationships = result["data"]["relationships"];
+            var job = relationships["job"];
+
+            Assert.NotNull(job["data"]);
+        }
+
         [Fact(DisplayName = "Relationships of included resources have correct URLs")]
         public void IncludedResourceRelationshipURLsAreCorrect()
         {
@@ -340,8 +375,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Null(relationships["job"]["data"]);
-            Assert.Null(relationships["friends"]["data"]);
+            Assert.Equal(0, relationships["job"]["data"].Count());
+            Assert.Equal(0, relationships["friends"]["data"].Count());
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]

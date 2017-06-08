@@ -51,7 +51,8 @@ namespace Saule.Serialization
             object obj,
             ApiResource resource,
             ResourceGraphPathSet includePaths,
-            int depth)
+            int depth,
+            string propertyName = null)
         {
             if (obj == null)
             {
@@ -76,7 +77,7 @@ namespace Saule.Serialization
             if (existingNode == null)
             {
                 // this is the first time we have seen this node
-                existingNode = new ResourceGraphNode(obj, resource, includePaths, depth);
+                existingNode = new ResourceGraphNode(obj, resource, includePaths, depth, propertyName);
             }
             else if (!existingNode.IncludePaths.Equals(includePaths))
             {
@@ -90,7 +91,7 @@ namespace Saule.Serialization
                  */
 
                 includePaths = existingNode.IncludePaths.Union(includePaths);
-                existingNode = new ResourceGraphNode(obj, resource, includePaths, depth);
+                existingNode = new ResourceGraphNode(obj, resource, includePaths, depth, propertyName);
             }
             else if (existingNode.GraphDepth > depth)
             {
@@ -125,7 +126,7 @@ namespace Saule.Serialization
                         foreach (var o in collection)
                         {
                             // Add the relationship member to the graph
-                            Build(o, r.RelatedResource, childIncludes, depth + 1);
+                            Build(o, r.RelatedResource, childIncludes, depth + 1, r.PropertyName);
                         }
                     }
                 }
@@ -135,7 +136,7 @@ namespace Saule.Serialization
                     if (o != null)
                     {
                         // Add the relationship member to the graph
-                        Build(o, r.RelatedResource, childIncludes, depth + 1);
+                        Build(o, r.RelatedResource, childIncludes, depth + 1, r.PropertyName);
                     }
                 }
             }

@@ -14,7 +14,8 @@ namespace Saule.Serialization
             object obj,
             ApiResource resource,
             ResourceGraphPathSet includePaths,
-            int graphDepth)
+            int graphDepth,
+            string propertyName = null)
         {
             obj.ThrowIfNull(nameof(obj));
             resource.ThrowIfNull(nameof(resource));
@@ -23,6 +24,7 @@ namespace Saule.Serialization
             Key = new ResourceGraphNodeKey(obj, resource);
             SourceObject = obj;
             IncludePaths = includePaths;
+            PropertyName = propertyName;
             Resource = resource;
             GraphDepth = graphDepth;
 
@@ -43,6 +45,8 @@ namespace Saule.Serialization
         public ApiResource Resource { get; private set; }
 
         public int GraphDepth { get; set; }
+
+        public string PropertyName { get; private set; }
 
         public IReadOnlyDictionary<string, ResourceGraphRelationship> Relationships { get; private set; }
     }
