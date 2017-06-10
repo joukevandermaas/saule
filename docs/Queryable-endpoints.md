@@ -2,8 +2,6 @@
 
 [Back to home](index)
 
-> **Note**: You need at least Saule 1.3 for this to work.
-
 Saule supports queryable endpoints. These endpoints allow users of
 your API to specify constraints on the results. Saule will automatically
 apply the query to the `IQueryable<T>` or `IEnumerable<T>` you return from
@@ -104,8 +102,6 @@ GET mywebsite.com/api/people?sort=last-name,-age
 ```
 
 ## Customizing filtering expressions
-
-> **Note**: you need at least Saule 1.4 for this to work.
 
 Sometimes you want to do something specific when a client specifies a filter query parameter.
 For example, you might want to do case insensitive filtering for strings, so `/people?filter[name]=smith`

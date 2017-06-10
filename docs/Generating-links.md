@@ -4,14 +4,14 @@
 
 ----
 
-> **Note**: You need at least Saule 1.2 for this to work.
-
 Saule lets you customize the links that are generated during serialization. It
 uses the `IUrlPathBuilder` interface to generate all urls.
 
 There are two complementary methods to control the link generation.
 
 ### Resource and relationship configuration
+
+> **Note**: You need at least Saule 1.7 for this to work.
 
 By using the enumeration `LinkType` you can opt out of link generation for a
 specific `ApiResource` or `Relationship` by setting it as in the following examples:

@@ -85,8 +85,6 @@ You can also customize the property Saule uses to determine the id for
 a resource. By default, it will use a property named `Id`. To customize
 this behavior, use the `WithId` function in your constructor:
 
-> **Note:** this feature was introduced in Saule 1.4
-
 ```csharp
 public class CompanyResource
 {
@@ -104,8 +102,6 @@ public class CompanyResource
 If you want to influence the self links that are generated for each
 resource, you can use the overload that lets you specify the path of
 the url for a resource:
-
-> **Note**: this feature was introduced in Saule 1.2
 
 ```csharp
 public class CompanyResource
