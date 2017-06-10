@@ -164,6 +164,7 @@
     <Compile Include="Queries\PaginationQueryTests.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilderTests.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilderTests.cs" />
+    <Compile Include="Serialization\MetadataTests.cs" />
     <Compile Include="Serialization\ResourceGraphNodeKeyTests.cs" />
     <Compile Include="Serialization\ResourceGraphPathSetTests.cs" />
     <Compile Include="Serialization\UrlConstructionTests.cs" />

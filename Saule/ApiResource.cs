@@ -6,33 +6,6 @@ using Humanizer;
 namespace Saule
 {
     /// <summary>
-    /// Describes one or more link types to be generated.
-    /// </summary>
-    [Flags]
-    public enum LinkType
-    {
-        /// <summary>
-        /// No links
-        /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// Only self links
-        /// </summary>
-        Self = 1,
-
-        /// <summary>
-        /// Only related links
-        /// </summary>
-        Related = 2,
-
-        /// <summary>
-        /// Generate all possible links
-        /// </summary>
-        All = ~None
-    }
-
-    /// <summary>
     /// Represents a resource that can be consumed by clients.
     /// </summary>
     public abstract class ApiResource
@@ -89,6 +62,22 @@ namespace Saule
         /// Gets the defined <see cref="LinkType"/> to be generated for this resource.
         /// </summary>
         public LinkType LinkType { get; private set; } = LinkType.All;
+
+        /// <summary>
+        /// Returns metadata for API responses that serialize this resource.
+        /// </summary>
+        /// <param name="response">The response object or collection.</param>
+        /// <param name="resourceType">
+        /// The type of the resource that is being serialized. If
+        /// the response is a collection, this is the generic type
+        /// parameter of that collection.
+        /// </param>
+        /// <param name="isEnumerable">True if the response is a collection of items, otherwise false.</param>
+        /// <returns>An object that will be serialized into the `meta` hash of the response.</returns>
+        public virtual object GetMetadata(object response, Type resourceType, bool isEnumerable)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Customize the type name of this resource. The default value

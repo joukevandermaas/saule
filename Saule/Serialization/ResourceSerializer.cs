@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -54,6 +55,7 @@ namespace Saule.Serialization
             var graph = new ResourceGraph(_value, _resource, _includedGraphPaths);
             var dataSection = SerializeData(graph);
             var includesSection = SerializeIncludes(graph);
+            var metaSection = SerializeMetadata();
 
             var result = new JObject
             {
@@ -72,7 +74,36 @@ namespace Saule.Serialization
                 result["included"] = includesSection;
             }
 
+            if (metaSection != null)
+            {
+                result["meta"] = metaSection;
+            }
+
             return result;
+        }
+
+        private JToken SerializeMetadata()
+        {
+            var valueType = _value.GetType();
+            var isCollection = false;
+
+            if (typeof(IEnumerable).IsAssignableFrom(valueType))
+            {
+                isCollection = true;
+
+                // if our value is an enumerable, get the type of the items in the collection
+                var collectionType = valueType.GetInterfaces().FirstOrDefault(i => i.Name.Contains("IEnumerable") && i.IsGenericType);
+                valueType = collectionType?.GenericTypeArguments[0] ?? valueType;
+            }
+
+            var metaObject = _resource.GetMetadata(_value, valueType, isCollection);
+
+            if (metaObject is JToken)
+            {
+                return metaObject as JToken;
+            }
+
+            return metaObject == null ? null : JToken.FromObject(metaObject, _serializer);
         }
 
         private ResourceGraphPathSet IncludedGraphPathsFromContext(IncludingContext context)
@@ -81,7 +112,7 @@ namespace Saule.Serialization
             {
                 return new ResourceGraphPathSet.All();
             }
-            else if (context.Includes != null && context.Includes.Count() > 0)
+            else if (context.Includes != null && context.Includes.Any())
             {
                 return new ResourceGraphPathSet(_includingContext.Includes.Select(i => i.Name));
             }
@@ -147,7 +178,7 @@ namespace Saule.Serialization
 
             if (isCollection)
             {
-                if (tokens.Count() == 0)
+                if (!tokens.Any())
                 {
                     return new JArray();
                 }
@@ -158,7 +189,7 @@ namespace Saule.Serialization
             }
             else
             {
-                if (tokens.Count() == 0)
+                if (!tokens.Any())
                 {
                     return JValue.CreateNull();
                 }
@@ -189,7 +220,7 @@ namespace Saule.Serialization
 
             var tokens = nodes.Select(n => SerializeNode(n, true));
 
-            if (tokens.Count() == 0)
+            if (!tokens.Any())
             {
                 return null;
             }
