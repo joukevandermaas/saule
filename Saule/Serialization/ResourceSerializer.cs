@@ -336,7 +336,17 @@ namespace Saule.Serialization
 
         private JToken SerializeRelationshipData(ResourceGraphRelationship relationship)
         {
+            // short circuit if not included in graph
             if (!relationship.Included)
+            {
+                return null;
+            }
+
+            // check if the relationship property exists on the underlying model and if not bail with null
+            // NOTE: this logic refers to https://github.com/joukevandermaas/saule/issues/159
+            // TODO: does not detect recursive properties on resource objects failing test "Handles recursive properties on resource objects"
+            var modelType = _value.GetType().GetGenericTypeParameterOfCollection() ?? _value.GetType();
+            if (modelType.GetProperty(relationship.Relationship.PropertyName) == null)
             {
                 return null;
             }

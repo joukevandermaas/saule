@@ -239,7 +239,7 @@ namespace Tests.Serialization
             var job = relationships["job"];
             var friends = relationships["friends"];
 
-            Assert.Equal(job["data"].Type, JTokenType.Null);
+            Assert.Null(job["data"]);
 
             Assert.NotNull(friends);
         }
@@ -310,6 +310,23 @@ namespace Tests.Serialization
             var job = relationships["job"];
 
             Assert.NotNull(job["data"]);
+        }
+
+        [Fact(DisplayName = "Omit data for relationship objects not existing as property in the original model")]
+        public void OmitRelationshipIdentifierObjectsWithoutProperty()
+        {
+            var includes = new IncludingContext();
+            includes.DisableDefaultIncluded = true;
+            var target = new ResourceSerializer(DefaultObject, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, includes);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var relationships = result["data"]["relationships"];
+            var secretFriends = relationships["secret-friends"];
+
+            Assert.Null(secretFriends["data"]);
         }
 
         [Fact(DisplayName = "Relationships of included resources have correct URLs")]
