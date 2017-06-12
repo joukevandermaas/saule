@@ -90,10 +90,7 @@ namespace Saule.Serialization
             if (typeof(IEnumerable).IsAssignableFrom(valueType))
             {
                 isCollection = true;
-
-                // if our value is an enumerable, get the type of the items in the collection
-                var collectionType = valueType.GetInterfaces().FirstOrDefault(i => i.Name.Contains("IEnumerable") && i.IsGenericType);
-                valueType = collectionType?.GenericTypeArguments[0] ?? valueType;
+                valueType = valueType.TryGetCollectionType();
             }
 
             var metaObject = _resource.GetMetadata(_value, valueType, isCollection);

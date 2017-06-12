@@ -33,5 +33,21 @@ namespace Saule
                 .Concat(type.BaseType.GetInheritanceChain())
                 .Distinct();
         }
+
+        public static bool IsEnumerable(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+        }
+
+        /// <summary>
+        /// Get the type of the items if the type is an <see cref="IEnumerable"/> (if not it will return the input type).
+        /// </summary>
+        /// <param name="type">The type to apply this extension method to.</param>
+        /// <returns>The type of the items if the type is an <see cref="IEnumerable"/> (if not it will return the input type).</returns>
+        public static Type TryGetCollectionType(this Type type)
+        {
+            var collectionType = type.GetInterfaces().FirstOrDefault(i => i.IsEnumerable());
+            return collectionType?.GenericTypeArguments[0] ?? type;
+        }
     }
 }
