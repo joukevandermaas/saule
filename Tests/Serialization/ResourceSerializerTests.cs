@@ -295,7 +295,7 @@ namespace Tests.Serialization
             Assert.Equal(1, included.Count());
         }
 
-        [Fact(DisplayName = "Serialize relationship identifier objects into 'data' key when includedDefault set to false")]
+        [Fact(DisplayName = "Serialize relationship identifier objects into 'data' key when includedDefault set to true")]
         public void IncludedRelationshipIdentifierObjects()
         {
             var includes = new IncludingContext();
