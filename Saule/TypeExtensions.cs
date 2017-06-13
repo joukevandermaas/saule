@@ -40,14 +40,14 @@ namespace Saule
         }
 
         /// <summary>
-        /// Get the type of the items if the type is an <see cref="IEnumerable{T}"/> (if not it will return the input type).
+        /// Get the type of the items if the type is an <see cref="IEnumerable{T}"/> (if not it will return null).
         /// </summary>
         /// <param name="type">The type to apply this extension method to.</param>
-        /// <returns>The type of the items if the type is an <see cref="IEnumerable{T}"/> (if not it will return the input type).</returns>
-        public static Type TryGetCollectionType(this Type type)
+        /// <returns>The type of the items if the type is an <see cref="IEnumerable{T}"/> (if not it will return null).</returns>
+        public static Type GetGenericTypeParameterOfCollection(this Type type)
         {
             var collectionType = type.GetInterfaces().FirstOrDefault(i => i.IsEnumerable());
-            return collectionType?.GenericTypeArguments[0] ?? type;
+            return collectionType?.GenericTypeArguments[0];
         }
     }
 }

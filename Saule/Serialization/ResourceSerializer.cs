@@ -90,7 +90,7 @@ namespace Saule.Serialization
             if (typeof(IEnumerable).IsAssignableFrom(valueType))
             {
                 isCollection = true;
-                valueType = valueType.TryGetCollectionType();
+                valueType = valueType.GetGenericTypeParameterOfCollection() ?? valueType;
             }
 
             var metaObject = _resource.GetMetadata(_value, valueType, isCollection);
