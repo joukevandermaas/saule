@@ -21,5 +21,10 @@ namespace Saule.Queries.Sorting
         }
 
         public IEnumerable<SortingProperty> Properties { get; }
+
+        public override string ToString()
+        {
+            return $"sort={string.Join(",", Properties)}";
+        }
     }
 }

@@ -31,5 +31,10 @@ namespace Saule.Http.FilterExpressions
         {
             return _expression;
         }
+
+        public override string ToString()
+        {
+            return _expression.ToString();
+        }
     }
 }

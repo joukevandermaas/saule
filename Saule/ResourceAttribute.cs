@@ -24,5 +24,11 @@
         /// Gets the name of the attribute in PascalCase.
         /// </summary>
         public string PropertyName { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return PropertyName;
+        }
     }
 }

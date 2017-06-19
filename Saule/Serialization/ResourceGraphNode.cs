@@ -49,5 +49,10 @@ namespace Saule.Serialization
         public string PropertyName { get; private set; }
 
         public IReadOnlyDictionary<string, ResourceGraphRelationship> Relationships { get; private set; }
+
+        public override string ToString()
+        {
+            return Key.ToString();
+        }
     }
 }

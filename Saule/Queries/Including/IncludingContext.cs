@@ -33,5 +33,10 @@ namespace Saule.Queries.Including
                 Includes = new IncludingProperty[0];
             }
         }
+
+        public override string ToString()
+        {
+            return Includes != null && Includes.Any() ? "include=" + string.Join(",", Includes.Select(p => p.ToString())) : string.Empty;
+        }
     }
 }

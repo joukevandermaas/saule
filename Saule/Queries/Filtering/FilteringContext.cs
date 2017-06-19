@@ -19,5 +19,10 @@ namespace Saule.Queries.Filtering
         public IEnumerable<FilteringProperty> Properties { get; }
 
         public QueryFilterExpressionCollection QueryFilters { get; set; } = new QueryFilterExpressionCollection();
+
+        public override string ToString()
+        {
+            return string.Join("&", Properties.Select(p => p.ToString()));
+        }
     }
 }

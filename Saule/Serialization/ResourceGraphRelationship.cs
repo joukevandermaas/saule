@@ -20,5 +20,12 @@ namespace Saule.Serialization
         public object SourceObject { get; private set; }
 
         public ResourceRelationship Relationship { get; private set; }
+
+        public override string ToString()
+        {
+            var type = SourceObject?.GetType().GetGenericTypeParameterOfCollection() ?? SourceObject?.GetType();
+
+            return Relationship.Name + " <" + (type?.ToString() ?? "unknown") + ">";
+        }
     }
 }
