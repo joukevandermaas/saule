@@ -293,7 +293,7 @@ namespace Saule.Serialization
 
                 var item = new JObject();
 
-                var data = SerializeRelationshipData(kv.Value);
+                var data = SerializeRelationshipData(node, kv.Value);
 
                 var relationshipId = default(string);
 
@@ -334,9 +334,17 @@ namespace Saule.Serialization
             return response;
         }
 
-        private JToken SerializeRelationshipData(ResourceGraphRelationship relationship)
+        private JToken SerializeRelationshipData(ResourceGraphNode node, ResourceGraphRelationship relationship)
         {
+            // short circuit if not included in graph
             if (!relationship.Included)
+            {
+                return null;
+            }
+
+            // check if the relationship property exists on the underlying model and if not bail with null
+            // NOTE: this logic refers to https://github.com/joukevandermaas/saule/issues/159
+            if (node.SourceObject.GetType().GetProperty(relationship.Relationship.PropertyName) == null)
             {
                 return null;
             }
