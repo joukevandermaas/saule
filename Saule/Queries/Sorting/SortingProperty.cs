@@ -12,6 +12,11 @@
 
         public SortingDirection Direction { get; }
 
+        public override string ToString()
+        {
+            return Direction == SortingDirection.Descending ? "-" + Name : Name;
+        }
+
         private static string StripSyntax(string value)
         {
             return value.Trim('+', '-').Trim();

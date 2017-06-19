@@ -21,6 +21,11 @@ namespace Saule.Queries.Pagination
 
         public IDictionary<string, string> ClientFilters { get; }
 
+        public override string ToString()
+        {
+            return $"page[number]={Page}&page[size]={PerPage}";
+        }
+
         private int GetNumber()
         {
             if (!ClientFilters.ContainsKey(Constants.QueryNames.PageNumber))

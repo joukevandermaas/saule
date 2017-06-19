@@ -79,6 +79,12 @@ namespace Saule
             return null;
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return ResourceType;
+        }
+
         /// <summary>
         /// Customize the type name of this resource. The default value
         /// is the name of the class (without 'Resource', if it exists).

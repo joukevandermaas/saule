@@ -60,5 +60,11 @@
         /// Gets the defined <see cref="LinkType"/> to be generated for this relationship.
         /// </summary>
         public LinkType LinkType { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return PropertyName + " " + Kind + "<" + RelatedResource + ">";
+        }
     }
 }
