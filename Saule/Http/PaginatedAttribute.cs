@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Saule.Configuration;
 using Saule.Queries;
 using Saule.Queries.Pagination;
 
@@ -15,7 +17,24 @@ namespace Saule.Http
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class PaginatedAttribute : ActionFilterAttribute
     {
-        private int _perPage = 10;
+        private int _perPage = PaginationConfig.DefaultPageSize;
+        private int? _queryPageSizeLimit = PaginationConfig.DefaultPageSizeLimit;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaginatedAttribute"/> class.        
+        /// </summary>
+        public PaginatedAttribute()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaginatedAttribute"/> class.
+        /// </summary>
+        /// <param name="queryPageSizeLimit">Maximum page size to accept from a URL query string.</param>
+        public PaginatedAttribute(int queryPageSizeLimit)
+        {
+            _queryPageSizeLimit = queryPageSizeLimit;
+        }
 
         /// <summary>
         /// Gets or sets the number of items to return per response.
@@ -34,7 +53,41 @@ namespace Saule.Http
                     throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Must have at least one item per page.");
                 }
 
+                if (value > QueryPageSizeLimit)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Page size limit cannot be smaller than page size.");
+                }
+
                 _perPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum page size the client can specify the page size with a "page[size]" query parameter.
+        /// </summary>
+        /// <remarks>
+        /// Null values indicate the page[size] parameter will be ignored.
+        /// </remarks>
+        private int? QueryPageSizeLimit
+        {
+            get
+            {
+                return _queryPageSizeLimit;
+            }
+
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Must have at least one item per page.");
+                }
+
+                if (value < PerPage)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(QueryPageSizeLimit), value, "Page size limit cannot be smaller than page size.");
+                }
+
+                _queryPageSizeLimit = value;
             }
         }
 
@@ -46,7 +99,13 @@ namespace Saule.Http
         {
             var context = new PaginationContext(
                 actionContext.Request.GetQueryNameValuePairs(),
-                PerPage);
+                PerPage,
+                QueryPageSizeLimit.HasValue);
+
+            if (QueryPageSizeLimit.HasValue && context.PerPage > QueryPageSizeLimit)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
 
             var query = GetQueryContext(actionContext);
 

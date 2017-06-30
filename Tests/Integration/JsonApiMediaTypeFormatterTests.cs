@@ -321,8 +321,9 @@ namespace Tests.Integration
                 Assert.Equal("http://localhost/corporations/456/", relatedUrl);
             }
         }
-        [Fact(DisplayName = "Applies pagination when appropriate")]
-        public async Task AppliesPagination()
+
+        [Fact(DisplayName = "Applies pagination with fixed page size from attribute")]
+        public async Task AppliesPaginationPageSizeFromAttribute()
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
@@ -334,6 +335,20 @@ namespace Tests.Integration
             }
         }
 
+        [Fact(DisplayName = "Applies pagination with page size from query string")]
+        public async Task AppliesPaginationPageSizeFromClient()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/companies/querypagesize/?page[size]=5");
+                _output.WriteLine(result.ToString());
+
+                var resultCount = ((JArray)result["data"])?.Count;
+                Assert.Equal(5, resultCount);
+            }
+        }
+        
         [Fact(DisplayName = "Applies sorting when appropriate")]
         public async Task AppliesSorting()
         {
@@ -414,7 +429,7 @@ namespace Tests.Integration
                 Assert.Equal(sorted, ages1.Concat(ages2).ToList());
             }
         }
-
+        
         [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute")]
         public async Task GivesUsefulError()
         {
