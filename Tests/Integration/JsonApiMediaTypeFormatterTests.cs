@@ -341,14 +341,33 @@ namespace Tests.Integration
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetJsonResponseAsync("api/companies/querypagesize/?page[size]=5");
+                var result = await client.GetJsonResponseAsync("api/companies/querypagesizelimit50/?page[size]=5");
                 _output.WriteLine(result.ToString());
 
                 var resultCount = ((JArray)result["data"])?.Count;
                 Assert.Equal(5, resultCount);
             }
         }
-        
+
+        [Fact(DisplayName = "Limits page sizes")]
+        public async Task LimitsPageSize()
+        {
+            var apiConfig = new JsonApiConfiguration
+            {
+                PaginationConfig = new PaginationConfig {DefaultPageSize = 2, DefaultPageSizeLimit = 4}
+            };
+
+            using (var server = new NewSetupJsonApiServer(apiConfig))
+            {
+                var client = server.GetClient();
+                var result = await client.GetFullJsonResponseAsync("api/companies/querypagesize/?page[size]=5");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+
+                var resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(null, resultCount);
+            }
+        }
+
         [Fact(DisplayName = "Applies sorting when appropriate")]
         public async Task AppliesSorting()
         {
