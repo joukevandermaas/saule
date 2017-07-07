@@ -20,5 +20,10 @@
             public const string Filtering = "filter";
             public const string Including = "include";
         }
+
+        public static class QueryValues
+        {
+            public const int ValueNotSpecified = -1;
+        }
     }
 }

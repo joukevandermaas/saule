@@ -36,5 +36,14 @@ namespace Tests.Controllers
         {
             return Get.Companies(100);
         }
+
+        [HttpGet]
+        [Paginated(PerPage = 12, PageSizeLimit = 50)]
+        [Route("companies/querypagesize")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IEnumerable<Company> GetCompaniesQueryPageSize()
+        {
+            return Get.Companies(100);
+        }
     }
 }
