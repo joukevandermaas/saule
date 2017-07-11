@@ -5,38 +5,49 @@ namespace Saule.Queries.Pagination
 {
     internal class PaginationContext
     {
-        public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int perPage)
+        public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault)
+            : this(filters, pageSizeDefault, null)
+        {
+        }
+
+        public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault, int? pageSizeLimit)
         {
             var keyValuePairs = filters as IList<KeyValuePair<string, string>> ?? filters.ToList();
 
             var dictionary = keyValuePairs.ToDictionary(kv => kv.Key.ToLowerInvariant(), kv => kv.Value.ToLowerInvariant());
             ClientFilters = dictionary;
             Page = GetNumber();
-            PerPage = perPage;
+            PerPage = GetSize(pageSizeDefault);
+            PageSizeLimit = pageSizeLimit;
         }
 
         public int Page { get; }
 
-        public int PerPage { get; }
+        public int? PerPage { get; set; }
+
+        public int? PageSizeLimit { get; set; }
+
+        public bool IsPageSizeFromQuery { get; private set; }
 
         public IDictionary<string, string> ClientFilters { get; }
 
         public override string ToString()
         {
-            return $"page[number]={Page}&page[size]={PerPage}";
+            string pageNum = $"page[number]={Page}";
+            string pageSize = PerPage.HasValue ? $"&page[size]={PerPage}" : string.Empty;
+            return pageNum + pageSize;
         }
 
         private int GetNumber()
         {
-            if (!ClientFilters.ContainsKey(Constants.QueryNames.PageNumber))
-            {
-                return 0;
-            }
+            return ClientFilters.GetInt(Constants.QueryNames.PageNumber, 0);
+        }
 
-            int result;
-            var isNumber = int.TryParse(ClientFilters[Constants.QueryNames.PageNumber], out result);
-
-            return isNumber ? result : 0;
+        private int? GetSize(int? defaultSize)
+        {
+            int? queryPageSize = ClientFilters.GetInt(Constants.QueryNames.PageSize);
+            IsPageSizeFromQuery = queryPageSize.HasValue;
+            return queryPageSize ?? defaultSize;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -15,7 +16,8 @@ namespace Saule.Http
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class PaginatedAttribute : ActionFilterAttribute
     {
-        private int _perPage = 10;
+        private int? _perPage;
+        private int? _queryPageSizeLimit;
 
         /// <summary>
         /// Gets or sets the number of items to return per response.
@@ -24,7 +26,7 @@ namespace Saule.Http
         {
             get
             {
-                return _perPage;
+                return _perPage ?? Constants.QueryValues.ValueNotSpecified;
             }
 
             set
@@ -34,7 +36,38 @@ namespace Saule.Http
                     throw new ArgumentOutOfRangeException(nameof(PerPage), value, "Must have at least one item per page.");
                 }
 
+                if (_queryPageSizeLimit.HasValue && value > _queryPageSizeLimit)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(PageSizeLimit), value, "Items per page cannot be larger than the page size limit.");
+                }
+
                 _perPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum page size to accept from a URL query string.
+        /// </summary>
+        public int PageSizeLimit
+        {
+            get
+            {
+                return _queryPageSizeLimit ?? Constants.QueryValues.ValueNotSpecified;
+            }
+
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(PageSizeLimit), value, "Must have at least one item per page.");
+                }
+
+                if (_perPage.HasValue && value < _perPage)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(PageSizeLimit), value, "PageSizeLimit cannot be smaller than page size.");
+                }
+
+                _queryPageSizeLimit = value;
             }
         }
 
@@ -44,13 +77,14 @@ namespace Saule.Http
         /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
-            var context = new PaginationContext(
+            var paginationContext = new PaginationContext(
                 actionContext.Request.GetQueryNameValuePairs(),
-                PerPage);
+                _perPage,
+                _queryPageSizeLimit);
 
             var query = GetQueryContext(actionContext);
 
-            query.Pagination = context;
+            query.Pagination = paginationContext;
             base.OnActionExecuting(actionContext);
         }
 
