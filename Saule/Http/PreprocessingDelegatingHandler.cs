@@ -144,8 +144,7 @@ namespace Saule.Http
                     pagination.PageSizeLimit = config.PaginationConfig.DefaultPageSizeLimit;
                 }
 
-                // page size limit needs to be configured if we're going to accept client/query page sizes
-                if (!pagination.PerPage.HasValue || (pagination.IsPageSizeFromQuery && !pagination.PageSizeLimit.HasValue))
+                if (!pagination.PerPage.HasValue)
                 {
                     pagination.PerPage = config.PaginationConfig.DefaultPageSize;
                 }

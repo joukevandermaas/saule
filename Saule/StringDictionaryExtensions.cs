@@ -6,7 +6,7 @@ namespace Saule
     /// <summary>
     /// Extension methods for operating on IDictionary[string, string]
     /// </summary>
-    public static class StringDictionaryExtensions
+    internal static class StringDictionaryExtensions
     {
         /// <summary>
         /// Parse an integer value from a dictionary.

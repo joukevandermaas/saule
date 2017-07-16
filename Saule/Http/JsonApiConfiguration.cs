@@ -14,7 +14,7 @@ namespace Saule.Http
         /// </summary>
         public JsonApiConfiguration()
         {
-            PaginationConfig = PaginationConfig.FromWebConfig();
+            PaginationConfig = new PaginationConfig();
         }
 
         /// <summary>

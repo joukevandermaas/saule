@@ -24,10 +24,7 @@ namespace Saule.Queries.Pagination
         public int Page { get; }
 
         public int? PerPage { get; set; }
-
         public int? PageSizeLimit { get; set; }
-
-        public bool IsPageSizeFromQuery { get; private set; }
 
         public IDictionary<string, string> ClientFilters { get; }
 
@@ -46,7 +43,6 @@ namespace Saule.Queries.Pagination
         private int? GetSize(int? defaultSize)
         {
             int? queryPageSize = ClientFilters.GetInt(Constants.QueryNames.PageSize);
-            IsPageSizeFromQuery = queryPageSize.HasValue;
             return queryPageSize ?? defaultSize;
         }
     }
