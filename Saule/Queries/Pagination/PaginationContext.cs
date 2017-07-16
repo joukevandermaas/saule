@@ -24,7 +24,7 @@ namespace Saule.Queries.Pagination
         public int Page { get; }
 
         public int? PerPage { get; set; }
-        
+
         public int? PageSizeLimit { get; set; }
 
         public IDictionary<string, string> ClientFilters { get; }
