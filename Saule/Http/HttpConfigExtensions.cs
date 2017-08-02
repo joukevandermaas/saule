@@ -50,11 +50,11 @@ namespace Saule.Http
         {
             if (overwriteOtherFormatters)
             {
-                ConfigureJsonApi(config, jsonApiConfiguration, ConfigureFormattersEnum.OverwriteOtherFormatters);
+                ConfigureJsonApi(config, jsonApiConfiguration, FormatterPriority.OverwriteOtherFormatters);
             }
             else
             {
-                ConfigureJsonApi(config, jsonApiConfiguration, ConfigureFormattersEnum.AddFormatterToStart);
+                ConfigureJsonApi(config, jsonApiConfiguration, FormatterPriority.AddFormatterToStart);
             }
         }
 
@@ -63,29 +63,25 @@ namespace Saule.Http
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> that is used in the setup of the application.</param>
         /// <param name="jsonApiConfiguration">Configuration parameters for Json Api serialization.</param>
-        /// <param name="configureFormatters">
-        /// AddFormatterToStart - Formatter will be inserted at the start of the collection.
-        /// AddFormatterToEnd - Formatter will be inserted at the end of the collection.
-        /// OverwriteOtherFormatters -  Other formatters will be cleared.
-        /// </param>
+        /// <param name="formatterPriority"> Determines the relative position of the JSON API formatter.</param>
         public static void ConfigureJsonApi(
           this HttpConfiguration config,
           JsonApiConfiguration jsonApiConfiguration,
-          ConfigureFormattersEnum configureFormatters)
+          FormatterPriority formatterPriority)
         {
             config.MessageHandlers.Add(new PreprocessingDelegatingHandler(jsonApiConfiguration));
             var formatter = new JsonApiMediaTypeFormatter(jsonApiConfiguration);
 
-            if (configureFormatters == ConfigureFormattersEnum.OverwriteOtherFormatters)
+            if (formatterPriority == FormatterPriority.OverwriteOtherFormatters)
             {
                 config.Formatters.Clear();
                 config.Formatters.Add(formatter);
             }
-            else if (configureFormatters == ConfigureFormattersEnum.AddFormatterToEnd)
+            else if (formatterPriority == FormatterPriority.AddFormatterToEnd)
             {
                 config.Formatters.Add(formatter);
             }
-            else if (configureFormatters == ConfigureFormattersEnum.AddFormatterToStart)
+            else if (formatterPriority == FormatterPriority.AddFormatterToStart)
             {
                 config.Formatters.Insert(0, formatter);
             }

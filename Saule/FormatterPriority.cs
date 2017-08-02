@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Saule
 {
     /// <summary>
-    /// Configuration enum for formatters
+    /// Formatter priority for configuration
     /// </summary>
-    public enum ConfigureFormattersEnum
+    public enum FormatterPriority
     {
         /// <summary>
         /// Formatter will be inserted at the start of the collection
