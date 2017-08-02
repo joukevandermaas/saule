@@ -91,6 +91,5 @@ namespace Saule.Http
                 config.Formatters.Insert(0, formatter);
             }
         }
-
     }
 }
