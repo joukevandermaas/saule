@@ -56,7 +56,6 @@ namespace Saule.Http
             {
                 ConfigureJsonApi(config, jsonApiConfiguration, ConfigureFormattersEnum.AddFormatterToStart);
             }
-
         }
 
         /// <summary>
