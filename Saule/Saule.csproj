@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
-    <Compile Include="Http\PaginationConfig.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="StringDictionaryExtensions.cs" />
     <Compile Include="Http\DisableDefaultIncludedAttribute.cs" />

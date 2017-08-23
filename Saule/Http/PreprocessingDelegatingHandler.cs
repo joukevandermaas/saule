@@ -136,20 +136,6 @@ namespace Saule.Http
                 queryContext.Filtering.QueryFilters = config.QueryFilterExpressions;
             }
 
-            PaginationContext pagination = queryContext.Pagination;
-            if (pagination != null)
-            {
-                if (!pagination.PageSizeLimit.HasValue)
-                {
-                    pagination.PageSizeLimit = config.PaginationConfig.DefaultPageSizeLimit;
-                }
-
-                if (!pagination.PerPage.HasValue)
-                {
-                    pagination.PerPage = config.PaginationConfig.DefaultPageSize;
-                }
-            }
-
             jsonApiSerializer.QueryContext = queryContext;
         }
     }

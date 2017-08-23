@@ -14,7 +14,6 @@ namespace Saule.Http
         /// </summary>
         public JsonApiConfiguration()
         {
-            PaginationConfig = new PaginationConfig();
         }
 
         /// <summary>
@@ -31,10 +30,5 @@ namespace Saule.Http
         /// Gets the expressions that are used to evaluate filter queries on a per-type basis.
         /// </summary>
         public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
-
-        /// <summary>
-        /// Gets or sets configurable defaults to use for query pagination.
-        /// </summary>
-        public PaginationConfig PaginationConfig { get; set; }
     }
 }

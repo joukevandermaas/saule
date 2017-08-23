@@ -349,22 +349,86 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Limits page sizes")]
-        public async Task LimitsPageSize()
+        [Fact(DisplayName = "Limits page sizes to 1 and default page size is set to 1 too")]
+        public async Task LimitsPageSize1()
         {
-            var apiConfig = new JsonApiConfiguration
-            {
-                PaginationConfig = new PaginationConfig {DefaultPageSize = 2, DefaultPageSizeLimit = 4}
-            };
-
-            using (var server = new NewSetupJsonApiServer(apiConfig))
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var result = await client.GetFullJsonResponseAsync("api/companies/querypagesize/?page[size]=5");
-                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
 
+                // maximum page size equal to client page size and it works
+                var result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit1/?page[size]=1");
                 var resultCount = ((JArray)result.Content["data"])?.Count;
-                Assert.Equal(null, resultCount);
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(1, resultCount);
+
+                // maximum page size is lower than client page size and it fails
+                result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit1/?page[size]=10");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.Null(resultCount);
+
+                // client page size isn't specified and it works and returns one record
+                result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit1/");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(1, resultCount);
+            }
+        }
+
+        [Fact(DisplayName = "Maximum page sizes is set to 50 and default page size is set to 12")]
+        public async Task LimitsPageSize50()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+
+                // maximum page size is not set and client page size is 1 and it works
+                var result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit50/?page[size]=1");
+                var resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(1, resultCount);
+
+                // maximum page size is not set and client page size is 1000 and it works
+                result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit50/?page[size]=100");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.Null(resultCount);
+
+                // client page size isn't specified and it works and returns 12 records 
+                // as default paging for this endpoint is 12
+                result = await client.GetFullJsonResponseAsync("api/companies/querypagesizelimit50/");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(12, resultCount);
+            }
+        }
+
+        [Fact(DisplayName = "Maximum page sizes is not set, but default page size is set to 12")]
+        public async Task LimitsPageSizeIsNotSet()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+
+                // maximum page size is not set and client page size is 1 and it works
+                var result = await client.GetFullJsonResponseAsync("api/companies/?page[size]=1");
+                var resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(1, resultCount);
+
+                // maximum page size is not set and client page size is 1000 and it works and returns 100 records
+                result = await client.GetFullJsonResponseAsync("api/companies/?page[size]=1000");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(100, resultCount);
+
+                // client page size isn't specified and it works and returns 12 records 
+                // as default paging for this endpoint is 12
+                result = await client.GetFullJsonResponseAsync("api/companies/");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(12, resultCount);
             }
         }
 
