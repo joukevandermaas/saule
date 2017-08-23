@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -52,6 +53,11 @@ namespace Saule.Http
                 {
                     HelpLink = "https://github.com/joukevandermaas/saule/wiki"
                 };
+            }
+
+            if (!(content is HttpError) && jsonApi.QueryContext?.Pagination?.PerPage > jsonApi.QueryContext?.Pagination?.PageSizeLimit)
+            {
+                content = new JsonApiException(ErrorType.Client, "Page size exceeds page size limit for queries.");
             }
 
             PrepareUrlPathBuilder(jsonApi, request, config);

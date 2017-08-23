@@ -15,9 +15,15 @@
         public static class QueryNames
         {
             public const string PageNumber = "page.number";
+            public const string PageSize = "page.size";
             public const string Sorting = "sort";
             public const string Filtering = "filter";
             public const string Including = "include";
+        }
+
+        public static class QueryValues
+        {
+            public const int ValueNotSpecified = -1;
         }
     }
 }

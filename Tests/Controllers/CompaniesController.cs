@@ -36,5 +36,32 @@ namespace Tests.Controllers
         {
             return Get.Companies(100);
         }
-    }
+
+        [HttpGet]
+        [Paginated(PerPage = 12)]
+        [Route("companies/querypagesize")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IEnumerable<Company> GetCompaniesQueryPageSize()
+        {
+            return Get.Companies(100);
+        }
+
+        [HttpGet]
+        [Paginated(PerPage = 12, PageSizeLimit = 50)]
+        [Route("companies/querypagesizelimit50")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IEnumerable<Company> GetCompaniesQueryPageSizeLimit50()
+        {
+            return Get.Companies(100);
+        }
+
+	    [HttpGet]
+	    [Paginated(PerPage = 1, PageSizeLimit = 1)]
+	    [Route("companies/querypagesizelimit1")]
+	    [ReturnsResource(typeof(CompanyResource))]
+	    public IEnumerable<Company> GetCompaniesQueryPageSizeLimit1()
+	    {
+		    return Get.Companies(20);
+	    }
+	}
 }

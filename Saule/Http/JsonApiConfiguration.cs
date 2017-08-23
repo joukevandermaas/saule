@@ -10,6 +10,13 @@ namespace Saule.Http
     public class JsonApiConfiguration
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="JsonApiConfiguration"/> class.
+        /// </summary>
+        public JsonApiConfiguration()
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the UrlPathBuilder which determines how to generate urls for links.
         /// </summary>
         public IUrlPathBuilder UrlPathBuilder { get; set; } = null;
