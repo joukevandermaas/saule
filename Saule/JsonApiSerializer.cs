@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -83,18 +84,24 @@ namespace Saule
             return result;
         }
 
-        private static ApiError GetAsError(object @object)
+        private static List<ApiError> GetAsError(object @object)
         {
             var exception = @object as Exception;
             if (exception != null)
             {
-                return new ApiError(exception);
+                return new List<ApiError>() {new ApiError(exception)};
             }
 
             var httpError = @object as HttpError;
             if (httpError != null)
             {
-                return new ApiError(httpError);
+                return new List<ApiError>() { new ApiError(httpError) };
+            }
+
+            var httpErrorList = @object as IEnumerable<HttpError>;
+            if (httpErrorList != null)
+            {
+                return httpErrorList.Select(error => new ApiError(error)).ToList();
             }
 
             return null;

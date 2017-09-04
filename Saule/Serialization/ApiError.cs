@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 
 namespace Saule.Serialization
@@ -34,6 +35,11 @@ namespace Saule.Serialization
         public string Code { get; }
 
         public Dictionary<string, string> Links { get; }
+
+        public static bool IsClientError(List<ApiError> errors)
+        {
+            return errors.Any(IsClientError);
+        }
 
         public static bool IsClientError(ApiError error)
         {

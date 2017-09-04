@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using Saule.Http;
 using Tests.Helpers;
@@ -22,6 +25,24 @@ namespace Tests.Controllers
         public IQueryable<Person> GetPeople()
         {
             return Get.People(20).AsQueryable();
+        }
+
+        [HttpGet]
+        [Route("api/broken/errors")]
+        [ReturnsResource(typeof(PersonResource))]
+        public HttpResponseMessage TwoErrors()
+        {
+            return Request.CreateResponse(HttpStatusCode.BadRequest, new List<HttpError>()
+            {
+                new HttpError("Error 1")
+                {
+                    ExceptionType = "Type 1"
+                },
+                new HttpError("Error 2")
+                {
+                    ExceptionType = "Type 2"
+                }
+            });
         }
     }
 }
