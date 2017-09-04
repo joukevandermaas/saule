@@ -89,7 +89,7 @@ namespace Saule
             var exception = @object as Exception;
             if (exception != null)
             {
-                return new List<ApiError>() {new ApiError(exception)};
+                return new List<ApiError>() { new ApiError(exception) };
             }
 
             var httpError = @object as HttpError;
