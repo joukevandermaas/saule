@@ -18,9 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		StyleCop.Analyzers.ruleset = StyleCop.Analyzers.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.NetCore", "Saule.NetCore\Saule.NetCore.csproj", "{D0AB5F96-6FB2-4C16-B72B-848AC1F3476D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.NetCore", "Saule.NetCore\Saule.NetCore.csproj", "{D0AB5F96-6FB2-4C16-B72B-848AC1F3476D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.NetCore.Tests", "Saule.NetCore.Tests\Saule.NetCore.Tests.csproj", "{7175DFF7-6810-493E-9D90-636961A72DBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.NetCore.Tests", "Saule.NetCore.Tests\Saule.NetCore.Tests.csproj", "{7175DFF7-6810-493E-9D90-636961A72DBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
