@@ -16,4 +16,8 @@
     <CodeAnalysisRuleSet>$(SolutionDir)\StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Saule.NetCore.xml</DocumentationFile>
+  </PropertyGroup>
+  
 </Project>
