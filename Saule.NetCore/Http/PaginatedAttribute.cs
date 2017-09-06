@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -77,8 +78,10 @@ namespace Saule.Http
         /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
+            var queryParams = actionContext.HttpContext.Request.GetQueryNameValuePairs().ToList();
+
             var paginationContext = new PaginationContext(
-                actionContext.Request.GetQueryNameValuePairs(),
+                queryParams,
                 _perPage,
                 _queryPageSizeLimit);
 
