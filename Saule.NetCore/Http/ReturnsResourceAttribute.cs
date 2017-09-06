@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Saule.Http
@@ -53,7 +55,7 @@ namespace Saule.Http
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.UnsupportedMediaType);
             }
 
-            actionContext.Request.Properties.Add(Constants.PropertyNames.ResourceDescriptor, Resource);
+            actionContext.HttpContext.Items.Add(Constants.PropertyNames.ResourceDescriptor, Resource);
             base.OnActionExecuting(actionContext);
         }
     }
