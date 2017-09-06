@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
@@ -43,7 +45,7 @@ namespace Saule
 
             try
             {
-                var error = GetAsError(@object);
+                var error = GetAsErrors(@object);
                 if (error != null)
                 {
                     result.ErrorContent = error;
@@ -77,24 +79,34 @@ namespace Saule
             }
             catch (Exception ex)
             {
-                result.ErrorContent = GetAsError(ex);
+                result.ErrorContent = GetAsErrors(ex);
             }
 
             return result;
         }
 
-        private static ApiError GetAsError(object @object)
+        private static ApiError[] GetAsErrors(object @object)
         {
             var exception = @object as Exception;
             if (exception != null)
             {
-                return new ApiError(exception);
+                return new[] { new ApiError(exception) };
             }
 
-            var httpError = @object as HttpError;
+            var httpError = @object as SerializableError;
             if (httpError != null)
             {
-                return new ApiError(httpError);
+                return httpError.Select(p => new ApiError
+                {
+                    Title = $"{p.Key} is not valid.",
+                    Detail = p.Value
+                }).ToArray();
+            }
+
+            var apiError = @object as ApiError;
+            if (apiError != null)
+            {
+                return new[] { apiError };
             }
 
             return null;

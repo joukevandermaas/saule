@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Http;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Saule.Serialization
 {
     internal class ApiError
     {
         private readonly JsonApiException _exception;
+
+        public ApiError()
+        {
+        }
 
         public ApiError(Exception ex)
         {
@@ -20,16 +25,9 @@ namespace Saule.Serialization
             _exception = ex as JsonApiException;
         }
 
-        internal ApiError(HttpError ex)
-        {
-            Title = GetRecursiveExceptionMessage(ex);
-            Detail = ex.StackTrace;
-            Code = ex.ExceptionType;
-        }
+        public string Title { get; internal set; }
 
-        public string Title { get; }
-
-        public string Detail { get; }
+        public object Detail { get; internal set; }
 
         public string Code { get; }
 
@@ -40,16 +38,10 @@ namespace Saule.Serialization
             return error._exception != null && error._exception.ErrorType == ErrorType.Client;
         }
 
-        private static string GetRecursiveExceptionMessage(HttpError ex)
+        public static bool AreClientErrors(ApiError[] errors)
         {
-            var msg = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
-            msg = msg?.EnsureEndsWith(".");
-            if (ex.InnerException != null)
-            {
-                msg += ' ' + GetRecursiveExceptionMessage(ex.InnerException);
-            }
-
-            return msg;
+            return errors
+                .Min(e => e._exception != null ? e._exception.ErrorType : ErrorType.Server) == ErrorType.Client;
         }
     }
 }
