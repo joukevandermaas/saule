@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Saule.Queries;
 using Saule.Queries.Pagination;
 
@@ -75,7 +75,7 @@ namespace Saule.Http
         /// See base class documentation.
         /// </summary>
         /// <param name="actionContext">The action context.</param>
-        public override void OnActionExecuting(HttpActionContext actionContext)
+        public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var paginationContext = new PaginationContext(
                 actionContext.Request.GetQueryNameValuePairs(),
@@ -88,7 +88,7 @@ namespace Saule.Http
             base.OnActionExecuting(actionContext);
         }
 
-        private static QueryContext GetQueryContext(HttpActionContext actionContext)
+        private static QueryContext GetQueryContext(ActionExecutingContext actionContext)
         {
             var hasQuery = actionContext.Request.Properties.ContainsKey(Constants.PropertyNames.QueryContext);
             QueryContext query;

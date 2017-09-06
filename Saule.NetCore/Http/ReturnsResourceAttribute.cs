@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Saule.Http
 {
@@ -36,7 +36,7 @@ namespace Saule.Http
         /// See base class documentation.
         /// </summary>
         /// <param name="actionContext">The action context.</param>
-        public override void OnActionExecuting(HttpActionContext actionContext)
+        public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var accept = actionContext.Request.Headers.Accept
                 .Where(a => a.MediaType == Constants.MediaType);

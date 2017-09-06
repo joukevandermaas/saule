@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Saule.Queries.Including;
 
 namespace Saule.Http
@@ -18,7 +17,7 @@ namespace Saule.Http
         /// See base class documentation.
         /// </summary>
         /// <param name="actionContext">The action context.</param>
-        public override void OnActionExecuting(HttpActionContext actionContext)
+        public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
 
