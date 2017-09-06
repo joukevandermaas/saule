@@ -40,19 +40,22 @@ namespace Saule.Http
         /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
-            var accept = actionContext.Request.Headers.Accept
+            var requestHeaders = actionContext.HttpContext.Request.GetTypedHeaders();
+
+            var accept = requestHeaders.Accept
                 .Where(a => a.MediaType == Constants.MediaType);
+
             if (accept.Count() > 0 && accept.All(a => a.Parameters.Any()))
             {
                 // no json api media type without parameters
-                actionContext.Response = new HttpResponseMessage(HttpStatusCode.NotAcceptable);
+                actionContext.Result = new StatusCodeResult(StatusCodes.Status406NotAcceptable);
             }
 
-            var contentType = actionContext.Request.Content?.Headers?.ContentType;
+            var contentType = requestHeaders.ContentType;
             if (contentType != null && contentType.Parameters.Any())
             {
                 // client is sending json api media type with parameters
-                actionContext.Response = new HttpResponseMessage(HttpStatusCode.UnsupportedMediaType);
+                actionContext.Result = new StatusCodeResult(StatusCodes.Status415UnsupportedMediaType);
             }
 
             actionContext.HttpContext.Items.Add(Constants.PropertyNames.ResourceDescriptor, Resource);
