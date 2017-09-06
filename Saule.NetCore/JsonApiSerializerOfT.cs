@@ -82,8 +82,7 @@ namespace Saule
         /// <returns>A <see cref="JToken"/> representing the object.</returns>
         public JToken Serialize(object @object, Uri requestUri)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
+            var queryContext = GetQueryContext(requestUri.GetQueryNameValuePairs());
 
             _serializer.QueryContext = queryContext;
 
