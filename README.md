@@ -5,7 +5,7 @@ Saule is a Json Api (version 1.0) library for ASP.Net Web API 2 and ASP.Net Core
 See the [our documentation](http://joukevandermaas.github.io/saule) for more information. Install Saule using NuGet:
 
 ```
-Install-Package saule.AspNetCore
+Install-Package saule
 ```
 
 ### [Visit the documentation website](http://joukevandermaas.github.io/saule)

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule", "Saule\Saule.csproj", "{AD43EDE3-88C9-47EE-BAE1-C14C80F1ACE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.AspNet", "Saule.AspNet\Saule.AspNet.csproj", "{AD43EDE3-88C9-47EE-BAE1-C14C80F1ACE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{BF3A993B-0AAC-419B-904C-E5B93E1C916D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.AspNet.Tests", "Saule.AspNet.Tests\Saule.AspNet.Tests.csproj", "{BF3A993B-0AAC-419B-904C-E5B93E1C916D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D2F8CA1-79B8-4492-907E-5BCF88429168}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,13 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		StyleCop.Analyzers.ruleset = StyleCop.Analyzers.ruleset
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.NetCore", "Saule.NetCore\Saule.NetCore.csproj", "{D0AB5F96-6FB2-4C16-B72B-848AC1F3476D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.AspNetCore", "Saule.AspNetCore\Saule.AspNetCore.csproj", "{D0AB5F96-6FB2-4C16-B72B-848AC1F3476D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.NetCore.Tests", "Saule.NetCore.Tests\Saule.NetCore.Tests.csproj", "{7175DFF7-6810-493E-9D90-636961A72DBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.AspNetCore.Tests", "Saule.AspNetCore.Tests\Saule.AspNetCore.Tests.csproj", "{7175DFF7-6810-493E-9D90-636961A72DBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.Common", "Saule.Common\Saule.Common.csproj", "{807D239E-8954-4107-8B69-C5D523F1EB92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.Common", "Saule.Common\Saule.Common.csproj", "{807D239E-8954-4107-8B69-C5D523F1EB92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule.Common.Tests", "Saule.Common.Tests\Saule.Common.Tests.csproj", "{2B8E9AED-B3F6-4C1E-A0F5-F945D4625B41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saule.Common.Tests", "Saule.Common.Tests\Saule.Common.Tests.csproj", "{2B8E9AED-B3F6-4C1E-A0F5-F945D4625B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saule", "Saule\Saule.csproj", "{A55A4816-9CA1-4486-8BA5-1FD6031607A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,10 @@ Global
 		{2B8E9AED-B3F6-4C1E-A0F5-F945D4625B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B8E9AED-B3F6-4C1E-A0F5-F945D4625B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B8E9AED-B3F6-4C1E-A0F5-F945D4625B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A55A4816-9CA1-4486-8BA5-1FD6031607A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A55A4816-9CA1-4486-8BA5-1FD6031607A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A55A4816-9CA1-4486-8BA5-1FD6031607A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A55A4816-9CA1-4486-8BA5-1FD6031607A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

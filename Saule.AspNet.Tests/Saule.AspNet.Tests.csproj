@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
+    <AssemblyName>Saule.AspNet.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -149,9 +149,9 @@
       <Project>{807d239e-8954-4107-8b69-c5d523f1eb92}</Project>
       <Name>Saule.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Saule\Saule.csproj">
+    <ProjectReference Include="..\Saule.AspNet\Saule.AspNet.csproj">
       <Project>{ad43ede3-88c9-47ee-bae1-c14c80f1ace4}</Project>
-      <Name>Saule</Name>
+      <Name>Saule.AspNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

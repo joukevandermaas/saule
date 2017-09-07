@@ -1,0 +1,11 @@
+﻿{
+  "data": {
+    "type": "person",
+    "attributes": {
+      "first-name": "John",
+      "last-name": "Smith",
+      "age": 34,
+      "number-of-legs": 2
+    }
+  }
+}

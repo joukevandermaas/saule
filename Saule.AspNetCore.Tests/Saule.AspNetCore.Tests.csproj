@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Saule.AspNetCore\Saule.AspNetCore.csproj" />
     <ProjectReference Include="..\Saule.Common.Tests\Saule.Common.Tests.csproj" />
-    <ProjectReference Include="..\Saule.NetCore\Saule.NetCore.csproj" />
   </ItemGroup>
 
 </Project>

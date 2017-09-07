@@ -2,5 +2,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly:InternalsVisibleTo("Tests")]
-[assembly:InternalsVisibleTo("Saule.NetCore.Tests")]
+[assembly:InternalsVisibleTo("Saule.AspNet.Tests")]
+[assembly:InternalsVisibleTo("Saule.AspNetCore.Tests")]
