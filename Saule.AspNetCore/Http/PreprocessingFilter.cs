@@ -36,10 +36,9 @@ namespace Saule.Http
         public void OnActionExecuted(ActionExecutedContext context)
         {
             var requestHeaders = context.HttpContext.Request.GetTypedHeaders();
-            var hasMediaType = requestHeaders.Accept?.Any(x => x.MediaType == Constants.MediaType) ?? false;
 
             var statusCode = context.HttpContext.Response.StatusCode;
-            if (!hasMediaType || (statusCode >= 400 && statusCode < 500))
+            if (statusCode >= 400 && statusCode < 500)
             {
                 // probably malformed request or not found
                 return;

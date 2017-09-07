@@ -92,6 +92,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.OutputFormatters.Insert(0, outputFormatter);
                 }
 
+                options.ReturnHttpNotAcceptable = true;
+
                 options.Filters.Add<PreprocessingFilter>();
             });
         }
