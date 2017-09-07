@@ -39,12 +39,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.0.0\lib\net45\Castle.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.4.1.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Humanizer, Version=2.1.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Humanizer.Core.2.1.0\lib\netstandard1.0\Humanizer.dll</HintPath>
+    <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -59,12 +58,11 @@
       <HintPath>..\packages\Microsoft.Owin.Testing.3.0.1\lib\net45\Microsoft.Owin.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.7.10.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.7.10\lib\net45\Moq.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Moq, Version=4.7.99.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.7.99\lib\net45\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -107,73 +105,25 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Controllers\StaticController.cs" />
-    <Compile Include="Helpers\Get.cs" />
-    <Compile Include="Helpers\HttpClientExtensions.cs" />
     <Compile Include="Helpers\NewSetupJsonApiServer.cs" />
     <Compile Include="Http\AttributeTests.cs" />
-    <Compile Include="Helpers\ExpressionComparer.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Http\QueryFilterExpressionCollectionTests.cs" />
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
-    <Compile Include="Models\Car.cs" />
-    <Compile Include="Models\CarResource.cs" />
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\CompanyResource.cs" />
-    <Compile Include="Models\CompanyWithDifferentId.cs" />
-    <Compile Include="Models\CompanyWithDifferentIdResource.cs" />
-    <Compile Include="Models\CompanyWithCustomers.cs" />
-    <Compile Include="Models\CompanyWithCustomersResource.cs" />
-    <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\CustomerResource.cs" />
-    <Compile Include="Models\GuidAsRelation.cs" />
-    <Compile Include="Models\GuidAsId.cs" />
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
-    <Compile Include="Helpers\Paths.cs" />
-    <Compile Include="Models\LazyPerson.cs" />
-    <Compile Include="Models\PersonJobOnlyRelatedLinksResource.cs" />
-    <Compile Include="Models\PersonJobOnlySelfLinksResource.cs" />
-    <Compile Include="Models\PersonNoJobLinksResource.cs" />
-    <Compile Include="Models\PersonNoLinksResource.cs" />
-    <Compile Include="Models\PersonWithCompanyWithCustomersResource.cs" />
-    <Compile Include="Models\PersonWithGuidAsRelationsResource.cs" />
-    <Compile Include="Models\PersonResource.cs" />
-    <Compile Include="Models\PersonWithDefaultIdResource.cs" />
-    <Compile Include="Models\PersonWithDifferentId.cs" />
-    <Compile Include="Models\PersonWithDifferentIdResource.cs" />
-    <Compile Include="Models\PersonWithNoId.cs" />
-    <Compile Include="Models\PersonWithNoJob.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="JsonApiSerializerTests.cs" />
-    <Compile Include="Models\Recursion.cs" />
-    <Compile Include="Models\Widget.cs" />
-    <Compile Include="Models\WidgetResource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\NotOrderedQueryable.cs" />
-    <Compile Include="Queries\PaginationInterpreterTests.cs" />
-    <Compile Include="Queries\FilteringInterpreterTests.cs" />
-    <Compile Include="Queries\SortingInterpreterTests.cs" />
-    <Compile Include="Queries\PaginationQueryTests.cs" />
-    <Compile Include="Serialization\CanonicalUrlPathBuilderTests.cs" />
-    <Compile Include="Serialization\DefaultUrlPathBuilderTests.cs" />
-    <Compile Include="Serialization\MetadataTests.cs" />
-    <Compile Include="Serialization\ResourceGraphNodeKeyTests.cs" />
-    <Compile Include="Serialization\ResourceGraphPathSetTests.cs" />
-    <Compile Include="Serialization\UrlConstructionTests.cs" />
-    <Compile Include="Serialization\ResourceDeserializerTests.cs" />
     <Compile Include="Serialization\ErrorSerializerTests.cs" />
-    <Compile Include="Serialization\ResourceSerializerTests.cs" />
     <Compile Include="Integration\ContentNegotiationTests.cs" />
-    <Compile Include="StringExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -191,6 +141,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Saule.Common.Tests\Saule.Common.Tests.csproj">
+      <Project>{2b8e9aed-b3f6-4c1e-a0f5-f945d4625b41}</Project>
+      <Name>Saule.Common.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Saule.Common\Saule.Common.csproj">
+      <Project>{807d239e-8954-4107-8b69-c5d523f1eb92}</Project>
+      <Name>Saule.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Saule\Saule.csproj">
       <Project>{ad43ede3-88c9-47ee-bae1-c14c80f1ace4}</Project>
       <Name>Saule</Name>

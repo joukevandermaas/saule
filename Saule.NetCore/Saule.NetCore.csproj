@@ -11,6 +11,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="All" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saule.Common\Saule.Common.csproj" />
+  </ItemGroup>
   
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(SolutionDir)\StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
