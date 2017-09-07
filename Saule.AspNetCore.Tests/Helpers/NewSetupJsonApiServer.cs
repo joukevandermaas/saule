@@ -44,16 +44,9 @@ namespace Tests.Helpers
 
         public class Startup
         {
-            private readonly JsonApiConfiguration _config;
-
-            public Startup(JsonApiConfiguration config)
-            {
-                _config = config;
-            }
-
             public void ConfigureServices(IServiceCollection services)
             {
-                services.AddMvc(options => options.AddJsonApi(_config));
+                services.AddJsonApi();
             }
 
             public void Configure(IApplicationBuilder app,

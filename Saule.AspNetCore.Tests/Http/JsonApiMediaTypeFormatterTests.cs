@@ -11,7 +11,7 @@ namespace Tests.Http
         [Fact(DisplayName = "Input formatter must support Json Api media type")]
         public void TestMethod1()
         {
-            var formatter = new JsonApiInputFormatter(new JsonApiConfiguration());
+            var formatter = new JsonApiInputFormatter();
             Assert.Equal(1, formatter.SupportedMediaTypes.Count);
             Assert.Equal(Constants.MediaType, formatter.SupportedMediaTypes.First());
         }
@@ -19,7 +19,7 @@ namespace Tests.Http
         [Fact(DisplayName = "Output formatter must support Json Api media type")]
         public void TestMethod2()
         {
-            var formatter = new JsonApiOutputFormatter(new JsonApiConfiguration());
+            var formatter = new JsonApiOutputFormatter();
             Assert.Equal(1, formatter.SupportedMediaTypes.Count);
             Assert.Equal(Constants.MediaType, formatter.SupportedMediaTypes.First());
         }

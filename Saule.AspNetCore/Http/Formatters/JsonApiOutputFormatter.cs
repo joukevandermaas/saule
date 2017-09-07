@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -14,13 +15,9 @@ namespace Saule.Http.Formatters
     /// </summary>
     public class JsonApiOutputFormatter : TextOutputFormatter
     {
-        private readonly JsonApiConfiguration _config = new JsonApiConfiguration();
-
-        internal JsonApiOutputFormatter(JsonApiConfiguration config)
+        internal JsonApiOutputFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
-            _config = config;
-
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.Unicode);
         }
@@ -34,7 +31,11 @@ namespace Saule.Http.Formatters
             var json = JsonApiSerializer.Serialize(preprocessed);
 
             var response = context.HttpContext.Response;
-            return WriteJsonToStream(json, response.Body);
+
+            IServiceProvider serviceProvider = context.HttpContext.RequestServices;
+            var config = serviceProvider.GetService(typeof(JsonApiConfiguration)) as JsonApiConfiguration;
+
+            return WriteJsonToStream(json, response.Body, config?.JsonConverters.ToArray());
         }
 
         /// <inheritdoc/>
@@ -43,11 +44,11 @@ namespace Saule.Http.Formatters
             return true;
         }
 
-        private async Task WriteJsonToStream(JToken json, Stream stream)
+        private async Task WriteJsonToStream(JToken json, Stream stream, JsonConverter[] jsonConverters)
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
             {
-                await writer.WriteAsync(json.ToString(Formatting.None, _config.JsonConverters.ToArray()));
+                await writer.WriteAsync(json.ToString(Formatting.None, jsonConverters));
             }
         }
     }
