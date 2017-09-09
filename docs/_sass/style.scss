@@ -32,6 +32,10 @@ body {
     color: inherit;
     text-decoration: none;
   }
+
+  .title {
+    margin-bottom: 12px;
+  }
 }
 
 .site-title .github {
@@ -144,7 +148,7 @@ blockquote {
 
 .page-title {
   font-size: 200%;
-  text-align: center;
+  text-align: left;
 }
 
 hr {
