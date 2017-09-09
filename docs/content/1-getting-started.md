@@ -3,7 +3,7 @@ title: Getting started
 resource: true
 ---
 
-First install Saule using nuget:
+First install Saule using Nuget:
 
 ```
 Install-Package saule
