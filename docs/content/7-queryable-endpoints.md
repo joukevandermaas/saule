@@ -1,6 +1,7 @@
-## Queryable endpoints
-
-[Back to home](index)
+---
+title: Queryable endpoints
+resource: true
+---
 
 Saule supports queryable endpoints. These endpoints allow users of
 your API to specify constraints on the results. Saule will automatically
@@ -24,7 +25,7 @@ public IQueryable<Person> GetPeople()
 }
 ```
 
-> **Note**: As of version 1.4, Saule only supports the `sort` and `filter` query parameters.
+> **Note**: Saule only supports the `sort` and `filter` query parameters.
 > The same attribute may support other queries in the future.
 
 ```
@@ -107,7 +108,7 @@ Sometimes you want to do something specific when a client specifies a filter que
 For example, you might want to do case insensitive filtering for strings, so `/people?filter[name]=smith`
 will not return an empty result set.
 
-To do this in Saule, you can set *query filter expressions* for specific types in your Json Api configuration:
+To do this in Saule, you can set *query filter expressions* for specific types in your JSON API configuration:
 
 ```csharp
 public static void Register(HttpConfiguration config)

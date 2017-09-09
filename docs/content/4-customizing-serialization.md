@@ -1,9 +1,7 @@
-
-## Customizing the serialization process
-
-[Back to home](index)
-
-----
+---
+title: Customizing serialization
+resource: true
+---
 
 To add serialization and deserialization to your Web Api project,
 add the following lines to your `Startup.cs`:
@@ -14,20 +12,6 @@ public static void Register(HttpConfiguration config)
     // ...
 
     config.ConfigureJsonApi();
-
-    // ...
-}
-```
-
-> **Note**: if you are using an older (< 1.4) version of Saule, add the following lines instead:
-
-```csharp
-public static void Register(HttpConfiguration config)
-{
-    // ...
-
-    config.Formatters.Clear();
-    config.Formatters.Add(new JsonApiMediaTypeFormatter());
 
     // ...
 }
@@ -68,5 +52,5 @@ sealed class MyExceptionFilter : ExceptionFilterAttribute
 }
 ```
 The media type formatter will automatically serialize subclasses of `System.Exception`
-or `System.Web.Http.HttpError` as a Json Api error response. No other types are supported
+or `System.Web.Http.HttpError` as a JSON API error response. No other types are supported
 at this time.
