@@ -1,8 +1,8 @@
-$light-color: #fefeff;
-$dark-color: #225;
-$border-color: #bbb;
+$light-color: #fcffff;
+$dark-color: #255;
+$border-color: #229999;
 $standout-color: #fff;
-$link-color: #255;
+$link-color: #166868;
 
 body {
   background-color: $light-color;
@@ -13,6 +13,10 @@ body {
   min-height: 100vh;
 
   font-size: 110%;
+}
+
+p {
+  line-height: 28px;
 }
 
 .site-title {
@@ -46,7 +50,7 @@ body {
     font-size: 90%;
 
     a:link, a:visited, a:hover {
-      color: darken($light-color, 20%);
+      color: darken($light-color, 10%);
     }
   }
 
@@ -99,7 +103,7 @@ a {
     list-style: none;
     background-color: $dark-color;
 
-    background: linear-gradient(to bottom right, $dark-color, lighten($dark-color, 10%));
+    background: linear-gradient(165deg, $dark-color, lighten($dark-color, 10%));
     
     color: $light-color;
     height: 100%;
@@ -138,10 +142,10 @@ a {
   box-sizing: border-box;
   margin: 0 auto;
   max-width: 960px;
-  padding: 20px 40px;
+  padding: 20px 40px 200px 40px;
 
   h1, h2, h3 {
-    margin-top: 30px;
+    margin-top: 50px;
   }
 }
 
@@ -153,7 +157,7 @@ pre.highlight {
 }
 
 blockquote {
-  margin-left: 12px;
+  margin: 30px 12px;
   border-left: 5px solid $dark-color;
   padding: 3px 20px;
 }
@@ -164,9 +168,11 @@ blockquote {
 }
 
 hr {
-  border-style: solid none;
-  border-width: 1px;
-  border-color: $standout-color $standout-color lighten($border-color, 20%) $standout-color;
+  border: none;
+  border-top: 1px dashed rgba($border-color, .5);
+
+  width: 60%;
+  margin: 50px auto;
 }
 
 table {
@@ -193,6 +199,8 @@ table {
   }
 }
 
+$menu-width: 350px;
+
 @media (min-width: 1200px) {
   .container {
     flex-direction: row;
@@ -201,9 +209,12 @@ table {
   }
 
   .main-navigation {
-    width: 400px;
+    flex-shrink: 0;
+    width: $menu-width;
 
     ul {
+      box-sizing: border-box;
+      width: $menu-width;
       height: 100vh;
       position: fixed;
       top: 0;
@@ -214,5 +225,11 @@ table {
     li {
       flex: 0;
     }
+  }
+}
+
+@media (min-width: 1400px + $menu-width) {
+  .main-navigation {
+    width: 0;
   }
 }
