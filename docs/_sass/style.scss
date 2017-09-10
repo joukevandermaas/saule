@@ -2,6 +2,7 @@ $light-color: #fefeff;
 $dark-color: #225;
 $border-color: #bbb;
 $standout-color: #fff;
+$link-color: #255;
 
 body {
   background-color: $light-color;
@@ -14,60 +15,65 @@ body {
   font-size: 110%;
 }
 
-.site-title .titles {
-  height: 150px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+.site-title {
+  .titles {
+    height: 150px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 
-  background-color: $dark-color;
-  color: $light-color;
+    background-color: $dark-color;
+    color: $light-color;
 
-  h1, h2 {
+    h1, h2 {
+      margin: 0;
+      padding: 0;
+    }
+
+    .title {
+      margin-bottom: 12px;
+    }
+  }
+
+  .github {
+    position: absolute;
+    right: 20px;
+    top: 20px;
     margin: 0;
     padding: 0;
+    font-size: 90%;
+
+    a:link, a:visited, a:hover {
+      color: darken($light-color, 20%);
+    }
   }
 
-  a {
+  a:link, a:visited {
     color: inherit;
-    text-decoration: none;
+    border-bottom: 1px dashed $dark-color;
   }
-
-  .title {
-    margin-bottom: 12px;
-  }
-}
-
-.site-title .github {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  margin: 0;
-  padding: 0;
-
-  a:link {
-    color: $light-color;
-    font-size: 80%;
+  a:hover {
+    border-bottom: 1px dashed $light-color;
   }
 }
 
 a {
   text-decoration: none;
   font-weight: bold;
+  transition: all 150ms ease-in;
 
-  &:link {
-    color: lighten($dark-color, 30%);
+  border-bottom: 1px dashed $light-color;
+
+  &:link, &:visited {
+    color: $link-color;
   }
   &:hover {
     border-bottom: 1px dashed;
   }
   &:active {
     border-bottom: 1px solid;
-  }
-  &:visited {
-    color: lighten($dark-color, 50%);
   }
 }
 
@@ -86,7 +92,6 @@ a {
 
   ul {
     margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,13 +102,14 @@ a {
     background: linear-gradient(to bottom right, $dark-color, lighten($dark-color, 10%));
     
     color: $light-color;
-    height: 100%
+    height: 100%;
+    padding: 12px;
   }
 
   li {
     flex: 1;
     margin: 3px;
-    border: 1px solid $light-color;
+    border-style: 1px solid $light-color;
     text-align: center;
   }
   
@@ -114,6 +120,10 @@ a {
     display: block;
     color: inherit;
     text-decoration: none;
+
+    &:visited, &:link {
+      border: none;
+    }
 
     &:hover, &.active {
       color: $dark-color;
@@ -194,9 +204,12 @@ table {
     width: 400px;
 
     ul {
+      height: 100vh;
+      position: fixed;
+      top: 0;
       flex-direction: column;
       justify-content: flex-start;
-      padding: 0 30px;
+      padding: 150px 30px 0 30px;
     }
     li {
       flex: 0;
