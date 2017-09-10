@@ -1,12 +1,14 @@
 # Saule
 [![Build status](https://ci.appveyor.com/api/projects/status/uj3ddt85jaebjuh9/branch/master?svg=true)](https://ci.appveyor.com/project/JoukevanderMaas/saule/branch/master)
 
-Saule is a Json Api (version 1.0) library for ASP.Net Web API 2.
-See the [our documentation](http://joukevandermaas.github.io/saule) for more information. Install Saule using NuGet:
+
+Saule is a JSON API (version 1.0) library for ASP.Net Web API 2. Install Saule using NuGet:
 
 ```
 Install-Package saule
 ```
+
+### [Visit the documentation website](http://joukevandermaas.github.io/saule)
 
 To use Saule, you must define resources that contain the information
 about your domain:
@@ -111,5 +113,5 @@ GET http://example.com/people/123
 }
 ```
 
-Deserialization works just like in normal Web Api; you don't need
+Deserialization works just like in normal Web API; you don't need
 to do anything special to make this work.
