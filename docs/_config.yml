@@ -1,7 +1,6 @@
 repository: joukevandermaas/saule
 markdown: kramdown
 highlighter: rouge
-baseurl: /saule
 kramdown:
   input: GFM
   hard_wrap: false
