@@ -1,0 +1,235 @@
+$light-color: #fcffff;
+$dark-color: #255;
+$border-color: #229999;
+$standout-color: #fff;
+$link-color: #166868;
+
+body {
+  background-color: $light-color;
+  color: $dark-color;
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+
+  font-size: 110%;
+}
+
+p {
+  line-height: 28px;
+}
+
+.site-title {
+  .titles {
+    height: 150px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    background-color: $dark-color;
+    color: $light-color;
+
+    h1, h2 {
+      margin: 0;
+      padding: 0;
+    }
+
+    .title {
+      margin-bottom: 12px;
+    }
+  }
+
+  .github {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    margin: 0;
+    padding: 0;
+    font-size: 90%;
+
+    a:link, a:visited, a:hover {
+      color: darken($light-color, 10%);
+    }
+  }
+
+  a:link, a:visited {
+    color: inherit;
+    border-bottom: 1px dashed $dark-color;
+  }
+  a:hover {
+    border-bottom: 1px dashed $light-color;
+  }
+}
+
+a {
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 150ms ease-in;
+
+  border-bottom: 1px dashed $light-color;
+
+  &:link, &:visited {
+    color: $link-color;
+  }
+  &:hover {
+    border-bottom: 1px dashed;
+  }
+  &:active {
+    border-bottom: 1px solid;
+  }
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.main-navigation {
+  width: 100%;
+
+  ul {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    list-style: none;
+    background-color: $dark-color;
+
+    background: linear-gradient(165deg, $dark-color, lighten($dark-color, 10%));
+    
+    color: $light-color;
+    height: 100%;
+    padding: 12px;
+  }
+
+  li {
+    flex: 1;
+    margin: 3px;
+    border-style: 1px solid $light-color;
+    text-align: center;
+  }
+  
+  a {
+    box-sizing: border-box;
+    padding: 9px 20px;
+    height: 100%;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+
+    &:visited, &:link {
+      border: none;
+    }
+
+    &:hover, &.active {
+      color: $dark-color;
+      background: $light-color;
+      border: none;
+    }
+  }
+}
+
+.main-content {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 20px 40px 200px 40px;
+
+  h1, h2, h3 {
+    margin-top: 50px;
+  }
+}
+
+pre.highlight {
+  background-color: $standout-color;
+  padding: 20px;
+  border: 1px solid $border-color;
+  overflow-y: auto;
+}
+
+blockquote {
+  margin: 30px 12px;
+  border-left: 5px solid $dark-color;
+  padding: 3px 20px;
+}
+
+.page-title {
+  font-size: 200%;
+  text-align: left;
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed rgba($border-color, .5);
+
+  width: 60%;
+  margin: 50px auto;
+}
+
+table {
+  display: block;
+  max-width: 100%;
+  overflow-y: auto;
+
+  border: 1px solid $border-color;
+  background: $standout-color;
+
+  tbody tr {
+    background-color: darken($light-color, 3%);
+
+    &:nth-child(2n) {
+      background-color: $standout-color;
+    }
+  }
+
+  td {
+    padding: 6px 12px;
+  }
+  th {
+    padding: 12px;
+  }
+}
+
+$menu-width: 350px;
+
+@media (min-width: 1200px) {
+  .container {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .main-navigation {
+    flex-shrink: 0;
+    width: $menu-width;
+
+    ul {
+      box-sizing: border-box;
+      width: $menu-width;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 150px 30px 0 30px;
+    }
+    li {
+      flex: 0;
+    }
+  }
+}
+
+@media (min-width: 1400px + $menu-width) {
+  .main-navigation {
+    width: 0;
+  }
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+    {% include head.html %}
+  </head>
+
+  <body>
+    <div class="site-title">
+      <div class="titles">
+        <h1 class="title"><a href="{{site.baseurl}}/">Saule</a></h1>
+        <h2 class="subtitle">JSON API for ASP.NET</h2>
+      </div>
+      <h3 class="github"><a href="https://github.com/{{site.repository}}">View on Github</a></h3>
+    </div>
+
+    <div class="container">
+      {% include navigation.html %}
+
+      <div class="main-content" role="main">
+        <h3 class="page-title">{{ page.title }}</h3>
+        {{ content }}
+      </div>
+    </div>
+  </body>
+</html>

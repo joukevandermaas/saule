@@ -1,0 +1,10 @@
+---
+---
+
+/*
+This file is a workaround for the fact that Jekyll requires
+a front matter to enable sass. This messes up highlighting in
+editors, so we just import a file that doesn't require it here.
+*/
+@import 'style';
+@import 'highlight';

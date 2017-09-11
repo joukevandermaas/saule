@@ -1,6 +1,7 @@
-## Resource Models
-
-[Back to home](index)
+---
+title: Resource models
+resource: true
+---
 
 ## Attributes
 Saule uses resource models to serialize any object into a
@@ -57,7 +58,7 @@ public class CompanyResource
 ## Type name & custom Id properties
 
 When using the resource from within a `ReturnsResourceAttribute`, Saule will create
-Json Api with the type `company` (or whatever the name of your resource class is). 
+JSON API with the type `company` (or whatever the name of your resource class is). 
 To customize this, use the `OfType` method in your constructor:
 
 ```csharp
@@ -72,7 +73,7 @@ public class CompanyResource
     }
 }
 ```
-```
+```text
 {
   "data": {
     "type": "coorporation",
@@ -115,7 +116,7 @@ public class CompanyResource
     }
 }
 ```
-```
+```text
 {
   "data": {
     "type": "coorporation",
@@ -128,4 +129,4 @@ public class CompanyResource
 ```
 
 If you want to customize the generated links objects further, see 
-[Generating links](Generating-links).
+[Generating links](5-generating-custom-links).
