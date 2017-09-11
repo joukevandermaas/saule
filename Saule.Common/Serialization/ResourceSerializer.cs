@@ -359,10 +359,10 @@ namespace Saule.Serialization
                     return JObject.FromObject(new ResourceGraphNodeKey(relationship.SourceObject, relationship.Relationship.RelatedResource));
                 }
             }
-            else if (relationship.Relationship.Kind == RelationshipKind.HasMany && relationship.SourceObject != null)
+            else if (relationship.Relationship.Kind == RelationshipKind.HasMany)
             {
                 var content = new JArray();
-                foreach (var o in (System.Collections.IEnumerable)relationship.SourceObject)
+                foreach (var o in (System.Collections.IEnumerable)relationship.SourceObject ?? new object[0])
                 {
                     content.Add(JObject.FromObject(new ResourceGraphNodeKey(o, relationship.Relationship.RelatedResource)));
                 }
