@@ -16,9 +16,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets up serialization and deserialization of Json Api resources.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> that is used in the setup of the application.</param>
-        public static void AddJsonApi(this IServiceCollection services)
+        /// <returns>The <see cref="IMvcBuilder"/> returned by the wrapped AddMvc() call</returns>
+        public static IMvcBuilder AddJsonApi(this IServiceCollection services)
         {
-            AddJsonApi(services, null);
+            return AddJsonApi(services, null);
         }
 
         /// <summary>
@@ -26,9 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> that is used in the setup of the application.</param>
         /// <param name="config">Configuration parameters for Json Api serialization.</param>
-        public static void AddJsonApi(this IServiceCollection services, JsonApiConfiguration config)
+        /// <returns>The <see cref="IMvcBuilder"/> returned by the wrapped AddMvc() call</returns>
+        public static IMvcBuilder AddJsonApi(this IServiceCollection services, JsonApiConfiguration config)
         {
-            AddJsonApi(services, config, false);
+            return AddJsonApi(services, config, false);
         }
 
         /// <summary>
@@ -40,18 +42,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// If true, other formatters will be cleared. Otherwise, the JSON API formatter
         /// will be inserted at the start of the collection.
         /// </param>
-        public static void AddJsonApi(
+        /// <returns>The <see cref="IMvcBuilder"/> returned by the wrapped AddMvc() call</returns>
+        public static IMvcBuilder AddJsonApi(
             this IServiceCollection services,
             JsonApiConfiguration config,
             bool overwriteOtherFormatters)
         {
             if (overwriteOtherFormatters)
             {
-                AddJsonApi(services, config, FormatterPriority.OverwriteOtherFormatters);
+                return AddJsonApi(services, config, FormatterPriority.OverwriteOtherFormatters);
             }
             else
             {
-                AddJsonApi(services, config, FormatterPriority.AddFormatterToStart);
+                return AddJsonApi(services, config, FormatterPriority.AddFormatterToStart);
             }
         }
 
@@ -61,14 +64,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> that is used in the setup of the application.</param>
         /// <param name="config">Configuration parameters for Json Api serialization.</param>
         /// <param name="formatterPriority"> Determines the relative position of the JSON API formatter.</param>
-        public static void AddJsonApi(this IServiceCollection services, JsonApiConfiguration config, FormatterPriority formatterPriority)
+        /// <returns>The <see cref="IMvcBuilder"/> returned by the wrapped AddMvc() call</returns>
+        public static IMvcBuilder AddJsonApi(this IServiceCollection services, JsonApiConfiguration config, FormatterPriority formatterPriority)
         {
             if (config != null)
             {
                 services.AddSingleton<JsonApiConfiguration>(config);
             }
 
-            services.AddMvc(options =>
+            return services.AddMvc(options =>
             {
                 var inputFormatter = new JsonApiInputFormatter();
                 var outputFormatter = new JsonApiOutputFormatter();
