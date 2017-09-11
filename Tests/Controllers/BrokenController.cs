@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -43,6 +44,26 @@ namespace Tests.Controllers
                     ExceptionType = "Type 2"
                 }
             });
+        }
+
+        [HttpGet]
+        [Route("api/broken/error")]
+        [ReturnsResource(typeof(PersonResource))]
+        public HttpResponseMessage OneError()
+        {
+            return Request.CreateResponse(HttpStatusCode.BadRequest,
+                new HttpError("Error 1")
+                {
+                    ExceptionType = "Type 1"
+                });
+        }
+
+        [HttpGet]
+        [Route("api/broken/exception")]
+        [ReturnsResource(typeof(PersonResource))]
+        public HttpResponseMessage Exception()
+        {
+            throw new InvalidOperationException("Test exception");
         }
     }
 }
