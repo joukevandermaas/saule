@@ -6,7 +6,7 @@ namespace Saule
 {
     internal sealed class PreprocessResult
     {
-        public ApiError ErrorContent { get; set; }
+        public List<ApiError> ErrorContent { get; set; }
 
         public ResourceSerializer ResourceSerializer { get; set; }
 

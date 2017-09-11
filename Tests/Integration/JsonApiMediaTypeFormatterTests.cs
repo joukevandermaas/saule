@@ -550,6 +550,55 @@ namespace Tests.Integration
             }
         }
 
+        [Fact(DisplayName = "Passes through two 4xx errors")]
+        public async Task PassesThroughTwoHttpErrors()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                var response = await client.GetFullJsonResponseAsync("api/broken/errors");
+                var errors = response.Content["errors"];
+
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                Assert.Equal(2, errors.Count());
+                Assert.Equal("Error 1.", errors[0]["title"]);
+                Assert.Equal("Type 1", errors[0]["code"]);
+                Assert.Equal("Error 2.", errors[1]["title"]);
+                Assert.Equal("Type 2", errors[1]["code"]);
+           }
+        }
+
+        [Fact(DisplayName = "Passes through one 400 error")]
+        public async Task PassesThroughHttpError()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                var response = await client.GetFullJsonResponseAsync("api/broken/error");
+                var errors = response.Content["errors"];
+
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                Assert.Equal(1, errors.Count());
+                Assert.Equal("Error 1.", errors[0]["title"]);
+                Assert.Equal("Type 1", errors[0]["code"]);
+            }
+        }
+
+        [Fact(DisplayName = "Passes through one 400 error")]
+        public async Task PassesThroughOneHttpException()
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                var response = await client.GetFullJsonResponseAsync("api/broken/exception");
+                var errors = response.Content["errors"];
+
+                Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+                Assert.Equal(1, errors.Count());
+                Assert.Equal("An error has occurred.", errors[0]["title"]);
+            }
+        }
+
         [Fact(DisplayName = "Passes through HttpError")]
         public async Task PassesThroughHttpErrors()
         {
