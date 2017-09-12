@@ -1,12 +1,15 @@
 # Saule
-[![Build status](https://ci.appveyor.com/api/projects/status/uj3ddt85jaebjuh9/branch/master?svg=true)](https://ci.appveyor.com/project/JoukevanderMaas/saule/branch/master)
-
 
 Saule is a JSON API (version 1.0) library for ASP.Net Web API 2. Install Saule using NuGet:
 
 ```
 Install-Package saule
 ```
+
+### Booker changes ###
+
+We made custom `booker-saule` branch where we would have our changes. And Master branch would be identitcal to original repo, so we can fetch changes from there to match latest version and then merge to `booker-saule` branch. We will use this branch for builds.
+
 
 ### [Visit the documentation website](http://joukevandermaas.github.io/saule)
 
