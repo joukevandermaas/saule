@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Saule.Serialization
 {
@@ -23,7 +24,11 @@ namespace Saule.Serialization
         public object Deserialize()
         {
             ValidateTopLevel(_object);
-            return ToFlatStructure(_object)?.ToObject(_target);
+            return ToFlatStructure(_object)?.ToObject(_target, new JsonSerializer()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new JsonApiContractResolver()
+            });
         }
 
         private static void ValidateTopLevel(JToken content)
@@ -100,13 +105,13 @@ namespace Saule.Serialization
             foreach (var attr in child["attributes"] ?? new JArray())
             {
                 var prop = attr as JProperty;
-                result.Add(prop?.Name.ToPascalCase(), prop?.Value);
+                result.Add(prop?.Name, prop?.Value);
             }
 
             foreach (var rel in child["relationships"] ?? new JArray())
             {
                 var prop = rel as JProperty;
-                result.Add(prop?.Name.ToPascalCase(), ToFlatStructure(prop?.Value));
+                result.Add(prop?.Name, ToFlatStructure(prop?.Value));
             }
 
             return result;
