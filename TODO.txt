@@ -1,0 +1,2 @@
+- Update .Net 46 version to use the FrameworkIndependentPreprocessor
+- Fix all the tests

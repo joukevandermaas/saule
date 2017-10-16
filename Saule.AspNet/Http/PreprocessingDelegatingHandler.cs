@@ -84,7 +84,7 @@ namespace Saule.Http
 
             if (content.ErrorContent != null)
             {
-                result.StatusCode = ApiError.IsClientError(content.ErrorContent)
+                result.StatusCode = ApiError.AnyClientError(content.ErrorContent)
                     ? HttpStatusCode.BadRequest
                     : HttpStatusCode.InternalServerError;
             }

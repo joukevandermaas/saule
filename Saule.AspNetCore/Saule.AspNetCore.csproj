@@ -32,6 +32,7 @@
   
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\netcoreapp2.0\Saule.AspNetCore.xml</DocumentationFile>
+    <RootNamespace>Saule</RootNamespace>
   </PropertyGroup>
   
 </Project>

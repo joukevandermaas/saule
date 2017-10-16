@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netcoreapp2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>saule</PackageId>
     <Authors>Jouke van der Maas</Authors>
     <Product>Saule for Json Api</Product>
     <Description>Json api library for ASP.Net Web API 2 and Asp.Net Core</Description>
-    <Copyright>Copyright 2015</Copyright>
+    <Copyright>Copyright 2017</Copyright>
     <PackageLicenseUrl>https://github.com/joukevandermaas/saule/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/joukevandermaas/saule/</PackageProjectUrl>
     <PackageTags>web api serialization media formatter json api jsonapi ember data</PackageTags>
@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Saule.AspNetCore\Saule.AspNetCore.csproj" Condition="'$(TargetFramework)' == 'netcoreapp2.0'" />
-    <ProjectReference Include="..\Saule.AspNet\Saule.AspNet.csproj" Condition="'$(TargetFramework)' == 'net452'" />
+    <ProjectReference Include="..\Saule.AspNet\Saule.AspNet.csproj" Condition="'$(TargetFramework)' == 'net462'" />
   </ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@ namespace Saule.Http.Formatters
     /// </summary>
     public class JsonApiOutputFormatter : TextOutputFormatter
     {
-        internal JsonApiOutputFormatter()
+        public JsonApiOutputFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
             SupportedEncodings.Add(Encoding.UTF8);
