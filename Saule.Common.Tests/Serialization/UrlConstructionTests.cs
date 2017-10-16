@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Saule;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Queries.Pagination;
 using Saule.Serialization;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class UrlConstructionTests
     {

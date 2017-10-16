@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Saule.Queries;
 using Saule.Queries.Pagination;
@@ -75,7 +76,7 @@ namespace Saule.Http
         /// <param name="actionContext">The action context.</param>
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
-            var queryParams = actionContext.HttpContext.Request.GetQueryNameValuePairs().ToList();
+            var queryParams = new Uri(actionContext.HttpContext.Request.GetEncodedUrl()).GetQueryNameValuePairs().ToList();
 
             var paginationContext = new PaginationContext(
                 queryParams,

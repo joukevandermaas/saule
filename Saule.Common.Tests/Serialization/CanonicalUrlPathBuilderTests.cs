@@ -1,10 +1,9 @@
-﻿using Saule;
+﻿using Saule.Common.Tests.Models;
 using Saule.Serialization;
-using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class CanonicalUrlPathBuilderTests
     {

@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Saule.Http;
-using Tests.Helpers;
-using Tests.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
+using Saule.Http;
 
-namespace Tests.Controllers
+namespace Saule.AspNetCore.Tests.Controllers
 {
     [ReturnsResource(typeof(PersonResource))]
     [Route("api")]

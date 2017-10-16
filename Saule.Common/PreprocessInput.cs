@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saule.Queries;
+using Saule.Serialization;
 
 namespace Saule
 {
@@ -7,11 +9,11 @@ namespace Saule
     {
         public abstract object Content { get; }
 
+        public abstract IEnumerable<ApiError> ErrorContent { get; }
+
         public abstract ApiResource ResourceDescriptor { get; }
 
         public abstract int StatusCode { get; }
-
-        public abstract bool IsErrorContent { get; }
 
         public abstract Uri RequestUri { get; }
 

@@ -1,9 +1,8 @@
-﻿using Saule.Serialization;
-using System;
-using Saule;
+﻿using System;
+using Saule.Serialization;
 using Xunit;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class ErrorSerializerTests
     {

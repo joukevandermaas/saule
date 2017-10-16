@@ -81,18 +81,16 @@ namespace Saule
             return result;
         }
 
-        private static ApiError[] GetAsErrors(object @object)
+        private static IEnumerable<ApiError> GetAsErrors(object @object)
         {
-            var exception = @object as Exception;
-            if (exception != null)
+            switch (@object)
             {
-                return new[] { new ApiError(exception) };
-            }
-
-            var apiError = @object as ApiError;
-            if (apiError != null)
-            {
-                return new[] { apiError };
+                case Exception exception:
+                    return new[] { new ApiError(exception) };
+                case ApiError apiError:
+                    return new[] { apiError };
+                case IEnumerable<ApiError> errors:
+                    return errors;
             }
 
             return null;

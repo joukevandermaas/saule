@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Tests.Helpers
+namespace Saule.Common.Tests.Helpers
 {
     public class ExpressionComparer : IEqualityComparer<Expression>
     {

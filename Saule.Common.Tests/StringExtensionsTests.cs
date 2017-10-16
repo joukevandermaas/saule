@@ -1,9 +1,8 @@
-﻿using Saule;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Tests
+namespace Saule.Common.Tests
 {
     public class StringExtensionsTests
     {

@@ -1,7 +1,6 @@
-﻿using Tests.Helpers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     public class CompanyWithCustomers : Company
     {

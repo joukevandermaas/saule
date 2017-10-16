@@ -9,6 +9,7 @@ using Saule.Serialization;
 
 namespace Saule.Http
 {
+    /// <inheritdoc />
     /// <summary>
     /// Processes JSON API responses to enable filtering, pagination and sorting.
     /// </summary>

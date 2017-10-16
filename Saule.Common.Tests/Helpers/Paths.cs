@@ -1,4 +1,4 @@
-﻿namespace Tests.Helpers
+﻿namespace Saule.Common.Tests.Helpers
 {
     public static class Paths
     {

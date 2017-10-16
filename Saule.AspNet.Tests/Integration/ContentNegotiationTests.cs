@@ -1,17 +1,15 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Saule;
+using Saule.AspNet.Tests.Helpers;
+using Saule.Common.Tests.Helpers;
 using Saule.Http;
-using Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Integration
+namespace Saule.AspNet.Tests.Integration
 {
     public class ContentNegotiationTests
     {
@@ -19,7 +17,7 @@ namespace Tests.Integration
         {
             private readonly ObsoleteSetupJsonApiServer _server;
 
-            private readonly string _personContent = Properties.Resources.PersonResourceString;
+            private readonly string _personContent = File.ReadAllText("../../../Assets/person.json");
 
             public ObsoleteSetup(ObsoleteSetupJsonApiServer server)
             {
@@ -107,7 +105,7 @@ namespace Tests.Integration
         {
             private readonly NewSetupJsonApiServer _server;
 
-            private readonly string _personContent = Properties.Resources.PersonResourceString;
+            private readonly string _personContent = File.ReadAllText("../../../../Saule.Common.Tests/Assets/person.json");
 
             public NewSetup(NewSetupJsonApiServer server, ITestOutputHelper output)
             {

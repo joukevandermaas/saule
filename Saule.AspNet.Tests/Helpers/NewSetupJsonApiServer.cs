@@ -5,10 +5,9 @@ using System.Web.Http;
 using System.Web.Http.Routing;
 using Microsoft.Owin.Testing;
 using Owin;
-using Saule;
 using Saule.Http;
 
-namespace Tests.Helpers
+namespace Saule.AspNet.Tests.Helpers
 {
     public class NewSetupJsonApiServer : IDisposable
     {

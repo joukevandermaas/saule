@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Saule;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Queries;
 using Saule.Queries.Sorting;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 
-namespace Tests.Queries
+namespace Saule.Common.Tests.Queries
 {
     public class SortingInterpreterTests
     {

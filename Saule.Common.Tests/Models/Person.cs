@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Tests.Helpers;
+using Saule.Common.Tests.Helpers;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     public class Person
     {

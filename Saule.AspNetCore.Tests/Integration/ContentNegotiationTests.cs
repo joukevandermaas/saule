@@ -1,17 +1,15 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Saule;
+using Saule.AspNetCore.Tests.Helpers;
+using Saule.Common.Tests.Helpers;
 using Saule.Http;
-using Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Integration
+namespace Saule.AspNetCore.Tests.Integration
 {
     public class ContentNegotiationTests
     {

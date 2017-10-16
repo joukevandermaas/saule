@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
+using System.Net;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -31,6 +33,15 @@ namespace Saule.Http
                 };
             }
 
+            if (input.Content == null && !input.ErrorContent.Any())
+            {
+                // probably no JSON api output
+                return new PreprocessResult
+                {
+                    StatusCode = input.StatusCode
+                };
+            }
+
             var processed = PreprocessRequest(input);
 
             if (processed.ErrorContent != null)
@@ -56,7 +67,7 @@ namespace Saule.Http
 
             object content = input.Content;
 
-            if (!input.IsErrorContent && input.ResourceDescriptor == null)
+            if (!input.ErrorContent.Any() && input.ResourceDescriptor == null)
             {
                 content = new JsonApiException(
                     ErrorType.Server,
@@ -65,9 +76,12 @@ namespace Saule.Http
                     HelpLink = "https://github.com/joukevandermaas/saule/wiki"
                 };
             }
-            else if (!input.IsErrorContent && jsonApi.QueryContext?.Pagination?.PerPage > jsonApi.QueryContext?.Pagination?.PageSizeLimit)
+            else if (!input.ErrorContent.Any() && jsonApi.QueryContext?.Pagination?.PerPage > jsonApi.QueryContext?.Pagination?.PageSizeLimit)
             {
                 content = new JsonApiException(ErrorType.Client, "Page size exceeds page size limit for queries.");
+            } else if (input.ErrorContent.Any())
+            {
+                content = input.ErrorContent;
             }
 
             PrepareUrlPathBuilder(jsonApi, input);

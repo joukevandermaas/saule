@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Tests.Helpers;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     public class PersonWithDifferentId
     {

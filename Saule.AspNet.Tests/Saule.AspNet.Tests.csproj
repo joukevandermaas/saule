@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Saule.Common\Saule.Common.csproj" />
     <ProjectReference Include="..\Saule.AspNet\Saule.AspNet.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

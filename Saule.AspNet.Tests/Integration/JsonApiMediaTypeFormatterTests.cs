@@ -3,13 +3,14 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Saule.AspNet.Tests.Helpers;
+using Saule.Common.Tests.Helpers;
 using Saule.Http;
 using Saule.Serialization;
-using Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Integration
+namespace Saule.AspNet.Tests.Integration
 {
     public class JsonApiMediaTypeFormatterTests
     {

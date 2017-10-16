@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json.Linq;
-using Saule.Serialization;
 using System.Linq;
-using Saule;
-using Tests.Helpers;
-using Tests.Models;
+using Newtonsoft.Json.Linq;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
+using Saule.Serialization;
 using Xunit;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class ResourceDeserializerTests
     {

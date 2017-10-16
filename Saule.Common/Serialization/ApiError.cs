@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,10 +36,15 @@ namespace Saule.Serialization
 
         public Dictionary<string, string> Links { get; }
 
-        public static bool AnyClientError(params ApiError[] errors)
+        public static bool AnyClientError(IEnumerable<ApiError> errors)
         {
             return errors.Any(error =>
                 error._exception != null && error._exception.ErrorType == ErrorType.Client);
+        }
+
+        public static bool AnyClientError(params ApiError[] errors)
+        {
+            return AnyClientError((IEnumerable<ApiError>)errors);
         }
     }
 }

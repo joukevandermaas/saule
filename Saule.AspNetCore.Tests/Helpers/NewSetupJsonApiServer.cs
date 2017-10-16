@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Saule;
-using Saule.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Saule.Http;
 
-namespace Tests.Helpers
+namespace Saule.AspNetCore.Tests.Helpers
 {
     public class NewSetupJsonApiServer : IDisposable
     {

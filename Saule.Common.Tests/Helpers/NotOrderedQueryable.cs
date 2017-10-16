@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Tests.Helpers
+namespace Saule.Common.Tests.Helpers
 {
     /// <summary>
     /// The queryable returned by Enumerable.AsQueryable() is ordered

@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Saule.Queries;
+using Saule.Serialization;
 
 namespace Saule.Http
 {
@@ -13,20 +18,58 @@ namespace Saule.Http
             _context = context;
         }
 
-        public override object Content => throw new NotImplementedException();
+        public override ApiResource ResourceDescriptor
+        {
+            get
+            {
+                if (_context.HttpContext.Items.ContainsKey(Constants.PropertyNames.ResourceDescriptor))
+                {
+                    return (ApiResource)_context.HttpContext.Items[Constants.PropertyNames.ResourceDescriptor];
+                }
 
-        public override ApiResource ResourceDescriptor => throw new NotImplementedException();
+                return null;
+            }
+        }
 
-        public override int StatusCode => throw new NotImplementedException();
+        public override object Content => (_context.Result as ObjectResult)?.Value;
 
-        public override bool IsErrorContent => throw new NotImplementedException();
+        public override IEnumerable<ApiError> ErrorContent
+        {
+            get
+            {
+                if (_context.Exception != null)
+                {
+                    yield return new ApiError(_context.Exception);
+                }
 
-        public override Uri RequestUri => throw new NotImplementedException();
+                if ((_context.Result as ObjectResult)?.Value is SerializableError errors)
+                {
+                    foreach (var error in errors)
+                    {
+                        if (error.Key == "Request content" && error.Value is IEnumerable<string> messages)
+                        {
+                            foreach (var message in messages)
+                            {
+                                yield return new ApiError(new JsonApiException(ErrorType.Client, message));
+                            }
+                        }
+                        else
+                        {
+                            yield return new ApiError(error.Value.ToString(), detail: null, code: null);
+                        }
+                    }
+                }
+            }
+        }
 
-        public override string RouteTemplate => throw new NotImplementedException();
+        public override int StatusCode => _context.HttpContext.Response.StatusCode;
 
-        public override string VirtualPathRoot => throw new NotImplementedException();
+        public override Uri RequestUri => new Uri(_context.HttpContext.Request.GetEncodedUrl());
 
-        public override QueryContext QueryContext => throw new NotImplementedException();
+        public override string RouteTemplate => _context.ActionDescriptor.AttributeRouteInfo.Template;
+
+        public override string VirtualPathRoot => _context.HttpContext.Request.PathBase.Value;
+
+        public override QueryContext QueryContext => (QueryContext)_context.HttpContext.Items[Constants.PropertyNames.QueryContext];
     }
 }

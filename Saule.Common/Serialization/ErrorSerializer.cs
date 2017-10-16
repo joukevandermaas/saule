@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,7 +7,7 @@ namespace Saule.Serialization
 {
     internal class ErrorSerializer
     {
-        public JObject Serialize(ApiError[] errors)
+        public JObject Serialize(IEnumerable<ApiError> errors)
         {
             return new JObject
             {

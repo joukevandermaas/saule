@@ -1,6 +1,4 @@
-﻿using Saule;
-
-namespace Tests.Models
+﻿namespace Saule.Common.Tests.Models
 {
     internal static class Recursion
     {

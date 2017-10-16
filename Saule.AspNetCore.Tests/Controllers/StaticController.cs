@@ -1,8 +1,7 @@
-﻿namespace Tests.Controllers
-{
-    using System.Net;
-    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
+namespace Saule.AspNetCore.Tests.Controllers
+{
     [Route("static")]
     public class StaticController : Controller
     {

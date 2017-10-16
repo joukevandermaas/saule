@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Saule.Http;
-using Tests.Helpers;
-using Tests.Models;
 using Microsoft.AspNetCore.Mvc;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
+using Saule.Http;
 
-namespace Tests.Controllers
+namespace Saule.AspNetCore.Tests.Controllers
 {
     [Route("api")]
     public class CompaniesController : Controller

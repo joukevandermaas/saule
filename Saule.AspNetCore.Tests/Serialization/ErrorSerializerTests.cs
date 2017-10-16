@@ -1,10 +1,8 @@
-﻿using Saule.Serialization;
-using System;
-using Saule;
+﻿using System;
+using Saule.Serialization;
 using Xunit;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Tests.Serialization
+namespace Saule.AspNetCore.Tests.Serialization
 {
     public class ErrorSerializerTests
     {

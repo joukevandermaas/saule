@@ -4,14 +4,13 @@ using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Saule;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Serialization;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace Saule.AspNet.Tests
 {
     public class JsonApiSerializerTests
     {

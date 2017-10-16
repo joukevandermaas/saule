@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Saule;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     public class PersonResource : ApiResource
     {

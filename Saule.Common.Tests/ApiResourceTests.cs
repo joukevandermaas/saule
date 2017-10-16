@@ -1,7 +1,6 @@
-﻿using Saule;
-using Xunit;
+﻿using Xunit;
 
-namespace Tests
+namespace Saule.Common.Tests
 {
     public class ApiResourceTests
     {
