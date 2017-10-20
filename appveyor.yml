@@ -1,20 +1,19 @@
 version: 1.7.0.{build}
 configuration: Release
 skip_tags: true
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
 
 image: Visual Studio 2017
 
-build:
-  publish_nuget: true
-  verbosity: minimal
-  parallel: true
-  include_nuget_references: true
+install:
+  dotnet restore
+
+build_script:
+  dotnet build Saule.sln
+
+test_script:
+  - dotnet test Saule.Common.Tests
+  - dotnet test Saule.AspNet.Tests
+  - dotnet test Saule.AspNetCore.Tests
 
 deploy:
 - provider: NuGet
