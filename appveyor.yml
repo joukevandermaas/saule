@@ -7,10 +7,7 @@ assembly_info:
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
-install:
-- ps: nuget restore
-before_build:
-- ps: .\set-version.ps1
+
 build:
   publish_nuget: true
   verbosity: minimal
