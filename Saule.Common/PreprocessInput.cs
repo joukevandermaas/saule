@@ -22,5 +22,7 @@ namespace Saule
         public abstract string VirtualPathRoot { get; }
 
         public abstract QueryContext QueryContext { get; }
+
+        public abstract IEnumerable<string> AcceptMediaTypes { get; }
     }
 }

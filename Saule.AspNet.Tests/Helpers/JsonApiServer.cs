@@ -9,25 +9,32 @@ using Saule.Http;
 
 namespace Saule.AspNet.Tests.Helpers
 {
-    public class ObsoleteSetupJsonApiServer : IDisposable
+    public class JsonApiServer : IDisposable
     {
         private readonly TestServer _server;
 
-        public ObsoleteSetupJsonApiServer()
-            : this(new JsonApiMediaTypeFormatter())
+        public JsonApiServer()
+            : this(null)
         {
         }
 
-        internal ObsoleteSetupJsonApiServer(JsonApiMediaTypeFormatter formatter)
+        internal JsonApiServer(JsonApiConfiguration config)
         {
-            var config = new HttpConfiguration();
-            config.Formatters.Clear();
-            config.Formatters.Add(formatter);
-            config.MapHttpAttributeRoutes(new DefaultDirectRouteProvider());
+            var httpConfig = new HttpConfiguration();
+            if (config == null)
+            {
+                httpConfig.ConfigureJsonApi();
+            }
+            else
+            {
+                httpConfig.ConfigureJsonApi(config);
+            }
+
+            httpConfig.MapHttpAttributeRoutes(new DefaultDirectRouteProvider());
 
             _server = TestServer.Create(builder =>
             {
-                builder.UseWebApi(config);
+                builder.UseWebApi(httpConfig);
             });
         }
 

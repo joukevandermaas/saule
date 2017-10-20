@@ -24,7 +24,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Default constructor finds correct path namespace and uses no converters")]
         public async Task DefaultConstructor()
         {
-            using (var server = new NewSetupJsonApiServer())
+            using (var server = new JsonApiServer())
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/companies/456/");
@@ -49,7 +49,7 @@ namespace Saule.AspNetCore.Tests.Integration
                 UrlPathBuilder = new CanonicalUrlPathBuilder()
             };
 
-            using (var server = new NewSetupJsonApiServer(config))
+            using (var server = new JsonApiServer(config))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/people/");
@@ -69,7 +69,7 @@ namespace Saule.AspNetCore.Tests.Integration
                 JsonConverters = { new StringEnumConverter() }
             };
 
-            using (var server = new NewSetupJsonApiServer(config))
+            using (var server = new JsonApiServer(config))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/companies/456/");
@@ -88,7 +88,7 @@ namespace Saule.AspNetCore.Tests.Integration
                 JsonConverters = { new StringEnumConverter() }
             };
 
-            using (var server = new NewSetupJsonApiServer(config))
+            using (var server = new JsonApiServer(config))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/companies/456/");
@@ -108,7 +108,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Applies pagination with fixed page size from attribute")]
         public async Task AppliesPaginationPageSizeFromAttribute()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/companies/");
@@ -121,7 +121,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Applies pagination with page size from query string")]
         public async Task AppliesPaginationPageSizeFromClient()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/companies/querypagesizelimit50/?page[size]=5");
@@ -135,7 +135,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Limits page sizes to 1 and default page size is set to 1 too")]
         public async Task LimitsPageSize1()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
 
@@ -162,7 +162,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Maximum page sizes is set to 50 and default page size is set to 12")]
         public async Task LimitsPageSize50()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
 
@@ -190,7 +190,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Maximum page sizes is not set, but default page size is set to 12")]
         public async Task LimitsPageSizeIsNotSet()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
 
@@ -218,7 +218,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Applies sorting when appropriate")]
         public async Task AppliesSorting()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/query/people?sort=age");
@@ -236,7 +236,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Applies filtering when appropriate")]
         public async Task AppliesFiltering()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/query/people?filter[last-name]=Russel");
@@ -255,7 +255,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Does not apply sorting when not allowed")]
         public async Task AppliesSortingConditionally()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/people?sort=age");
@@ -275,7 +275,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [InlineData("paginate/query")]
         public async Task AppliesSortingBeforePagination(string path)
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var result1 = await client.GetJsonResponseAsync($"api/{path}/people?sort=age");
@@ -299,7 +299,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Gives useful error when you don't add ReturnsResourceAttribute")]
         public async Task GivesUsefulError()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var response = await client.GetFullJsonResponseAsync("api/broken/123/");
@@ -324,7 +324,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Passes through 4xx errors")]
         public async Task PassesThrough400Errors()
         {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            using (var server = new JsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
                 var response = await client.GetAsync("does/not/exist");
@@ -336,7 +336,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Passes through HttpError")]
         public async Task PassesThroughHttpErrors()
         {
-            using (var server = new NewSetupJsonApiServer())
+            using (var server = new JsonApiServer())
             {
                 var client = server.GetClient();
                 var response = await client.GetFullJsonResponseAsync("api/broken");
@@ -353,7 +353,7 @@ namespace Saule.AspNetCore.Tests.Integration
         [Fact(DisplayName = "Works with delete/no content")]
         public async Task WorksForNoContent()
         {
-            using (var server = new NewSetupJsonApiServer())
+            using (var server = new JsonApiServer())
             {
                 var client = server.GetClient();
                 var result = await client.DeleteAsync("/api/companies/123");
@@ -368,7 +368,7 @@ namespace Saule.AspNetCore.Tests.Integration
             var config = new JsonApiConfiguration();
             config.QueryFilterExpressions.SetExpression<string>((left, right) => left != right);
 
-            using (var server = new NewSetupJsonApiServer(config))
+            using (var server = new JsonApiServer(config))
             {
                 var client = server.GetClient();
                 var result = await client.GetJsonResponseAsync("api/query/people?filter[last-name]=Russel");

@@ -86,18 +86,6 @@ namespace Saule.AspNet.Tests
             Assert.NotNull(result["errors"]);
         }
 
-        [Fact(DisplayName = "Serializes HttpErrors as errors")]
-        public void WorksOnHttpErrors()
-        {
-            var target = new JsonApiSerializer<PersonResource>();
-            var result = target.Serialize(new HttpError(), DefaultUrl);
-
-            _output.WriteLine(result.ToString());
-
-            Assert.Null(result["data"]);
-            Assert.NotNull(result["errors"]);
-        }
-
         [Fact(DisplayName = "Uses pagination if property set")]
         public void AppliesPagination()
         {

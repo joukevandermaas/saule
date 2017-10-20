@@ -24,7 +24,9 @@ namespace Saule.Http
 
         public PreprocessResult ProcessAfterActionMethod(PreprocessInput input)
         {
-            if (input.StatusCode >= 400 && input.StatusCode < 500)
+            var hasMediaType = input.AcceptMediaTypes.Any(x => x == Constants.MediaType);
+
+            if (!hasMediaType || (input.StatusCode >= 400 && input.StatusCode < 500))
             {
                 // probably malformed request or not found
                 return new PreprocessResult

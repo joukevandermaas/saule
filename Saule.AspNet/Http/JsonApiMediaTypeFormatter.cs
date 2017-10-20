@@ -99,20 +99,29 @@ namespace Saule.Http
             HttpContent content,
             TransportContext transportContext)
         {
-            PreprocessResult preprocessed;
+            JToken token;
+
             if (_request.Properties.ContainsKey(Constants.PropertyNames.PreprocessResult))
             {
-                preprocessed = _request.Properties[Constants.PropertyNames.PreprocessResult]
+                var preprocessed = _request.Properties[Constants.PropertyNames.PreprocessResult]
                     as PreprocessResult;
+
+                token = JsonApiSerializer.Serialize(preprocessed);
+            }
+            else if (value is HttpError err)
+            {
+                token = new ErrorSerializer().Serialize(new[]
+                {
+                    new ApiError(err.Message, err.MessageDetail, err.ExceptionType)
+                });
             }
             else
             {
-                // backwards compatibility with old way to do Saule setup
-                preprocessed = PreprocessingDelegatingHandler.PreprocessRequest(value, _request, _config);
+                var error = new JsonApiException(ErrorType.Server, "You cannot use the JsonApiMediaTypeFormatter by itself.");
+                token = new ErrorSerializer().Serialize(new[] { new ApiError(error) });
             }
 
-            var json = JsonApiSerializer.Serialize(preprocessed);
-            await WriteJsonToStream(json, writeStream);
+            await WriteJsonToStream(token, writeStream);
         }
 
         /// <inheritdoc/>

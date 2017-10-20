@@ -10,16 +10,16 @@ using Saule.Http;
 
 namespace Saule.AspNetCore.Tests.Helpers
 {
-    public class NewSetupJsonApiServer : IDisposable
+    public class JsonApiServer : IDisposable
     {
         private readonly TestServer _server;
 
-        public NewSetupJsonApiServer()
+        public JsonApiServer()
             : this(new JsonApiConfiguration())
         {
         }
 
-        internal NewSetupJsonApiServer(JsonApiConfiguration config)
+        internal JsonApiServer(JsonApiConfiguration config)
         {
             _server = new TestServer(new WebHostBuilder()
                 .ConfigureServices(s => s

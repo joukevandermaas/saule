@@ -7,6 +7,10 @@
     <Copyright>Copyright 2017</Copyright>
     <RootNamespace>Saule</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>NU1605</WarningsAsErrors>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Saule.Common\Saule.Common.csproj" />

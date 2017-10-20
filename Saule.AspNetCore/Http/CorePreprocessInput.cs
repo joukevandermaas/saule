@@ -71,5 +71,18 @@ namespace Saule.Http
         public override string VirtualPathRoot => _context.HttpContext.Request.PathBase.Value;
 
         public override QueryContext QueryContext => (QueryContext)_context.HttpContext.Items[Constants.PropertyNames.QueryContext];
+
+        public override IEnumerable<string> AcceptMediaTypes
+        {
+            get
+            {
+                var headers = _context.HttpContext.Request.Headers;
+                if (headers.ContainsKey("Accept"))
+                {
+                    return headers["Accept"];
+                }
+                return Enumerable.Empty<string>();
+            }
+        }
     }
 }
