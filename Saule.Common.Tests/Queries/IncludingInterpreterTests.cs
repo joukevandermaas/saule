@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Saule;
-using Saule.Queries;
 using Saule.Queries.Including;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 
-namespace Tests.Queries
+namespace Saule.Common.Tests.Queries
 {
     public class IncludingInterpreterTests
     {

@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-using Saule;
-using Saule.Http;
 using Saule.Http.Formatters;
 using Xunit;
 
-namespace Tests.Http
+namespace Saule.AspNetCore.Tests.Http
 {
     public class JsonApiMediaTypeFormatterTests
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tests.Models;
+using Saule.Common.Tests.Models;
 
-namespace Tests.Helpers
+namespace Saule.Common.Tests.Helpers
 {
     internal static class Get
     {

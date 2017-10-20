@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Web.Http;
+using System.Linq;
 
 namespace Saule.Serialization
 {
@@ -20,11 +21,11 @@ namespace Saule.Serialization
             _exception = ex as JsonApiException;
         }
 
-        internal ApiError(HttpError ex)
+        public ApiError(string title, string detail, string code)
         {
-            Title = GetRecursiveExceptionMessage(ex);
-            Detail = ex.StackTrace;
-            Code = ex.ExceptionType;
+            Title = title;
+            Detail = detail;
+            Code = code;
         }
 
         public string Title { get; }
@@ -35,21 +36,15 @@ namespace Saule.Serialization
 
         public Dictionary<string, string> Links { get; }
 
-        public static bool IsClientError(ApiError error)
+        public static bool AnyClientError(IEnumerable<ApiError> errors)
         {
-            return error._exception != null && error._exception.ErrorType == ErrorType.Client;
+            return errors.Any(error =>
+                error._exception != null && error._exception.ErrorType == ErrorType.Client);
         }
 
-        private static string GetRecursiveExceptionMessage(HttpError ex)
+        public static bool AnyClientError(params ApiError[] errors)
         {
-            var msg = !string.IsNullOrEmpty(ex.ExceptionMessage) ? ex.ExceptionMessage : ex.Message;
-            msg = msg?.EnsureEndsWith(".");
-            if (ex.InnerException != null)
-            {
-                msg += ' ' + GetRecursiveExceptionMessage(ex.InnerException);
-            }
-
-            return msg;
+            return AnyClientError((IEnumerable<ApiError>)errors);
         }
     }
 }

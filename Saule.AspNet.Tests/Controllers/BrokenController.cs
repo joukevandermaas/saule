@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Web.Http;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Http;
-using Tests.Helpers;
-using Tests.Models;
 
-namespace Tests.Controllers
+namespace Saule.AspNet.Tests.Controllers
 {
     public class BrokenController : ApiController
     {

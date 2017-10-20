@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json.Linq;
-using Saule;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Serialization;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class MetadataTests
     {

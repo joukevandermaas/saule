@@ -1,8 +1,8 @@
-﻿namespace Tests.Controllers
+﻿using System.Net;
+using System.Web.Http;
+
+namespace Saule.AspNet.Tests.Controllers
 {
-    using System.Net;
-    using System.Web.Http;
-   
     [RoutePrefix("static")]
     public class StaticController : ApiController
     {

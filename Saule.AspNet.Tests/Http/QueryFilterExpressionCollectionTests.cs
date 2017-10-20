@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Saule.Common.Tests.Helpers;
 using Saule.Http;
-using Tests.Helpers;
 using Xunit;
 
-namespace Tests.Http
+namespace Saule.AspNet.Tests.Http
 {
     public class QueryFilterExpressionCollectionTests
     {

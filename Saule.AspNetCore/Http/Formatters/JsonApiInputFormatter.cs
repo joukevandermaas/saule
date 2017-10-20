@@ -15,7 +15,7 @@ namespace Saule.Http.Formatters
     /// </summary>
     public class JsonApiInputFormatter : TextInputFormatter
     {
-        internal JsonApiInputFormatter()
+        public JsonApiInputFormatter()
         {
             SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MediaType));
             SupportedEncodings.Add(Encoding.UTF8);

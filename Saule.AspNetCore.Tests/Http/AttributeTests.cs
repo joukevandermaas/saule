@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Saule.Common.Tests.Models;
 using Saule.Http;
-using Tests.Models;
 using Xunit;
 
-namespace Tests.Http
+namespace Saule.AspNetCore.Tests.Http
 {
     public class AttributeTests
     {

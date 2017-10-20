@@ -1,12 +1,11 @@
 ﻿using System.Linq;
-using Saule.Queries;
-using Saule.Http;
-using Tests.Helpers;
-using Tests.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
+using Saule.Http;
+using Saule.Queries;
 
-namespace Tests.Controllers
+namespace Saule.AspNetCore.Tests.Controllers
 {
     public class BrokenController : Controller
     {

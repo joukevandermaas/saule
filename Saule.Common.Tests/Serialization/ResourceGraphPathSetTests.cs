@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Saule;
-using Saule.Serialization;
-using System.Linq;
-using Tests.Helpers;
-using Tests.Models;
+﻿using Saule.Serialization;
 using Xunit;
 using Xunit.Abstractions;
-using Saule.Queries.Including;
-using Saule.Queries.Pagination;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class ResourceGraphPathSetTests
     {

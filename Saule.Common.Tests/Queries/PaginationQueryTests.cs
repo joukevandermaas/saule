@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Saule;
 using Saule.Queries.Pagination;
 using Xunit;
 
-namespace Tests.Queries
+namespace Saule.Common.Tests.Queries
 {
     public class PaginationQueryTests
     {

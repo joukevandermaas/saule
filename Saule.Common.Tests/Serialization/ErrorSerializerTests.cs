@@ -2,7 +2,7 @@
 using Saule.Serialization;
 using Xunit;
 
-namespace Saule.AspNetCore.Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class ErrorSerializerTests
     {
@@ -22,23 +22,9 @@ namespace Saule.AspNetCore.Tests.Serialization
         public void DoesNotPutNullInALink()
         {
             var exception = new JsonApiException(ErrorType.Server, "Some message");
-            var errors = new ErrorSerializer().Serialize(new[] { new ApiError(exception) })["errors"][0];
+            var errors = new ErrorSerializer().Serialize(new [] { new ApiError(exception) })["errors"][0];
 
             Assert.Null(errors["links"]);
         }
-
-        //[Fact(DisplayName = "Serializers HttpError properties")]
-        //public void SerializesHttpError()
-        //{
-        //    var innerException = new ApplicationException("Another message");
-        //    var exception = new InvalidOperationException("Some message", innerException);
-        //    var httpError = exception.ToSerializableError(true);
-
-        //    var errors = new ErrorSerializer().Serialize(new ApiError(httpError))["errors"][0];
-
-        //    Assert.Equal("Some message. Another message.", errors.Value<string>("title"));
-        //    Assert.Equal(httpError.GetExceptionType(), errors.Value<string>("code"));
-        //    Assert.Equal(httpError.GetStackTrace(), errors.Value<string>("detail"));
-        //}
     }
 }

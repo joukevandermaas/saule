@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     internal class GuidAsId
     {

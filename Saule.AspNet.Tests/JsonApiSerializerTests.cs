@@ -4,14 +4,13 @@ using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Saule;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
 using Saule.Serialization;
-using Tests.Helpers;
-using Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace Saule.AspNet.Tests
 {
     public class JsonApiSerializerTests
     {
@@ -80,18 +79,6 @@ namespace Tests
         {
             var target = new JsonApiSerializer<PersonResource>();
             var result = target.Serialize(new FileNotFoundException(), DefaultUrl);
-
-            _output.WriteLine(result.ToString());
-
-            Assert.Null(result["data"]);
-            Assert.NotNull(result["errors"]);
-        }
-
-        [Fact(DisplayName = "Serializes HttpErrors as errors")]
-        public void WorksOnHttpErrors()
-        {
-            var target = new JsonApiSerializer<PersonResource>();
-            var result = target.Serialize(new HttpError(), DefaultUrl);
 
             _output.WriteLine(result.ToString());
 

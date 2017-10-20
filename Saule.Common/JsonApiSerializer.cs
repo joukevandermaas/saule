@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Saule.Http;
 using Saule.Queries;
 using Saule.Serialization;
 
@@ -43,7 +41,7 @@ namespace Saule
 
             try
             {
-                var error = GetAsError(@object);
+                var error = GetAsErrors(@object);
                 if (error != null)
                 {
                     result.ErrorContent = error;
@@ -77,24 +75,22 @@ namespace Saule
             }
             catch (Exception ex)
             {
-                result.ErrorContent = GetAsError(ex);
+                result.ErrorContent = GetAsErrors(ex);
             }
 
             return result;
         }
 
-        private static ApiError GetAsError(object @object)
+        private static IEnumerable<ApiError> GetAsErrors(object @object)
         {
-            var exception = @object as Exception;
-            if (exception != null)
+            switch (@object)
             {
-                return new ApiError(exception);
-            }
-
-            var httpError = @object as HttpError;
-            if (httpError != null)
-            {
-                return new ApiError(httpError);
+                case Exception exception:
+                    return new[] { new ApiError(exception) };
+                case ApiError apiError:
+                    return new[] { apiError };
+                case IEnumerable<ApiError> errors:
+                    return errors;
             }
 
             return null;

@@ -1,4 +1,4 @@
-﻿namespace Tests.Models
+﻿namespace Saule.Common.Tests.Models
 {
     public class CompanyWithDifferentId
     {

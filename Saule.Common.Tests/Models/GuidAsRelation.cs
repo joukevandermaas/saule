@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tests.Models
+namespace Saule.Common.Tests.Models
 {
     internal class GuidAsRelation
     {

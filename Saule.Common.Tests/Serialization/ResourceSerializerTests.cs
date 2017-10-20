@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Newtonsoft.Json.Linq;
-using Saule;
-using Saule.Serialization;
 using System.Linq;
-using Tests.Helpers;
-using Tests.Models;
+using Moq;
+using Newtonsoft.Json.Linq;
+using Saule.Common.Tests.Helpers;
+using Saule.Common.Tests.Models;
+using Saule.Queries.Including;
+using Saule.Serialization;
 using Xunit;
 using Xunit.Abstractions;
-using Saule.Queries.Including;
-using Saule.Queries.Pagination;
-using Moq;
 
-namespace Tests.Serialization
+namespace Saule.Common.Tests.Serialization
 {
     public class ResourceSerializerTests
     {
