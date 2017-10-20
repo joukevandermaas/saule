@@ -8,9 +8,8 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 
-build:
-  publish_nuget: true
-  verbosity: minimal
+build_script:
+  - dotnet build Saule.sln -c Release
 deploy:
 - provider: NuGet
   api_key:
