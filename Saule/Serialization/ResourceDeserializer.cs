@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Saule.Serialization
 {
-    internal class ResourceDeserializer
+    public class ResourceDeserializer
     {
         private static string[] _allowedTopLevelMembers = new[]
         {
