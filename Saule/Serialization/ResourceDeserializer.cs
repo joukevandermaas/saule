@@ -20,6 +20,8 @@ namespace Saule.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceDeserializer"/> class.
         /// </summary>
+        /// <param name="object">Json token we want to convert into an object</param>
+        /// <param name="target">The type of object the json token should be converted into</param>
         public ResourceDeserializer(JToken @object, Type target)
         {
             _object = @object;
@@ -29,6 +31,7 @@ namespace Saule.Serialization
         /// <summary>
         /// Deserialize the contained json into the specified type of object
         /// </summary>
+        /// <returns>Json converted into the specified type of object</returns>
         public object Deserialize()
         {
             ValidateTopLevel(_object);
