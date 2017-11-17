@@ -4,6 +4,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Saule.Serialization
 {
+    /// <summary>
+    /// Deserializes json into a specified type of object
+    /// </summary>
     public class ResourceDeserializer
     {
         private static string[] _allowedTopLevelMembers = new[]
@@ -14,12 +17,19 @@ namespace Saule.Serialization
         private readonly JToken _object;
         private readonly Type _target;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceDeserializer"/> class.
+        /// </summary>
         public ResourceDeserializer(JToken @object, Type target)
         {
             _object = @object;
             _target = target;
         }
 
+        /// <summary>
+        /// Deserialize the contained json into the specified type of object
+        /// </summary>
+        /// <returns></returns>
         public object Deserialize()
         {
             ValidateTopLevel(_object);
