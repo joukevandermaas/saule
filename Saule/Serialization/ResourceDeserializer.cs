@@ -29,7 +29,6 @@ namespace Saule.Serialization
         /// <summary>
         /// Deserialize the contained json into the specified type of object
         /// </summary>
-        /// <returns></returns>
         public object Deserialize()
         {
             ValidateTopLevel(_object);
