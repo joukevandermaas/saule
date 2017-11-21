@@ -269,5 +269,17 @@ namespace Tests
 
             Assert.Equal("Attribute 'fail-me' not found.", error["title"].Value<string>());
         }
+
+        [Fact(DisplayName = "Deserialize")]
+        public void Gives()
+        {
+            var target = new JsonApiSerializer<PersonResource>();
+            var initialPerson = Get.Person();
+
+            var personJson = target.Serialize(initialPerson, DefaultUrl);
+            var dsPerson = (Person)target.Deserialize(personJson, typeof(Person));
+
+            Assert.Equal(initialPerson.FirstName, dsPerson.FirstName);
+        }
     }
 }
