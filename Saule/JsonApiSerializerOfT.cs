@@ -97,7 +97,7 @@ namespace Saule
         /// <param name="object">Json to convert</param>
         /// <param name="type">Type to convert to</param>
         /// <returns>Json converted into the specified type of object</returns>
-        public dynamic Deserialize(JToken @object, Type type)
+        public object Deserialize(JToken @object, Type type)
         {
             var target = new ResourceDeserializer(@object, type);
             return target.Deserialize();
