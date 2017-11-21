@@ -13,7 +13,7 @@ namespace Saule.Serialization
 
         private readonly JToken _object;
         private readonly Type _target;
-        
+
         public ResourceDeserializer(JToken @object, Type target)
         {
             _object = @object;
