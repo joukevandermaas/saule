@@ -7,7 +7,7 @@ namespace Saule.Serialization
     /// <summary>
     /// Deserializes json into a specified type of object
     /// </summary>
-    public class ResourceDeserializer
+    internal class ResourceDeserializer
     {
         private static string[] _allowedTopLevelMembers = new[]
         {

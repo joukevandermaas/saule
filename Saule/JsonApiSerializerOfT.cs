@@ -91,6 +91,18 @@ namespace Saule
             return JsonApiSerializer.Serialize(preprocessResult);
         }
 
+        /// <summary>
+        /// Converts json into an object of a specified type
+        /// </summary>
+        /// <param name="object">Json to convert</param>
+        /// <param name="type">Type to convert to</param>
+        /// <returns>Json converted into the specified type of object</returns>
+        public dynamic Deserialize(JToken @object, Type type)
+        {
+            var target = new ResourceDeserializer(@object, type);
+            return target.Deserialize();
+        }
+
         private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters)
         {
             var context = new QueryContext();
