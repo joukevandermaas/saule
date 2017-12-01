@@ -78,7 +78,7 @@ namespace Tests
                 Job = null
             };
 
-            var result = target.Serialize(model, new System.Uri("http://somewhere.com"));
+            var result = target.Serialize(model, DefaultUrl);
 
              Assert.Null(result["data"]["relationships"]["job"]["data"]);
         }
