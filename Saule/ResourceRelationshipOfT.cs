@@ -9,8 +9,8 @@ namespace Saule
     internal class ResourceRelationship<T> : ResourceRelationship
             where T : ApiResource, new()
         {
-        internal ResourceRelationship(string name, string urlPath, RelationshipKind kind, T resource, LinkType withLinks, bool excludeDataWhenNull)
-            : base(name, urlPath, kind, resource, withLinks, excludeDataWhenNull)
+        internal ResourceRelationship(string name, string urlPath, RelationshipKind kind, T resource, LinkType withLinks)
+            : base(name, urlPath, kind, resource, withLinks)
         {
         }
     }

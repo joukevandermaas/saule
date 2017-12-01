@@ -143,6 +143,8 @@ namespace Tests.Serialization
                 }
             };
 
+            person.Job = null;
+
             var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
@@ -392,8 +394,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Equal(0, relationships["job"]["data"].Count());
-            Assert.Equal(0, relationships["friends"]["data"].Count());
+            Assert.Null(relationships["job"]["data"]);
+            Assert.Null(relationships["friends"]["data"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]

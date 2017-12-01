@@ -14,14 +14,12 @@
         /// <param name="kind">The kind of relationship.</param>
         /// <param name="relationshipResource">The specification of the related resource.</param>
         /// <param name="withLinks">The defined <see cref="LinkType" /> to be generated for this relationship.</param>
-        /// <param name="excludeDataWhenNull">if set to <c>true</c> [exclude when null].</param>
         protected ResourceRelationship(
             string name,
             string urlPath,
             RelationshipKind kind,
             ApiResource relationshipResource,
-            LinkType withLinks,
-            bool excludeDataWhenNull)
+            LinkType withLinks)
         {
             Name = name.ToDashed();
             PropertyName = name.ToPascalCase();
@@ -29,7 +27,6 @@
             RelatedResource = relationshipResource;
             Kind = kind;
             LinkType = withLinks;
-            ExcludeDataWhenNull = excludeDataWhenNull;
         }
 
         /// <summary>
@@ -61,14 +58,6 @@
         /// Gets the defined <see cref="LinkType"/> to be generated for this relationship.
         /// </summary>
         public LinkType LinkType { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether [exclude data when null].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [exclude data when null]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ExcludeDataWhenNull { get; private set; }
 
         /// <inheritdoc />
         public override string ToString()

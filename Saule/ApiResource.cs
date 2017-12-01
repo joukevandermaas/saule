@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+
 using Humanizer;
 
 namespace Saule
@@ -175,7 +176,7 @@ namespace Saule
         protected ResourceRelationship BelongsTo<T>(string name, string path)
                     where T : ApiResource, new()
         {
-            return BelongsTo<T>(name, path, LinkType.All, false);
+            return BelongsTo<T>(name, path, LinkType.All);
         }
 
         /// <summary>
@@ -192,28 +193,10 @@ namespace Saule
         protected ResourceRelationship BelongsTo<T>(string name, string path, LinkType withLinks)
                     where T : ApiResource, new()
         {
-            return BelongsTo<T>(name, path, withLinks, false);
-        }
-
-        /// <summary>
-        /// Specify a to-one relationship of this resource.
-        /// </summary>
-        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
-        /// <param name="name">The name of the relationship.</param>
-        /// <param name="path">The url pathspec of this relationship (default
-        /// is the name)</param>
-        /// <param name="withLinks">The defined <see cref="LinkType" /> to be generated for this relationship.</param>
-        /// <param name="excludeDataWhenNull">if set to <c>true</c> [exclude data when null].</param>
-        /// <returns>
-        /// The <see cref="ResourceRelationship" />.
-        /// </returns>
-        protected ResourceRelationship BelongsTo<T>(string name, string path, LinkType withLinks, bool excludeDataWhenNull)
-                    where T : ApiResource, new()
-        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
-            var result = new ResourceRelationship<T>(name, path, RelationshipKind.BelongsTo, resource, withLinks, excludeDataWhenNull);
+            var result = new ResourceRelationship<T>(name, path, RelationshipKind.BelongsTo, resource, withLinks);
 
             _relationships.Add(result);
 
@@ -242,7 +225,7 @@ namespace Saule
         protected ResourceRelationship HasMany<T>(string name, string path)
                     where T : ApiResource, new()
         {
-            return HasMany<T>(name, path, LinkType.All, false);
+            return HasMany<T>(name, path, LinkType.All);
         }
 
         /// <summary>
@@ -258,27 +241,10 @@ namespace Saule
         protected ResourceRelationship HasMany<T>(string name, string path, LinkType withLinks)
                     where T : ApiResource, new()
         {
-            return HasMany<T>(name, path, withLinks, false);
-        }
-
-        /// <summary>
-        /// Specify a to-many relationship of this resource.
-        /// </summary>
-        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
-        /// <param name="name">The name of the relationship.</param>
-        /// <param name="path">The url pathspec of this relationship (default is the name).</param>
-        /// <param name="withLinks">The defined <see cref="LinkType" /> to be generated for this relationship.</param>
-        /// <param name="excludeDataWhenNull">if set to <c>true</c> [exclude data when null].</param>
-        /// <returns>
-        /// The <see cref="ResourceRelationship" />.
-        /// </returns>
-        protected ResourceRelationship HasMany<T>(string name, string path, LinkType withLinks, bool excludeDataWhenNull)
-                    where T : ApiResource, new()
-        {
             VerifyPropertyName(name);
 
             var resource = GetUniqueResource<T>();
-            var result = new ResourceRelationship<T>(name, path, RelationshipKind.HasMany, resource, withLinks, excludeDataWhenNull);
+            var result = new ResourceRelationship<T>(name, path, RelationshipKind.HasMany, resource, withLinks);
 
             _relationships.Add(result);
 
