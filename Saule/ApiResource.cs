@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+
 using Humanizer;
 
 namespace Saule
@@ -181,12 +182,14 @@ namespace Saule
         /// <summary>
         /// Specify a to-one relationship of this resource.
         /// </summary>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default
         /// is the name)</param>
-        /// <param name="withLinks">The defined <see cref="LinkType"/> to be generated for this relationship.</param>
-        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
-        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        /// <param name="withLinks">The defined <see cref="LinkType" /> to be generated for this relationship.</param>
+        /// <returns>
+        /// The <see cref="ResourceRelationship" />.
+        /// </returns>
         protected ResourceRelationship BelongsTo<T>(string name, string path, LinkType withLinks)
                     where T : ApiResource, new()
         {
@@ -222,17 +225,19 @@ namespace Saule
         protected ResourceRelationship HasMany<T>(string name, string path)
                     where T : ApiResource, new()
         {
-            return HasMany<T>(name, name, LinkType.All);
+            return HasMany<T>(name, path, LinkType.All);
         }
 
         /// <summary>
         /// Specify a to-many relationship of this resource.
         /// </summary>
+        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
         /// <param name="name">The name of the relationship.</param>
         /// <param name="path">The url pathspec of this relationship (default is the name).</param>
-        /// <param name="withLinks">The defined <see cref="LinkType"/> to be generated for this relationship.</param>
-        /// <typeparam name="T">The api resource type of the relationship.</typeparam>
-        /// <returns>The <see cref="ResourceRelationship"/>.</returns>
+        /// <param name="withLinks">The defined <see cref="LinkType" /> to be generated for this relationship.</param>
+        /// <returns>
+        /// The <see cref="ResourceRelationship" />.
+        /// </returns>
         protected ResourceRelationship HasMany<T>(string name, string path, LinkType withLinks)
                     where T : ApiResource, new()
         {

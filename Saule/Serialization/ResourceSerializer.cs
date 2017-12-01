@@ -323,7 +323,7 @@ namespace Saule.Serialization
                     item["links"] = links;
                 }
 
-                if (data != null)
+                if (data != null && kv.Value != null && kv.Value.SourceObject != null)
                 {
                     item["data"] = data;
                 }

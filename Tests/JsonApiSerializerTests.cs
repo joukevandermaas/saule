@@ -68,6 +68,21 @@ namespace Tests
 
         }
 
+        [Fact(DisplayName = "Does not include relationship data when the relationship is null")]
+        public void DoesNotIncludeNullData()
+        {
+            var target = new JsonApiSerializer<PersonResource>();
+            var model = new Person()
+            {
+                Identifier = "Id",
+                Job = null
+            };
+
+            var result = target.Serialize(model, DefaultUrl);
+
+             Assert.Null(result["data"]["relationships"]["job"]["data"]);
+        }
+
         [Fact(DisplayName = "Does not allow null Uri")]
         public void HasAContract()
         {
