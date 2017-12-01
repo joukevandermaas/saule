@@ -143,8 +143,6 @@ namespace Tests.Serialization
                 }
             };
 
-            person.Job = null;
-
             var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "abc"), DefaultPathBuilder, null, null);
 
