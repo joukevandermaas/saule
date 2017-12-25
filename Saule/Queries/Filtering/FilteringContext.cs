@@ -4,8 +4,15 @@ using Saule.Http;
 
 namespace Saule.Queries.Filtering
 {
+    /// <summary>
+    /// Context for filtering operations
+    /// </summary>
     public class FilteringContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilteringContext"/> class.
+        /// </summary>
+        /// <param name="queryParams">query string that might contain Filter keyword</param>
         public FilteringContext(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             Properties =
@@ -16,10 +23,23 @@ namespace Saule.Queries.Filtering
                 select new FilteringProperty(name, value);
         }
 
+        /// <summary>
+        /// Gets filtering properties
+        /// </summary>
         public IEnumerable<FilteringProperty> Properties { get; }
 
+        /// <summary>
+        /// Gets custom query filters
+        /// </summary>
         public QueryFilterExpressionCollection QueryFilters { get; internal set; } = new QueryFilterExpressionCollection();
 
+        /// <summary>
+        /// checking that specified property exists and returns converted value for it
+        /// </summary>
+        /// <typeparam name="T">Type of property</typeparam>
+        /// <param name="name">property name</param>
+        /// <param name="value">property value</param>
+        /// <returns>true if property is specified. Otherwise false</returns>
         public bool TryGetValue<T>(string name, out T value)
         {
             var property = Properties.FirstOrDefault(p => p.Name == name);
@@ -33,6 +53,7 @@ namespace Saule.Queries.Filtering
             return true;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.Join("&", Properties.Select(p => p.ToString()));

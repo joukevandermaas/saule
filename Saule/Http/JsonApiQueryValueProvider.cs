@@ -15,6 +15,8 @@ namespace Saule.Http
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonApiQueryValueProvider"/> class.
         /// </summary>
+        /// <param name="actionContext">current ActionContext</param>
+        /// <param name="culture">target culture</param>
         public JsonApiQueryValueProvider(HttpActionContext actionContext, CultureInfo culture)
             : base(() => ParseSauleQueryPairs(actionContext), culture)
         {

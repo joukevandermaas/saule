@@ -10,7 +10,7 @@ using Saule.Queries.Sorting;
 namespace Saule.Http
 {
     /// <summary>
-    /// Indicates that filter, paging, include and sorting should be parsed. But they won't be automatically applied to WebApi action, 
+    /// Indicates that filter, paging, include and sorting should be parsed. But they won't be automatically applied to WebApi action
     /// and action should handle them manually
     /// </summary>
     public class AllowsManuallyHandledQueryAttribute : ActionFilterAttribute

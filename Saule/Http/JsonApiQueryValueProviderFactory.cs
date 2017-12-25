@@ -9,6 +9,7 @@ namespace Saule.Http
     /// </summary>
     public class JsonApiQueryValueProviderFactory : ValueProviderFactory, IUriValueProviderFactory
     {
+        /// <inheritdoc/>
         public override IValueProvider GetValueProvider(HttpActionContext actionContext)
         {
             return new JsonApiQueryValueProvider(actionContext, CultureInfo.InvariantCulture);

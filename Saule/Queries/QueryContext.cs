@@ -8,14 +8,29 @@ using Saule.Queries.Sorting;
 
 namespace Saule.Queries
 {
+    /// <summary>
+    /// Context with all Json Api operations for current request
+    /// </summary>
     public class QueryContext
     {
+        /// <summary>
+        /// Gets pagination context
+        /// </summary>
         public PaginationContext Pagination { get; internal set; }
 
+        /// <summary>
+        /// Gets sorting context
+        /// </summary>
         public SortingContext Sorting { get; internal set; }
 
+        /// <summary>
+        /// Gets filtering context
+        /// </summary>
         public FilteringContext Filtering { get; internal set; }
 
+        /// <summary>
+        /// Gets including context
+        /// </summary>
         public IncludingContext Including { get; internal set; }
 
         /// <summary>
@@ -24,6 +39,7 @@ namespace Saule.Queries
         /// </summary>
         internal bool IsManuallyHandledQuery { get; set; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var result = new List<string>

@@ -3,23 +3,40 @@ using System.Linq;
 
 namespace Saule.Queries.Including
 {
+    /// <summary>
+    /// Context for including operations
+    /// </summary>
     public class IncludingContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IncludingContext"/> class.
+        /// </summary>
         public IncludingContext()
         {
             DisableDefaultIncluded = false;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IncludingContext"/> class.
+        /// </summary>
+        /// <param name="includes">query string that might contain Include keyword</param>
         public IncludingContext(IEnumerable<KeyValuePair<string, string>> includes)
             : this()
         {
             SetIncludes(includes);
         }
 
+        /// <summary>
+        /// Gets including properties
+        /// </summary>
         public IEnumerable<IncludingProperty> Includes { get; internal set; }
 
+        /// <summary>
+        /// Gets a value indicating whether includes shouldn't be returned by default or not
+        /// </summary>
         public bool DisableDefaultIncluded { get; internal set; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return Includes != null && Includes.Any() ? "include=" + string.Join(",", Includes.Select(p => p.ToString())) : string.Empty;

@@ -1,5 +1,8 @@
 ﻿namespace Saule.Queries.Sorting
 {
+    /// <summary>
+    /// Direction of sorting
+    /// </summary>
     public enum SortingDirection
     {
         /// <summary>
