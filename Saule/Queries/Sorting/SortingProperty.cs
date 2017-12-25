@@ -1,6 +1,6 @@
 ﻿namespace Saule.Queries.Sorting
 {
-    internal class SortingProperty
+    public class SortingProperty
     {
         public SortingProperty(string value)
         {

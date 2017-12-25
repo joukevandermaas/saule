@@ -1,6 +1,6 @@
 ﻿namespace Saule.Queries.Filtering
 {
-    internal class FilteringProperty
+    public class FilteringProperty
     {
         public FilteringProperty(string name, string value)
         {

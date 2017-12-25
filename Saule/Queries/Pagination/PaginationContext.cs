@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Saule.Queries.Pagination
 {
-    internal class PaginationContext
+    public class PaginationContext
     {
         public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault)
             : this(filters, pageSizeDefault, null)
@@ -23,9 +23,9 @@ namespace Saule.Queries.Pagination
 
         public int Page { get; }
 
-        public int? PerPage { get; set; }
+        public int? PerPage { get; internal set; }
 
-        public int? PageSizeLimit { get; set; }
+        public int? PageSizeLimit { get; internal set; }
 
         public IDictionary<string, string> ClientFilters { get; }
 

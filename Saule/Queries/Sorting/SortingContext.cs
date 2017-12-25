@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Saule.Queries.Sorting
 {
-    internal class SortingContext
+    public class SortingContext
     {
         public SortingContext(IEnumerable<KeyValuePair<string, string>> filters)
         {

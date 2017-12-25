@@ -1,6 +1,6 @@
 ﻿namespace Saule.Queries.Including
 {
-    internal class IncludingProperty
+    public class IncludingProperty
     {
         public IncludingProperty(string name)
         {

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Saule.Queries.Including
 {
-    internal class IncludingContext
+    public class IncludingContext
     {
         public IncludingContext()
         {
@@ -16,11 +16,16 @@ namespace Saule.Queries.Including
             SetIncludes(includes);
         }
 
-        public IEnumerable<IncludingProperty> Includes { get; set; }
+        public IEnumerable<IncludingProperty> Includes { get; internal set; }
 
-        public bool DisableDefaultIncluded { get; set; }
+        public bool DisableDefaultIncluded { get; internal set; }
 
-        public void SetIncludes(IEnumerable<KeyValuePair<string, string>> includes)
+        public override string ToString()
+        {
+            return Includes != null && Includes.Any() ? "include=" + string.Join(",", Includes.Select(p => p.ToString())) : string.Empty;
+        }
+
+        internal void SetIncludes(IEnumerable<KeyValuePair<string, string>> includes)
         {
             var dict = includes.ToDictionary(kv => kv.Key, kv => kv.Value);
             if (dict.ContainsKey(Constants.QueryNames.Including))
@@ -32,11 +37,6 @@ namespace Saule.Queries.Including
             {
                 Includes = new IncludingProperty[0];
             }
-        }
-
-        public override string ToString()
-        {
-            return Includes != null && Includes.Any() ? "include=" + string.Join(",", Includes.Select(p => p.ToString())) : string.Empty;
         }
     }
 }

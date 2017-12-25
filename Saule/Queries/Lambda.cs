@@ -49,7 +49,7 @@ namespace Saule.Queries
             return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);
         }
 
-        private static object TryConvert(string value, Type type)
+        internal static object TryConvert(string value, Type type)
         {
             var converter = TypeDescriptor.GetConverter(type);
             return converter.ConvertFromInvariantString(value);

@@ -4,7 +4,7 @@ using Saule.Http;
 
 namespace Saule.Queries.Filtering
 {
-    internal class FilteringContext
+    public class FilteringContext
     {
         public FilteringContext(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
@@ -18,7 +18,20 @@ namespace Saule.Queries.Filtering
 
         public IEnumerable<FilteringProperty> Properties { get; }
 
-        public QueryFilterExpressionCollection QueryFilters { get; set; } = new QueryFilterExpressionCollection();
+        public QueryFilterExpressionCollection QueryFilters { get; internal set; } = new QueryFilterExpressionCollection();
+
+        public bool TryGetValue<T>(string name, out T value)
+        {
+            var property = Properties.FirstOrDefault(p => p.Name == name);
+            if (property == null)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = (T)Lambda.TryConvert(property.Value, typeof(T));
+            return true;
+        }
 
         public override string ToString()
         {
