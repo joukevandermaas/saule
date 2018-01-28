@@ -6,31 +6,31 @@ namespace Saule.Queries.Sorting
     /// <summary>
     /// Context for sorting operations
     /// </summary>
-    public class SortingContext
+    public class SortContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortingContext"/> class.
+        /// Initializes a new instance of the <see cref="SortContext"/> class.
         /// </summary>
         /// <param name="filters">query string that might contain Sorting keyword</param>
-        public SortingContext(IEnumerable<KeyValuePair<string, string>> filters)
+        public SortContext(IEnumerable<KeyValuePair<string, string>> filters)
         {
             var dict = filters.ToDictionary(kv => kv.Key, kv => kv.Value);
             if (dict.ContainsKey(Constants.QueryNames.Sorting))
             {
                 var props = dict[Constants.QueryNames.Sorting].Split(',').Select(s => s.Trim());
 
-                Properties = props.Select(p => new SortingProperty(p));
+                Properties = props.Select(p => new SortProperty(p));
             }
             else
             {
-                Properties = new SortingProperty[0];
+                Properties = new SortProperty[0];
             }
         }
 
         /// <summary>
         /// Gets sorting properties
         /// </summary>
-        public IEnumerable<SortingProperty> Properties { get; }
+        public IEnumerable<SortProperty> Properties { get; }
 
         /// <inheritdoc/>
         public override string ToString()

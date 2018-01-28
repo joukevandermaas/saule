@@ -3,7 +3,7 @@
     /// <summary>
     /// Direction of sorting
     /// </summary>
-    public enum SortingDirection
+    public enum SortDirection
     {
         /// <summary>
         /// Sort items in ascending order.

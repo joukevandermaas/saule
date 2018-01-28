@@ -13,7 +13,7 @@ namespace Saule.Serialization
     {
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
-        private readonly IncludingContext _includingContext;
+        private readonly IncludeContext _includeContext;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly IUrlPathBuilder _urlBuilder;
@@ -26,15 +26,15 @@ namespace Saule.Serialization
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
-            IncludingContext includingContext)
+            IncludeContext includeContext)
         {
             _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
-            _includingContext = includingContext;
-            _includedGraphPaths = IncludedGraphPathsFromContext(includingContext);
+            _includeContext = includeContext;
+            _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
         }
 
         public JObject Serialize()
@@ -103,7 +103,7 @@ namespace Saule.Serialization
             return metaObject == null ? null : JToken.FromObject(metaObject, _serializer);
         }
 
-        private ResourceGraphPathSet IncludedGraphPathsFromContext(IncludingContext context)
+        private ResourceGraphPathSet IncludedGraphPathsFromContext(IncludeContext context)
         {
             if (context == null)
             {
@@ -111,7 +111,7 @@ namespace Saule.Serialization
             }
             else if (context.Includes != null && context.Includes.Any())
             {
-                return new ResourceGraphPathSet(_includingContext.Includes.Select(i => i.Name));
+                return new ResourceGraphPathSet(_includeContext.Includes.Select(i => i.Name));
             }
             else
             {
@@ -202,12 +202,12 @@ namespace Saule.Serialization
             var nodes = graph.IncludedNodes;
 
             // if we have an including context and DisableDefaultIncluded is set
-            if (_includingContext != null && _includingContext.DisableDefaultIncluded)
+            if (_includeContext != null && _includeContext.DisableDefaultIncluded)
             {
                 // if we have specific includes filter nodes otherwise bail with null
-                if (_includingContext.Includes != null)
+                if (_includeContext.Includes != null)
                 {
-                    nodes = nodes.Where(n => _includingContext.Includes.Any(p => p.Name == n.PropertyName));
+                    nodes = nodes.Where(n => _includeContext.Includes.Any(p => p.Name == n.PropertyName));
                 }
                 else
                 {

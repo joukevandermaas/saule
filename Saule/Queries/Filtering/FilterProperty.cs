@@ -3,14 +3,14 @@
     /// <summary>
     /// Property for filtering
     /// </summary>
-    public class FilteringProperty
+    public class FilterProperty
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FilteringProperty"/> class.
+        /// Initializes a new instance of the <see cref="FilterProperty"/> class.
         /// </summary>
         /// <param name="name">property name</param>
         /// <param name="value">property value</param>
-        public FilteringProperty(string name, string value)
+        public FilterProperty(string name, string value)
         {
             Value = value;
             Name = name.ToPascalCase();

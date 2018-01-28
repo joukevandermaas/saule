@@ -131,9 +131,9 @@ namespace Saule.Http
 
             var queryContext = (QueryContext)request.Properties[Constants.PropertyNames.QueryContext];
 
-            if (queryContext.Filtering != null)
+            if (queryContext.Filter != null)
             {
-                queryContext.Filtering.QueryFilters = config.QueryFilterExpressions;
+                queryContext.Filter.QueryFilters = config.QueryFilterExpressions;
             }
 
             jsonApiSerializer.QueryContext = queryContext;

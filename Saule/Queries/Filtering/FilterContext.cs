@@ -7,26 +7,26 @@ namespace Saule.Queries.Filtering
     /// <summary>
     /// Context for filtering operations
     /// </summary>
-    public class FilteringContext
+    public class FilterContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FilteringContext"/> class.
+        /// Initializes a new instance of the <see cref="FilterContext"/> class.
         /// </summary>
         /// <param name="queryParams">query string that might contain Filter keyword</param>
-        public FilteringContext(IEnumerable<KeyValuePair<string, string>> queryParams)
+        public FilterContext(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             Properties =
                 from query in queryParams
                 where query.Key.StartsWith(Constants.QueryNames.Filtering)
                 let name = query.Key.Substring(Constants.QueryNames.Filtering.Length + 1)
                 let value = query.Value
-                select new FilteringProperty(name, value);
+                select new FilterProperty(name, value);
         }
 
         /// <summary>
         /// Gets filtering properties
         /// </summary>
-        public IEnumerable<FilteringProperty> Properties { get; }
+        public IEnumerable<FilterProperty> Properties { get; }
 
         /// <summary>
         /// Gets custom query filters

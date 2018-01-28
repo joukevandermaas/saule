@@ -19,25 +19,25 @@ namespace Saule.Queries
         public PaginationContext Pagination { get; internal set; }
 
         /// <summary>
-        /// Gets sorting context
+        /// Gets sort context
         /// </summary>
-        public SortingContext Sorting { get; internal set; }
+        public SortContext Sort { get; internal set; }
 
         /// <summary>
-        /// Gets filtering context
+        /// Gets filter context
         /// </summary>
-        public FilteringContext Filtering { get; internal set; }
+        public FilterContext Filter { get; internal set; }
 
         /// <summary>
-        /// Gets including context
+        /// Gets include context
         /// </summary>
-        public IncludingContext Including { get; internal set; }
+        public IncludeContext Include { get; internal set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether that query parameters
         /// will be handled by action itself or Saule should handle them
         /// </summary>
-        internal bool IsManuallyHandledQuery { get; set; }
+        internal bool IsHandledQuery { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -45,9 +45,9 @@ namespace Saule.Queries
             var result = new List<string>
             {
                 Pagination?.ToString(),
-                Sorting?.ToString(),
-                Filtering?.ToString(),
-                Including?.ToString()
+                Sort?.ToString(),
+                Filter?.ToString(),
+                Include?.ToString()
             };
 
             return string.Join("&", result.Where(c => !string.IsNullOrEmpty(c)));

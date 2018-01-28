@@ -46,9 +46,8 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
-        [AllowsManuallyHandledQuery]
+        [HandlesQuery]
         [Paginated]
-        [DisableDefaultIncluded]
         [Route("query/manual/paginate/people")]
         public IEnumerable<Person> ManualQueryAndPaginatePeople(QueryContext context)
         {
@@ -57,10 +56,10 @@ namespace Tests.Controllers
             bool? hideLastName;
             // if we want to include car or job, then we return response as is as it already has them
             // otherwise we clear it
-            bool includeCar = context.Including.Includes.Any(p => p.Name == nameof(Person.Car));
-            bool includeJob = context.Including.Includes.Any(p => p.Name == nameof(Person.Job));
+            bool includeCar = context.Include.Includes.Any(p => p.Name == nameof(Person.Car));
+            bool includeJob = context.Include.Includes.Any(p => p.Name == nameof(Person.Job));
 
-            context.Filtering.TryGetValue("HideLastName", out hideLastName);
+            context.Filter.TryGetValue("HideLastName", out hideLastName);
 
             if (hideLastName.GetValueOrDefault() || !includeCar)
             {
@@ -80,7 +79,7 @@ namespace Tests.Controllers
             }
 
             int? minAge;
-            if (context.Filtering.TryGetValue("MinAge", out minAge) && minAge.HasValue)
+            if (context.Filter.TryGetValue("MinAge", out minAge) && minAge.HasValue)
             {
                 data = data.Where(person => person.Age >= minAge);
             }
@@ -94,7 +93,7 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
-        [AllowsManuallyHandledQuery]
+        [HandlesQuery]
         [Route("query/manual-typed/people")]
         public IEnumerable<Person> ManualTypedQueryAndPaginatePeople([FromUri] PersonFilter filter)
         {

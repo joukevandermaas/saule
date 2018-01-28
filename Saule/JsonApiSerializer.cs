@@ -53,16 +53,16 @@ namespace Saule
 
                 var dataObject = @object;
 
-                if (QueryContext != null && !QueryContext.IsManuallyHandledQuery)
+                if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
-                    if (QueryContext.Filtering != null)
+                    if (QueryContext.Filter != null)
                     {
-                        dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filtering, resource);
+                        dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filter, resource);
                     }
 
-                    if (QueryContext.Sorting != null)
+                    if (QueryContext.Sort != null)
                     {
-                        dataObject = Query.ApplySorting(dataObject, QueryContext.Sorting, resource);
+                        dataObject = Query.ApplySorting(dataObject, QueryContext.Sort, resource);
                     }
 
                     if (QueryContext.Pagination != null)
@@ -77,7 +77,7 @@ namespace Saule
                         baseUrl: requestUri,
                         urlBuilder: UrlPathBuilder,
                         paginationContext: QueryContext?.Pagination,
-                        includingContext: QueryContext?.Including);
+                        includeContext: QueryContext?.Include);
             }
             catch (Exception ex)
             {

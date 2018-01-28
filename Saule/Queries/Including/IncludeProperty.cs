@@ -3,13 +3,13 @@
     /// <summary>
     /// Property for including
     /// </summary>
-    public class IncludingProperty
+    public class IncludeProperty
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IncludingProperty"/> class.
+        /// Initializes a new instance of the <see cref="IncludeProperty"/> class.
         /// </summary>
         /// <param name="name">property name</param>
-        public IncludingProperty(string name)
+        public IncludeProperty(string name)
         {
             Name = name.ToPascalCase();
         }

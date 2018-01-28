@@ -9,9 +9,9 @@ using Xunit;
 
 namespace Tests.Queries
 {
-    public class SortingInterpreterTests
+    public class SortInterpreterTests
     {
-        private static SortingContext DefaultContext => new SortingContext(GetQuery("id"));
+        private static SortContext DefaultContext => new SortContext(GetQuery("id"));
 
         [Fact(DisplayName = "Does not do anything to non-enumerables/queryables")]
         public void IgnoresNonEnumerables()
@@ -25,7 +25,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Doesn't do anything on empty queryable/enumerable")]
         public void EmptyIsNoop()
         {
-            var target = new SortingInterpreter(DefaultContext, new PersonResource());
+            var target = new SortInterpreter(DefaultContext, new PersonResource());
             var enumerableResult = target.Apply(Enumerable.Empty<Person>()) as IEnumerable<Person>;
             var queryableResult = target.Apply(Enumerable.Empty<Person>().AsQueryable()) as IQueryable<Person>;
 
@@ -34,15 +34,15 @@ namespace Tests.Queries
         }
 
         [Theory(DisplayName = "Parses sorting string value correctly")]
-        [InlineData("+id", new[] { "Id" }, new[] { SortingDirection.Ascending })]
-        [InlineData("-id", new[] { "Id" }, new[] { SortingDirection.Descending })]
-        [InlineData("id", new[] { "Id" }, new[] { SortingDirection.Ascending })]
-        [InlineData("id,-age", new[] { "Id", "Age" }, new[] { SortingDirection.Ascending, SortingDirection.Descending })]
-        [InlineData("+id,age", new[] { "Id", "Age" }, new[] { SortingDirection.Ascending, SortingDirection.Ascending })]
-        [InlineData("+id,-id", new[] { "Id", "Id" }, new[] { SortingDirection.Ascending, SortingDirection.Descending })]
-        internal void ParsesCorrectly(string query, string[] properties, SortingDirection[] directions)
+        [InlineData("+id", new[] { "Id" }, new[] { SortDirection.Ascending })]
+        [InlineData("-id", new[] { "Id" }, new[] { SortDirection.Descending })]
+        [InlineData("id", new[] { "Id" }, new[] { SortDirection.Ascending })]
+        [InlineData("id,-age", new[] { "Id", "Age" }, new[] { SortDirection.Ascending, SortDirection.Descending })]
+        [InlineData("+id,age", new[] { "Id", "Age" }, new[] { SortDirection.Ascending, SortDirection.Ascending })]
+        [InlineData("+id,-id", new[] { "Id", "Id" }, new[] { SortDirection.Ascending, SortDirection.Descending })]
+        internal void ParsesCorrectly(string query, string[] properties, SortDirection[] directions)
         {
-            var context = new SortingContext(GetQuery(query));
+            var context = new SortContext(GetQuery(query));
             var expected = properties.Zip(directions, (s, d) => new
             {
                 Name = s,
@@ -60,11 +60,11 @@ namespace Tests.Queries
         [Fact(DisplayName = "Parses empty query string correctly")]
         public void ParsesEmpty()
         {
-            var context = new SortingContext(Enumerable.Empty<KeyValuePair<string, string>>());
+            var context = new SortContext(Enumerable.Empty<KeyValuePair<string, string>>());
 
             var actual = context.Properties;
 
-            Assert.Equal(Enumerable.Empty<SortingProperty>(), actual);
+            Assert.Equal(Enumerable.Empty<SortProperty>(), actual);
         }
 
         [Fact(DisplayName = "Applies sorting order (asc,desc)")]
@@ -73,7 +73,7 @@ namespace Tests.Queries
             var people = Get.People(100).ToList().AsQueryable();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")), new PersonResource())
+            var result = Query.ApplySorting(people, new SortContext(GetQuery("age,-id")), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -85,7 +85,7 @@ namespace Tests.Queries
             var people = Get.People(100).ToList().AsQueryable();
             var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")), new PersonResource())
+            var result = Query.ApplySorting(people, new SortContext(GetQuery("age,id")), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -97,7 +97,7 @@ namespace Tests.Queries
             var people = Get.People(100).ToList();
             var expected = people.OrderBy(p => p.Age).ThenBy(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,id")), new PersonResource())
+            var result = Query.ApplySorting(people, new SortContext(GetQuery("age,id")), new PersonResource())
                 as IEnumerable<Person>;
 
             Assert.Equal(expected, result);
@@ -109,7 +109,7 @@ namespace Tests.Queries
             var people = Get.People(100).ToList();
             var expected = people.OrderBy(p => p.Age).ThenByDescending(p => p.Identifier);
 
-            var result = Query.ApplySorting(people, new SortingContext(GetQuery("age,-id")), new PersonResource())
+            var result = Query.ApplySorting(people, new SortContext(GetQuery("age,-id")), new PersonResource())
                 as IEnumerable<Person>;
 
             Assert.Equal(expected, result);

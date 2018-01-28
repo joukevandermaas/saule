@@ -3,13 +3,13 @@
     /// <summary>
     /// Property for sorting
     /// </summary>
-    public class SortingProperty
+    public class SortProperty
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortingProperty"/> class.
+        /// Initializes a new instance of the <see cref="SortProperty"/> class.
         /// </summary>
         /// <param name="value">property name and direction</param>
-        public SortingProperty(string value)
+        public SortProperty(string value)
         {
             Direction = FindSortingDirection(value);
             Name = StripSyntax(value).ToPascalCase();
@@ -23,12 +23,12 @@
         /// <summary>
         /// Gets or Sets direction of sorting
         /// </summary>
-        public SortingDirection Direction { get; }
+        public SortDirection Direction { get; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Direction == SortingDirection.Descending ? "-" + Name : Name;
+            return Direction == SortDirection.Descending ? "-" + Name : Name;
         }
 
         private static string StripSyntax(string value)
@@ -36,11 +36,11 @@
             return value.Trim('+', '-').Trim();
         }
 
-        private static SortingDirection FindSortingDirection(string value)
+        private static SortDirection FindSortingDirection(string value)
         {
             return value.StartsWith("-")
-                ? SortingDirection.Descending
-                : SortingDirection.Ascending;
+                ? SortDirection.Descending
+                : SortDirection.Ascending;
         }
     }
 }

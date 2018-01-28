@@ -6,21 +6,21 @@ namespace Saule.Queries.Including
     /// <summary>
     /// Context for including operations
     /// </summary>
-    public class IncludingContext
+    public class IncludeContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IncludingContext"/> class.
+        /// Initializes a new instance of the <see cref="IncludeContext"/> class.
         /// </summary>
-        public IncludingContext()
+        public IncludeContext()
         {
             DisableDefaultIncluded = false;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IncludingContext"/> class.
+        /// Initializes a new instance of the <see cref="IncludeContext"/> class.
         /// </summary>
         /// <param name="includes">query string that might contain Include keyword</param>
-        public IncludingContext(IEnumerable<KeyValuePair<string, string>> includes)
+        public IncludeContext(IEnumerable<KeyValuePair<string, string>> includes)
             : this()
         {
             SetIncludes(includes);
@@ -29,7 +29,7 @@ namespace Saule.Queries.Including
         /// <summary>
         /// Gets including properties
         /// </summary>
-        public IEnumerable<IncludingProperty> Includes { get; internal set; }
+        public IEnumerable<IncludeProperty> Includes { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating whether includes shouldn't be returned by default or not
@@ -48,11 +48,11 @@ namespace Saule.Queries.Including
             if (dict.ContainsKey(Constants.QueryNames.Including))
             {
                 var relatedResources = dict[Constants.QueryNames.Including].Split(',').Select(s => s.Trim());
-                Includes = relatedResources.Select(x => new IncludingProperty(x));
+                Includes = relatedResources.Select(x => new IncludeProperty(x));
             }
             else
             {
-                Includes = new IncludingProperty[0];
+                Includes = new IncludeProperty[0];
             }
         }
     }

@@ -26,16 +26,16 @@ namespace Saule.Http
             var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
 
-            queryContext.Sorting = new SortingContext(queryParams);
-            queryContext.Filtering = new FilteringContext(queryParams);
+            queryContext.Sort = new SortContext(queryParams);
+            queryContext.Filter = new FilterContext(queryParams);
 
-            if (queryContext.Including == null)
+            if (queryContext.Include == null)
             {
-                queryContext.Including = new IncludingContext(queryParams);
+                queryContext.Include = new IncludeContext(queryParams);
             }
             else
             {
-                queryContext.Including.SetIncludes(queryParams);
+                queryContext.Include.SetIncludes(queryParams);
             }
 
             base.OnActionExecuting(actionContext);

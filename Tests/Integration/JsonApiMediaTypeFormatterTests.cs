@@ -537,6 +537,27 @@ namespace Tests.Integration
         }
 
 
+        [Theory(DisplayName = "Denies other attributes when HandlesQueryAttribute is specified")]
+        [InlineData("api/broken/manual/disabledefault", "DisableDefaultIncludedAttribute shouldn't be used with HandlesQueryAttribute.")]
+        [InlineData("api/broken/manual/allowsquery", "AllowsQueryAttribute shouldn't be used with HandlesQueryAttribute.")]
+        public async Task DenyOtherAttributesForHandlesQuery(string query, string expectedTitle)
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+
+                var response = await client.GetFullJsonResponseAsync(query);
+                var error = response.Content["errors"][0];
+
+                Assert.Equal("Saule.JsonApiException", error["code"].Value<string>());
+
+                Assert.Equal(expectedTitle, error["title"].Value<string>());
+
+                Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            }
+        }
+
+
         [Fact(DisplayName = "Applies filtering when appropriate")]
         public async Task AppliesFiltering()
         {
