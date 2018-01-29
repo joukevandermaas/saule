@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Saule.Http;
+using Saule.Queries;
 using Tests.Helpers;
 using Tests.Models;
 
@@ -65,5 +66,24 @@ namespace Tests.Controllers
         {
             throw new InvalidOperationException("Test exception");
         }
+
+        [HttpGet]
+        [HandlesQuery]
+        [DisableDefaultIncluded]
+        [Route("api/broken/manual/disabledefault")]
+        public IQueryable<Person> ManualQueryAndDisableDefault(QueryContext context)
+        {
+            return Get.People(1).AsQueryable();
+        }
+
+        [HttpGet]
+        [HandlesQuery]
+        [AllowsQuery]
+        [Route("api/broken/manual/allowsquery")]
+        public IQueryable<Person> ManualQueryAndAllowsQuery(QueryContext context)
+        {
+            return Get.People(1).AsQueryable();
+        }
+
     }
 }

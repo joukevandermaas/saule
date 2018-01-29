@@ -37,6 +37,12 @@ namespace Saule.Queries
             return expressionFactory.Invoke(null, new object[] { propertyExpression, new[] { param } }) as Expression;
         }
 
+        internal static object TryConvert(string value, Type type)
+        {
+            var converter = TypeDescriptor.GetConverter(type);
+            return converter.ConvertFromInvariantString(value);
+        }
+
         // Return value is used through reflection invocation
         // ReSharper disable once UnusedMethodReturnValue.Local
         private static Expression<Func<TClass, bool>> Convert<TProperty, TClass>(
@@ -47,12 +53,6 @@ namespace Saule.Queries
         {
             var curriedBody = new FilterLambdaVisitor<TProperty>(propertyExpression, constant).Visit(expression.Body);
             return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);
-        }
-
-        private static object TryConvert(string value, Type type)
-        {
-            var converter = TypeDescriptor.GetConverter(type);
-            return converter.ConvertFromInvariantString(value);
         }
 
         private static Type GetPropertyType(Type type, string property)

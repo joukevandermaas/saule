@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
@@ -449,6 +450,113 @@ namespace Tests.Integration
                 Assert.Equal(sorted, ages);
             }
         }
+
+
+        [Theory(DisplayName = "Applies manual filtering when appropriate")]
+        [InlineData("api/query/manual-typed/people", 10, null, 2)]
+        [InlineData("api/query/manual-typed/people", 10, true, 2)]
+        [InlineData("api/query/manual-typed/people", 10, false, 2)]
+        [InlineData("api/query/manual-typed/people", 2, null, 10)]
+        [InlineData("api/query/manual-typed/people", null, null, 10)]
+        [InlineData("api/query/manual/paginate/people", 10, null, 2)]
+        [InlineData("api/query/manual/paginate/people", 2, null, 10)]
+        [InlineData("api/query/manual/paginate/people", null, null, 10)]
+        [InlineData("api/query/manual/paginate/people", null, true, 10)]
+        [InlineData("api/query/manual/paginate/people", null, false, 10)]
+        [InlineData("api/query/manual/paginate/people?page[size]=4", null, true, 4)]
+        [InlineData("api/query/manual/paginate/people?page[size]=4", null, null, 4)]
+        // it should have 2 items and with page.size == 1 it should return just one of them
+        [InlineData("api/query/manual/paginate/people?page[size]=1", 10, null, 1)]
+        [InlineData("api/query/manual/paginate/people?page[size]=1", null, null, 1)]
+        // we return only 10 persons in controller
+        [InlineData("api/query/manual/paginate/people?page[size]=100", null, null, 10)] 
+        public async Task AppliesManualFiltering(string query, int? minAge, bool? hideLastName, int expectedSize)
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                if (minAge.HasValue)
+                {
+                    query += $"{(query.Contains("?") ? "&" : "?")}filter[min-age]={minAge}";
+                }
+
+                if (hideLastName.HasValue)
+                {
+                    query += $"{(query.Contains("?") ? "&" : "?")}filter[hide-last-name]={hideLastName.Value}";
+                }
+
+                var result = await client.GetJsonResponseAsync(query);
+                var data = (JArray) result["data"];
+
+                var allLastNamesMissing = data.All(
+                    p => string.IsNullOrWhiteSpace(p["attributes"]["last-name"].Value<string>()));
+
+                // calculate count of returned records that satisfy condition
+                var validCount = data.Count(p =>
+                    !minAge.HasValue ||
+                    p["attributes"]["age"].Value<int>() >= minAge.Value);
+
+                var totalCount = ((JArray)result["data"]).Count;
+
+                Assert.Equal(expectedSize, validCount);
+                Assert.Equal(totalCount, validCount);
+
+                if (hideLastName.HasValue)
+                {
+                    Assert.Equal(hideLastName.Value, allLastNamesMissing);
+                }
+            }
+        }
+
+        [Theory(DisplayName = "Applies manual filtering when appropriate")]
+        [InlineData("api/query/manual/paginate/people", new string[0])]
+        [InlineData("api/query/manual/paginate/people?include=car,job", new[] { "car", "corporation" })]
+        [InlineData("api/query/manual/paginate/people?include=car", new[] { "car"})]
+        [InlineData("api/query/manual/paginate/people?include=job", new[] { "corporation" })]
+        public async Task AppliesManualIncluding(string query, string[] expectedIncludes)
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+
+                var result = await client.GetJsonResponseAsync(query);
+
+                // get all types that were included
+                var includedTypes = ((JArray) result["included"])
+                                    ?.Select(p => p["type"].Value<string>())
+                                    .Distinct()
+                                    .ToList() ?? new List<string>();
+
+                Assert.Equal(includedTypes.Count, expectedIncludes.Length);
+
+                foreach (var expectedInclude in expectedIncludes)
+                {
+                    Assert.Contains(expectedInclude, includedTypes);
+                }
+            }
+        }
+
+
+        [Theory(DisplayName = "Denies other attributes when HandlesQueryAttribute is specified")]
+        [InlineData("api/broken/manual/disabledefault", "DisableDefaultIncludedAttribute shouldn't be used with HandlesQueryAttribute.")]
+        [InlineData("api/broken/manual/allowsquery", "AllowsQueryAttribute shouldn't be used with HandlesQueryAttribute.")]
+        public async Task DenyOtherAttributesForHandlesQuery(string query, string expectedTitle)
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+
+                var response = await client.GetFullJsonResponseAsync(query);
+                var error = response.Content["errors"][0];
+
+                Assert.Equal("Saule.JsonApiException", error["code"].Value<string>());
+
+                Assert.Equal(expectedTitle, error["title"].Value<string>());
+
+                Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            }
+        }
+
 
         [Fact(DisplayName = "Applies filtering when appropriate")]
         public async Task AppliesFiltering()

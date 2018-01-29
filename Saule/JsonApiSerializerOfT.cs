@@ -115,9 +115,9 @@ namespace Saule
 
             if (AllowQuery)
             {
-                context.Sorting = new SortingContext(keyValuePairs);
-                context.Filtering = new FilteringContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
-                context.Including = new IncludingContext(keyValuePairs);
+                context.Sort = new SortContext(keyValuePairs);
+                context.Filter = new FilterContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
+                context.Include = new IncludeContext(keyValuePairs);
             }
 
             return context;

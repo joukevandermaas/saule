@@ -1,6 +1,9 @@
 ﻿namespace Saule.Queries.Sorting
 {
-    internal enum SortingDirection
+    /// <summary>
+    /// Direction of sorting
+    /// </summary>
+    public enum SortDirection
     {
         /// <summary>
         /// Sort items in ascending order.

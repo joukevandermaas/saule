@@ -3,13 +3,27 @@ using System.Linq;
 
 namespace Saule.Queries.Pagination
 {
-    internal class PaginationContext
+    /// <summary>
+    /// Context for pagination
+    /// </summary>
+    public class PaginationContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaginationContext"/> class.
+        /// </summary>
+        /// <param name="filters">query string that might contain Page keyword</param>
+        /// <param name="pageSizeDefault">default page size</param>
         public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault)
             : this(filters, pageSizeDefault, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaginationContext"/> class.
+        /// </summary>
+        /// <param name="filters">query string that might contain Page keyword</param>
+        /// <param name="pageSizeDefault">default page size</param>
+        /// <param name="pageSizeLimit">maximum page size</param>
         public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault, int? pageSizeLimit)
         {
             var keyValuePairs = filters as IList<KeyValuePair<string, string>> ?? filters.ToList();
@@ -21,14 +35,27 @@ namespace Saule.Queries.Pagination
             PageSizeLimit = pageSizeLimit;
         }
 
+        /// <summary>
+        /// Gets page number
+        /// </summary>
         public int Page { get; }
 
-        public int? PerPage { get; set; }
+        /// <summary>
+        /// Gets page size
+        /// </summary>
+        public int? PerPage { get; internal set; }
 
-        public int? PageSizeLimit { get; set; }
+        /// <summary>
+        /// Gets maximum page size
+        /// </summary>
+        public int? PageSizeLimit { get; internal set; }
 
+        /// <summary>
+        /// Gets client filters
+        /// </summary>
         public IDictionary<string, string> ClientFilters { get; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             string pageNum = $"page[number]={Page}";

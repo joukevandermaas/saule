@@ -53,19 +53,22 @@ namespace Saule
 
                 var dataObject = @object;
 
-                if (QueryContext?.Filtering != null)
+                if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
-                    dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filtering, resource);
-                }
+                    if (QueryContext.Filter != null)
+                    {
+                        dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filter, resource);
+                    }
 
-                if (QueryContext?.Sorting != null)
-                {
-                    dataObject = Query.ApplySorting(dataObject, QueryContext.Sorting, resource);
-                }
+                    if (QueryContext.Sort != null)
+                    {
+                        dataObject = Query.ApplySorting(dataObject, QueryContext.Sort, resource);
+                    }
 
-                if (QueryContext?.Pagination != null)
-                {
-                    dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
+                    if (QueryContext.Pagination != null)
+                    {
+                        dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
+                    }
                 }
 
                 result.ResourceSerializer = new ResourceSerializer(
@@ -74,7 +77,7 @@ namespace Saule
                         baseUrl: requestUri,
                         urlBuilder: UrlPathBuilder,
                         paginationContext: QueryContext?.Pagination,
-                        includingContext: QueryContext?.Including);
+                        includeContext: QueryContext?.Include);
             }
             catch (Exception ex)
             {

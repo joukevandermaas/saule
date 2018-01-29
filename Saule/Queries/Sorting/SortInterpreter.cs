@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace Saule.Queries.Sorting
 {
-    internal class SortingInterpreter
+    internal class SortInterpreter
     {
-        private readonly SortingContext _context;
+        private readonly SortContext _context;
         private readonly ApiResource _resource;
 
-        public SortingInterpreter(SortingContext context, ApiResource resource)
+        public SortInterpreter(SortContext context, ApiResource resource)
         {
             _context = context;
             _resource = resource;
@@ -56,21 +56,21 @@ namespace Saule.Queries.Sorting
             return new JsonApiException(ErrorType.Server, $"Attribute '{property.ToDashed()}' not found.", ex);
         }
 
-        private static QueryMethod GetQueryMethod(SortingDirection direction, bool isFirst)
+        private static QueryMethod GetQueryMethod(SortDirection direction, bool isFirst)
         {
             if (isFirst)
             {
-                return direction == SortingDirection.Descending
+                return direction == SortDirection.Descending
                     ? QueryMethod.OrderByDescending
                     : QueryMethod.OrderBy;
             }
 
-            return direction == SortingDirection.Descending
+            return direction == SortDirection.Descending
                 ? QueryMethod.ThenByDescending
                 : QueryMethod.ThenBy;
         }
 
-        private IQueryable ApplyProperty(IQueryable queryable, SortingProperty property, bool isFirst)
+        private IQueryable ApplyProperty(IQueryable queryable, SortProperty property, bool isFirst)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Saule.Queries.Sorting
             }
         }
 
-        private IEnumerable ApplyProperty(IEnumerable enumerable, SortingProperty property, bool isFirst)
+        private IEnumerable ApplyProperty(IEnumerable enumerable, SortProperty property, bool isFirst)
         {
             try
             {

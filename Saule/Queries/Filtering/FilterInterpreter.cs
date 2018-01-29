@@ -5,12 +5,12 @@ using Saule.Http;
 
 namespace Saule.Queries.Filtering
 {
-    internal class FilteringInterpreter
+    internal class FilterInterpreter
     {
-        private readonly FilteringContext _context;
+        private readonly FilterContext _context;
         private readonly ApiResource _resource;
 
-        public FilteringInterpreter(FilteringContext context, ApiResource resource)
+        public FilterInterpreter(FilterContext context, ApiResource resource)
         {
             _context = context;
             _resource = resource;
@@ -21,7 +21,7 @@ namespace Saule.Queries.Filtering
             if (_context.Properties.Any())
             {
                  return _context.Properties
-                    .Select(p => p.Name == "Id" ? new FilteringProperty(_resource.IdProperty, p.Value) : p)
+                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Value) : p)
                     .Aggregate(queryable, ApplyProperty);
             }
 
@@ -33,7 +33,7 @@ namespace Saule.Queries.Filtering
             if (_context.Properties.Any())
             {
                  return _context.Properties
-                    .Select(p => p.Name == "Id" ? new FilteringProperty(_resource.IdProperty, p.Value) : p)
+                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Value) : p)
                     .Aggregate(enumerable, ApplyProperty);
             }
 
@@ -45,7 +45,7 @@ namespace Saule.Queries.Filtering
             return new JsonApiException(ErrorType.Client, $"Attribute '{property.ToDashed()}' not found.", ex);
         }
 
-        private IEnumerable ApplyProperty(IEnumerable enumerable, FilteringProperty property)
+        private IEnumerable ApplyProperty(IEnumerable enumerable, FilterProperty property)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace Saule.Queries.Filtering
             }
         }
 
-        private IQueryable ApplyProperty(IQueryable queryable, FilteringProperty property)
+        private IQueryable ApplyProperty(IQueryable queryable, FilterProperty property)
         {
             try
             {
