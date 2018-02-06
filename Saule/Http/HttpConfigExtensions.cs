@@ -5,6 +5,7 @@ using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.ValueProviders;
 using Saule.Queries;
 using Saule.Serialization;
 
@@ -70,6 +71,9 @@ namespace Saule.Http
           FormatterPriority formatterPriority)
         {
             config.MessageHandlers.Add(new PreprocessingDelegatingHandler(jsonApiConfiguration));
+
+            config.Services.Add(typeof(ValueProviderFactory), new JsonApiQueryValueProviderFactory());
+
             var formatter = new JsonApiMediaTypeFormatter(jsonApiConfiguration);
 
             if (formatterPriority == FormatterPriority.OverwriteOtherFormatters)

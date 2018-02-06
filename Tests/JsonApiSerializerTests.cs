@@ -68,6 +68,21 @@ namespace Tests
 
         }
 
+        [Fact(DisplayName = "Does not include relationship data when the relationship is null")]
+        public void DoesNotIncludeNullData()
+        {
+            var target = new JsonApiSerializer<PersonResource>();
+            var model = new Person()
+            {
+                Identifier = "Id",
+                Job = null
+            };
+
+            var result = target.Serialize(model, DefaultUrl);
+
+             Assert.Null(result["data"]["relationships"]["job"]["data"]);
+        }
+
         [Fact(DisplayName = "Does not allow null Uri")]
         public void HasAContract()
         {
@@ -268,6 +283,18 @@ namespace Tests
             var error = result["errors"][0];
 
             Assert.Equal("Attribute 'fail-me' not found.", error["title"].Value<string>());
+        }
+
+        [Fact(DisplayName = "Deserialize")]
+        public void Gives()
+        {
+            var target = new JsonApiSerializer<PersonResource>();
+            var initialPerson = Get.Person();
+
+            var personJson = target.Serialize(initialPerson, DefaultUrl);
+            var dsPerson = (Person)target.Deserialize(personJson, typeof(Person));
+
+            Assert.Equal(initialPerson.FirstName, dsPerson.FirstName);
         }
     }
 }

@@ -22,12 +22,12 @@ namespace Saule.Http
         {
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
 
-            if (queryContext.Including == null)
+            if (queryContext.Include == null)
             {
-                queryContext.Including = new IncludingContext();
+                queryContext.Include = new IncludeContext();
             }
 
-            queryContext.Including.DisableDefaultIncluded = true;
+            queryContext.Include.DisableDefaultIncluded = true;
 
             base.OnActionExecuting(actionContext);
         }

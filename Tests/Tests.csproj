@@ -134,6 +134,7 @@
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\LazyPerson.cs" />
+    <Compile Include="Models\PersonFilter.cs" />
     <Compile Include="Models\PersonJobOnlyRelatedLinksResource.cs" />
     <Compile Include="Models\PersonJobOnlySelfLinksResource.cs" />
     <Compile Include="Models\PersonNoJobLinksResource.cs" />
@@ -160,8 +161,8 @@
     </Compile>
     <Compile Include="Helpers\NotOrderedQueryable.cs" />
     <Compile Include="Queries\PaginationInterpreterTests.cs" />
-    <Compile Include="Queries\FilteringInterpreterTests.cs" />
-    <Compile Include="Queries\SortingInterpreterTests.cs" />
+    <Compile Include="Queries\FilterInterpreterTests.cs" />
+    <Compile Include="Queries\SortInterpreterTests.cs" />
     <Compile Include="Queries\PaginationQueryTests.cs" />
     <Compile Include="Serialization\CanonicalUrlPathBuilderTests.cs" />
     <Compile Include="Serialization\DefaultUrlPathBuilderTests.cs" />

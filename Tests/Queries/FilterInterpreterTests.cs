@@ -11,9 +11,9 @@ using Xunit;
 
 namespace Tests.Queries
 {
-    public class FilteringInterpreterTests
+    public class FilterInterpreterTests
     {
-        private static FilteringContext DefaultContext => new FilteringContext(GetQuery(
+        private static FilterContext DefaultContext => new FilterContext(GetQuery(
             new[] { "id" },
             new[] { "5" }));
 
@@ -29,7 +29,7 @@ namespace Tests.Queries
         [Fact(DisplayName = "Doesn't do anything on empty queryable/enumerable")]
         public void EmptyIsNoop()
         {
-            var target = new FilteringInterpreter(DefaultContext, new PersonResource());
+            var target = new FilterInterpreter(DefaultContext, new PersonResource());
             var enumerableResult = target.Apply(Enumerable.Empty<Person>()) as IEnumerable<Person>;
             var queryableResult = target.Apply(Enumerable.Empty<Person>().AsQueryable()) as IQueryable<Person>;
 
@@ -44,7 +44,7 @@ namespace Tests.Queries
         [InlineData(new[] { "last-name", "first-name" }, new[] { "Smith", "John" }, new[] { "LastName", "FirstName" })]
         internal void ParsesCorrectly(string[] names, string[] values, string[] properties)
         {
-            var context = new FilteringContext(GetQuery(names, values));
+            var context = new FilterContext(GetQuery(names, values));
             var expected = properties.Zip(values, (n, v) => new
             {
                 Name = n,
@@ -62,11 +62,11 @@ namespace Tests.Queries
         [Fact(DisplayName = "Parses empty query string correctly")]
         public void ParsesEmpty()
         {
-            var context = new FilteringContext(Enumerable.Empty<KeyValuePair<string, string>>());
+            var context = new FilterContext(Enumerable.Empty<KeyValuePair<string, string>>());
 
             var actual = context.Properties;
 
-            Assert.Equal(Enumerable.Empty<FilteringProperty>(), actual);
+            Assert.Equal(Enumerable.Empty<FilterProperty>(), actual);
         }
 
         [Fact(DisplayName = "Applies filtering on enums (int)")]
@@ -77,7 +77,7 @@ namespace Tests.Queries
 
             var query = GetQuery(new[] { "Location" }, new[] { "1" });
 
-            var result = Query.ApplyFiltering(companies, new FilteringContext(query), new CompanyResource())
+            var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
                 as IQueryable<Company>;
 
             Assert.Equal(expected, result);
@@ -91,7 +91,7 @@ namespace Tests.Queries
 
             var query = GetQuery(new[] { "Age" }, new[] { "20" });
 
-            var result = Query.ApplyFiltering(people, new FilteringContext(query), new PersonResource())
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -105,7 +105,7 @@ namespace Tests.Queries
 
             var query = GetQuery(new[] { "Location" }, new[] { "national" });
 
-            var result = Query.ApplyFiltering(companies, new FilteringContext(query), new CompanyResource())
+            var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
                 as IQueryable<Company>;
 
             Assert.Equal(expected, result);
@@ -119,7 +119,7 @@ namespace Tests.Queries
 
             var query = GetQuery(new[] { "LastName" }, new[] { "Russel" });
 
-            var result = Query.ApplyFiltering(people, new FilteringContext(query), new PersonResource())
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IQueryable<Person>;
 
             Assert.Equal(expected, result);
@@ -133,7 +133,7 @@ namespace Tests.Queries
 
             var query = GetQuery(new[] { "LastName" }, new[] { "Russel" });
 
-            var result = Query.ApplyFiltering(people, new FilteringContext(query), new PersonResource())
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IEnumerable<Person>;
 
             Assert.Equal(expected, result);
@@ -148,9 +148,9 @@ namespace Tests.Queries
             var query = GetQuery(new[] { "Fake" }, new[] { "no" });
 
             Assert.Throws<JsonApiException>(() =>
-                Query.ApplyFiltering(enumerable, new FilteringContext(query), new PersonResource()));
+                Query.ApplyFiltering(enumerable, new FilterContext(query), new PersonResource()));
             Assert.Throws<JsonApiException>(() =>
-                Query.ApplyFiltering(queryable, new FilteringContext(query), new PersonResource()));
+                Query.ApplyFiltering(queryable, new FilterContext(query), new PersonResource()));
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(IEnumerable<string> properties, IEnumerable<string> values)

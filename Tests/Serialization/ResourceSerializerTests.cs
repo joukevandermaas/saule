@@ -264,7 +264,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Do not serialize relationship data into 'included' key when includedDefault set to false")]
         public void NoIncludedRelationshipData()
         {
-            var includes = new IncludingContext();
+            var includes = new IncludeContext();
             includes.DisableDefaultIncluded = true;
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
                 GetUri(id: "123"), DefaultPathBuilder, null, includes);
@@ -280,7 +280,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serialize only included relationship data into 'included' key when includedDefault set to false")]
         public void OnlyIncludedRelationshipData()
         {
-            var includes = new IncludingContext();
+            var includes = new IncludeContext();
             includes.DisableDefaultIncluded = true;
             var includeParam = new KeyValuePair<string, string>("include", "job");
             includes.SetIncludes(new List<KeyValuePair<string, string>>() { includeParam });
@@ -298,7 +298,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serialize relationship identifier objects into 'data' key when includedDefault set to true")]
         public void IncludedRelationshipIdentifierObjects()
         {
-            var includes = new IncludingContext();
+            var includes = new IncludeContext();
             includes.DisableDefaultIncluded = true;
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
                 GetUri(id: "123"), DefaultPathBuilder, null, includes);
@@ -315,7 +315,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Omit data for relationship objects not existing as property in the original model")]
         public void OmitRelationshipIdentifierObjectsWithoutProperty()
         {
-            var includes = new IncludingContext();
+            var includes = new IncludeContext();
             includes.DisableDefaultIncluded = true;
             var target = new ResourceSerializer(DefaultObject, DefaultResource,
                 GetUri(id: "123"), DefaultPathBuilder, null, includes);
@@ -364,7 +364,7 @@ namespace Tests.Serialization
                 }
             };
 
-            var include = new IncludingContext(GetQuery("include", "friends.job"));
+            var include = new IncludeContext(GetQuery("include", "friends.job"));
             var target = new ResourceSerializer(person, DefaultResource,
                 GetUri(id: "123"), DefaultPathBuilder, null, include);
             var result = target.Serialize();
@@ -380,7 +380,7 @@ namespace Tests.Serialization
         {
             var person = new Person(id: "45");
             var target = new ResourceSerializer(person, DefaultResource,
-                GetUri(id: "45"), DefaultPathBuilder, null, new IncludingContext { DisableDefaultIncluded = true });
+                GetUri(id: "45"), DefaultPathBuilder, null, new IncludeContext { DisableDefaultIncluded = true });
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -392,8 +392,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Equal(0, relationships["job"]["data"].Count());
-            Assert.Equal(0, relationships["friends"]["data"].Count());
+            Assert.Null(relationships["job"]["data"]);
+            Assert.Null(relationships["friends"]["data"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]

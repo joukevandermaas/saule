@@ -8,24 +8,46 @@ using Saule.Queries.Sorting;
 
 namespace Saule.Queries
 {
-    internal class QueryContext
+    /// <summary>
+    /// Context with all Json Api operations for current request
+    /// </summary>
+    public class QueryContext
     {
-        public PaginationContext Pagination { get; set; }
+        /// <summary>
+        /// Gets pagination context
+        /// </summary>
+        public PaginationContext Pagination { get; internal set; }
 
-        public SortingContext Sorting { get; set; }
+        /// <summary>
+        /// Gets sort context
+        /// </summary>
+        public SortContext Sort { get; internal set; }
 
-        public FilteringContext Filtering { get; set; }
+        /// <summary>
+        /// Gets filter context
+        /// </summary>
+        public FilterContext Filter { get; internal set; }
 
-        public IncludingContext Including { get; set; }
+        /// <summary>
+        /// Gets include context
+        /// </summary>
+        public IncludeContext Include { get; internal set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether that query parameters
+        /// will be handled by action itself or Saule should handle them
+        /// </summary>
+        internal bool IsHandledQuery { get; set; }
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             var result = new List<string>
             {
                 Pagination?.ToString(),
-                Sorting?.ToString(),
-                Filtering?.ToString(),
-                Including?.ToString()
+                Sort?.ToString(),
+                Filter?.ToString(),
+                Include?.ToString()
             };
 
             return string.Join("&", result.Where(c => !string.IsNullOrEmpty(c)));

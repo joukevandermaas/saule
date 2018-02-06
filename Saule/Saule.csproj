@@ -64,9 +64,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\HandlesQueryAttribute.cs" />
+    <Compile Include="Http\JsonApiQueryValueProvider.cs" />
+    <Compile Include="Http\JsonApiQueryValueProviderFactory.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="StringDictionaryExtensions.cs" />
-    <Compile Include="FormatterPriority.cs" />    <Compile Include="Http\DisableDefaultIncludedAttribute.cs" />
+    <Compile Include="FormatterPriority.cs" />
+    <Compile Include="Http\DisableDefaultIncludedAttribute.cs" />
     <Compile Include="Http\AllowsQueryAttribute.cs" />
     <Compile Include="Http\HttpConfigExtensions.cs" />
     <Compile Include="Http\JsonApiConfiguration.cs" />
@@ -82,20 +86,20 @@
     <Compile Include="NullGuardExtensions.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="PreprocessResult.cs" />
-    <Compile Include="Queries\Filtering\FilteringContext.cs" />
-    <Compile Include="Queries\Filtering\FilteringInterpreter.cs" />
-    <Compile Include="Queries\Filtering\FilteringProperty.cs" />
+    <Compile Include="Queries\Filtering\FilterContext.cs" />
+    <Compile Include="Queries\Filtering\FilterInterpreter.cs" />
+    <Compile Include="Queries\Filtering\FilterProperty.cs" />
     <Compile Include="Http\QueryFilterExpressionCollection.cs" />
     <Compile Include="Queries\Filtering\TypeCorrectingVisitor.cs" />
-    <Compile Include="Queries\Including\IncludingContext.cs" />
-    <Compile Include="Queries\Including\IncludingProperty.cs" />
+    <Compile Include="Queries\Including\IncludeContext.cs" />
+    <Compile Include="Queries\Including\IncludeProperty.cs" />
     <Compile Include="Queries\Lambda.cs" />
     <Compile Include="Queries\Query.cs" />
     <Compile Include="Queries\QueryContext.cs" />
-    <Compile Include="Queries\Sorting\SortingInterpreter.cs" />
-    <Compile Include="Queries\Sorting\SortingContext.cs" />
-    <Compile Include="Queries\Sorting\SortingDirection.cs" />
-    <Compile Include="Queries\Sorting\SortingProperty.cs" />
+    <Compile Include="Queries\Sorting\SortInterpreter.cs" />
+    <Compile Include="Queries\Sorting\SortContext.cs" />
+    <Compile Include="Queries\Sorting\SortDirection.cs" />
+    <Compile Include="Queries\Sorting\SortProperty.cs" />
     <Compile Include="Serialization\ResourceGraphPathSet.cs" />
     <Compile Include="Serialization\ResourceGraphRelationship.cs" />
     <Compile Include="Serialization\ResourceGraph.cs" />

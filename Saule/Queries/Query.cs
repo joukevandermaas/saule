@@ -9,12 +9,12 @@ namespace Saule.Queries
 {
     internal static class Query
     {
-        public static object ApplySorting(object data, SortingContext context, ApiResource resource)
+        public static object ApplySorting(object data, SortContext context, ApiResource resource)
         {
             var queryable = data as IQueryable;
             if (queryable != null)
             {
-                return new SortingInterpreter(context, resource).Apply(queryable);
+                return new SortInterpreter(context, resource).Apply(queryable);
             }
 
             var enumerable = data as IEnumerable;
@@ -22,7 +22,7 @@ namespace Saule.Queries
             {
                 // all queryables are enumerable, so this needs to be after
                 // the queryable case
-                return new SortingInterpreter(context, resource).Apply(enumerable);
+                return new SortInterpreter(context, resource).Apply(enumerable);
             }
 
             return data;
@@ -47,12 +47,12 @@ namespace Saule.Queries
             return data;
         }
 
-        public static object ApplyFiltering(object data, FilteringContext context, ApiResource resource)
+        public static object ApplyFiltering(object data, FilterContext context, ApiResource resource)
         {
             var queryable = data as IQueryable;
             if (queryable != null)
             {
-                return new FilteringInterpreter(context, resource).Apply(queryable);
+                return new FilterInterpreter(context, resource).Apply(queryable);
             }
 
             var enumerable = data as IEnumerable;
@@ -60,7 +60,7 @@ namespace Saule.Queries
             {
                 // all queryables are enumerable, so this needs to be after
                 // the queryable case
-                return new FilteringInterpreter(context, resource).Apply(enumerable);
+                return new FilterInterpreter(context, resource).Apply(enumerable);
             }
 
             return data;

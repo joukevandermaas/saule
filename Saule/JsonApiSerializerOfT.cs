@@ -91,6 +91,18 @@ namespace Saule
             return JsonApiSerializer.Serialize(preprocessResult);
         }
 
+        /// <summary>
+        /// Converts json into an object of a specified type
+        /// </summary>
+        /// <param name="object">Json to convert</param>
+        /// <param name="type">Type to convert to</param>
+        /// <returns>Json converted into the specified type of object</returns>
+        public object Deserialize(JToken @object, Type type)
+        {
+            var target = new ResourceDeserializer(@object, type);
+            return target.Deserialize();
+        }
+
         private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters)
         {
             var context = new QueryContext();
@@ -103,9 +115,9 @@ namespace Saule
 
             if (AllowQuery)
             {
-                context.Sorting = new SortingContext(keyValuePairs);
-                context.Filtering = new FilteringContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
-                context.Including = new IncludingContext(keyValuePairs);
+                context.Sort = new SortContext(keyValuePairs);
+                context.Filter = new FilterContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
+                context.Include = new IncludeContext(keyValuePairs);
             }
 
             return context;
