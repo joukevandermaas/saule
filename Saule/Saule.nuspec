@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Booker.saule</id>
+    <id>Booker.Saule</id>
     <version>$version$</version>
     <title>Saule for Json Api</title>
     <authors>Jouke van der Maas</authors>
