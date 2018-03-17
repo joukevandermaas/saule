@@ -226,7 +226,7 @@ namespace Tests.Serialization
             });
         }
 
-        [Fact(DisplayName = "Serializes relationship data only if it exists")]
+        [Fact(DisplayName = "Serializes relationship data only if it exists as model property")]
         public void SerializesRelationshipData()
         {
             var person = new PersonWithNoJob();
@@ -240,6 +240,25 @@ namespace Tests.Serialization
             var friends = relationships["friends"];
 
             Assert.Null(job["data"]);
+
+            Assert.NotNull(friends);
+        }
+
+        [Fact(DisplayName = "Serializes relationship data as null if empty one to one")]
+        public void SerializesRelationshipDataAsNull()
+        {
+            var person = Get.Person(id: "123");
+            person.Job = null;
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var relationships = result["data"]["relationships"];
+            var job = relationships["job"];
+            var friends = relationships["friends"];
+
+            Assert.Equal(JTokenType.Null, job["data"].Type);
 
             Assert.NotNull(friends);
         }
@@ -392,8 +411,8 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["last-name"]);
             Assert.NotNull(attributes["age"]);
 
-            Assert.Null(relationships["job"]["data"]);
-            Assert.Null(relationships["friends"]["data"]);
+            Assert.Equal(JTokenType.Null, relationships["job"]["data"].Type);
+            Assert.Empty(relationships["friends"]["data"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]
