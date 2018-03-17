@@ -412,7 +412,7 @@ namespace Tests.Serialization
             Assert.NotNull(attributes["age"]);
 
             Assert.Equal(JTokenType.Null, relationships["job"]["data"].Type);
-            Assert.Equal(JTokenType.Null, relationships["friends"]["data"].Type);
+            Assert.Empty(relationships["friends"]["data"]);
         }
 
         [Fact(DisplayName = "Serializes enumerables properly")]
