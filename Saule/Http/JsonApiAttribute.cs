@@ -31,7 +31,7 @@ namespace Saule.Http
             var formatter = new JsonApiMediaTypeFormatter(new JsonApiConfiguration()).GetPerRequestFormatterInstance(
                 typeof(string),
                 actionExecutedContext.Request,
-                new MediaTypeHeaderValue("application/vnd.api+json"));
+                new MediaTypeHeaderValue(Constants.MediaType));
 
             actionExecutedContext.Response.Content = new ObjectContent(content.ObjectType, content.Value, formatter);
         }
