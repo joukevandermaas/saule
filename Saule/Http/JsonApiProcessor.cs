@@ -50,7 +50,7 @@ namespace Saule.Http
                 return;
             }
 
-            var formatter = new JsonApiMediaTypeFormatter(new JsonApiConfiguration()).GetPerRequestFormatterInstance(
+            var formatter = new JsonApiMediaTypeFormatter(config).GetPerRequestFormatterInstance(
                 typeof(string),
                 context.Request,
                 new MediaTypeHeaderValue(Constants.MediaType));
