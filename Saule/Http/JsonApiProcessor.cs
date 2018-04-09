@@ -1,7 +1,6 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Web.Http.Filters;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -9,53 +8,36 @@ namespace Saule.Http
     /// <summary>
     /// Processes JSON API responses
     /// </summary>
-    public class JsonApiProcessor
+    internal static class JsonApiProcessor
     {
-        /// <summary>
-        /// process request as JSON API response
-        /// </summary>
-        /// <param name="context">context</param>
-        public static void ProcessRequest(HttpActionExecutedContext context)
+        internal static void ProcessRequest(HttpRequestMessage request, HttpResponseMessage response, JsonApiConfiguration config, bool requiresMediaType)
         {
-            var statusCode = (int)context.Response.StatusCode;
-            if (statusCode >= 400 && statusCode < 500)
+            var hasMediaType = request.Headers.Accept.Any(x => x.MediaType == Constants.MediaType);
+
+            var statusCode = (int)response.StatusCode;
+            if ((requiresMediaType && !hasMediaType) || (statusCode >= 400 && statusCode < 500))
             {
                 // probably malformed request or not found
                 return;
             }
 
-            var value = context.Response.Content as ObjectContent;
+            var value = response.Content as ObjectContent;
 
-            var config = new JsonApiConfiguration();
+            if (config == null)
+            {
+                config = new JsonApiConfiguration();
+            }
 
-            var content = PreprocessingDelegatingHandler.PreprocessRequest(value?.Value, context.Request, config);
+            var content = PreprocessingDelegatingHandler.PreprocessRequest(value?.Value, request, config);
 
             if (content.ErrorContent != null)
             {
-                context.Response.StatusCode = ApiError.IsClientError(content.ErrorContent)
+                response.StatusCode = ApiError.IsClientError(content.ErrorContent)
                     ? HttpStatusCode.BadRequest
                     : HttpStatusCode.InternalServerError;
             }
 
-            context.Request.Properties.Add(Constants.PropertyNames.PreprocessResult, content);
-
-            if (context.Exception != null)
-            {
-                return;
-            }
-
-            var responseContent = context.Response.Content as ObjectContent;
-            if (responseContent == null)
-            {
-                return;
-            }
-
-            var formatter = new JsonApiMediaTypeFormatter(config).GetPerRequestFormatterInstance(
-                typeof(string),
-                context.Request,
-                new MediaTypeHeaderValue(Constants.MediaType));
-
-            context.Response.Content = new ObjectContent(responseContent.ObjectType, responseContent.Value, formatter);
+            request.Properties.Add(Constants.PropertyNames.PreprocessResult, content);
         }
     }
 }
