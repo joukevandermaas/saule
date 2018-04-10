@@ -22,7 +22,6 @@ namespace Tests.Helpers
         internal ObsoleteSetupJsonApiServer(JsonApiMediaTypeFormatter formatter)
         {
             var config = new HttpConfiguration();
-            config.Formatters.Clear();
             config.Formatters.Add(formatter);
             config.MapHttpAttributeRoutes(new DefaultDirectRouteProvider());
 
