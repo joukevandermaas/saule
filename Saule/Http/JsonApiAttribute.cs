@@ -17,12 +17,13 @@ namespace Saule.Http
         public override void OnActionExecuted(HttpActionExecutedContext context)
         {
             var config = new JsonApiConfiguration();
-            JsonApiProcessor.ProcessRequest(context.Request, context.Response, config, requiresMediaType: false);
 
             if (context.Exception != null)
             {
-                return;
+                throw context.Exception;
             }
+
+            JsonApiProcessor.ProcessRequest(context.Request, context.Response, config, requiresMediaType: false);
 
             var responseContent = context.Response.Content as ObjectContent;
             if (responseContent == null)
