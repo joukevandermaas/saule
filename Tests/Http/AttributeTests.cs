@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Saule.Http;
 using Tests.Models;
 using Xunit;
+using System.Threading.Tasks;
+using Tests.Helpers;
 
 namespace Tests.Http
 {
@@ -30,6 +32,20 @@ namespace Tests.Http
         {
             Assert.Throws<ArgumentException>(() =>
                 new ReturnsResourceAttribute(type));
+        }
+        
+        [Fact(DisplayName = "JsonApiAttribute responds to HttpGets with Json Api even when content-type header is not 'application/vnd.api+json'")]
+        public async Task JsonApiAttributeRespondsWithJsonApi()
+        {
+            using (var server = new NewSetupJsonApiServer())
+            {
+                var client = server.GetClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+
+                var result = await client.GetJsonResponseAsync("api/people/123/usingJsonApiAttributeFilter");
+
+                Assert.NotNull(result["data"]["attributes"]["first-name"]);
+            }
         }
     }
 }

@@ -46,6 +46,24 @@ namespace Tests.Serialization
             Assert.Equal(_person.Age, result?.Age);
         }
 
+        [Fact(DisplayName = "Can deserialize attributes from camelCase")]
+        public void DeserializesCamelCase()
+        {
+            var camelCasePropertyNameConverter = new CamelCasePropertyNameConverter();
+
+            var singleSerializer = new ResourceSerializer(
+                _person, new PersonResource(), new Uri("http://example.com/people/1"),
+                new DefaultUrlPathBuilder(), null, null, camelCasePropertyNameConverter);
+
+            var singleJson = JToken.Parse(singleSerializer.Serialize().ToString());
+
+            var target = new ResourceDeserializer(singleJson, typeof(Person), camelCasePropertyNameConverter);
+            var result = target.Deserialize() as Person;
+
+            Assert.Equal(_person.FirstName, result?.FirstName);
+            Assert.Equal(_person.LastName, result?.LastName);
+        }
+
         [Fact(DisplayName = "Deserializes if id does not exist")]
         public void DeserializesWithoutId()
         {

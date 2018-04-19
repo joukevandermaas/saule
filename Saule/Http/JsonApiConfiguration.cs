@@ -17,6 +17,12 @@ namespace Saule.Http
         }
 
         /// <summary>
+        /// Gets or sets the PropertyNameConverter which determines
+        /// the format of json properties and model properties
+        /// </summary>
+        public IPropertyNameConverter PropertyNameConverter { get; set; } = new DefaultPropertyNameConverter();
+
+        /// <summary>
         /// Gets or sets the UrlPathBuilder which determines how to generate urls for links.
         /// </summary>
         public IUrlPathBuilder UrlPathBuilder { get; set; } = null;

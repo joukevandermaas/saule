@@ -16,6 +16,7 @@ namespace Saule.Serialization
         private readonly IncludeContext _includeContext;
         private readonly ApiResource _resource;
         private readonly object _value;
+        private readonly IPropertyNameConverter _propertyNameConverter;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
         private JsonSerializer _serializer;
@@ -26,8 +27,10 @@ namespace Saule.Serialization
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
-            IncludeContext includeContext)
+            IncludeContext includeContext,
+            IPropertyNameConverter propertyNameConverter = null)
         {
+            _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
             _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
@@ -264,12 +267,12 @@ namespace Saule.Serialization
         {
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
-                    node.SourceObject.IncludesProperty(a.PropertyName))
+                    node.SourceObject.IncludesProperty(a.Name))
                 .Select(a =>
                     new
                     {
-                        Key = a.Name,
-                        Value = node.SourceObject.GetValueOfProperty(a.PropertyName)
+                        Key = _propertyNameConverter.ToJsonPropertyName(a.Name),
+                        Value = node.SourceObject.GetValueOfProperty(a.Name)
                     })
                 .ToDictionary(
                     kvp => kvp.Key,
