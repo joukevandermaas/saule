@@ -1,5 +1,21 @@
 ## `master` (upcoming 1.7)
 
+- [**BUGFIX**] Serialise complex objects correctly (#149 by @laurence79)
+- [**BUGFIX**] Do not require Accept header (#151 by @bjornharrtell)
+- [**FEATURE**] Optional links support (#153 by @bjornharrtell)
+- [**BUGFIX**] Fix regression missing 'data' key for relationships when using DisableDefaultIncluded (#155 by @bjornharrtell)
+- [**FEATURE**] Add support for metadata (#158)
+- [**BUGFIX**] Omit data for relationship objects not existing as property in the original model (#161 by @bjornharrtell)
+- [**FEATURE**] Pagination page size (#165 by @erikhejl, #170 by @sergey-litvinov-work)
+- [**FEATURE**] Configuration improvments (formatter can be only add at end of the collection, without deleting other formatters) (#168 by @tomasjurasek)
+- [**FEATURE**] Functionality to return list of HttpErrors instead of just one error (#172 by @sergey-litvinov-work)
+- [**FEATURE**] Added deserialization method to `JsonApiSerializer<T>` (#179 @madsphi)
+- [**FEATURE**] Provide ability to handle JsonApi parameters in WebApi action itself manually (#181 by @sergey-litvinov-work)
+- [**MAINTENANCE**] Upgrade xunit dependencies (#183 by @bjornharrtell)
+- [**BUGFIX**] Fix regression with omitted data (#184 by @bjornharrtell)
+- [**FEATURE**] Opt into JsonApi per webapi endpoint (#187, #189 by @barsh)
+- [**FEATURE**] Option to serialize attributes in camelCase (#190 by @barsh)
+
 ## Version 1.6
 
 - [**BUGFIX**] Support belongsTo relationships when data is null (#124 by @goo32)
