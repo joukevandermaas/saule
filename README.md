@@ -115,3 +115,13 @@ GET http://example.com/people/123
 
 Deserialization works just like in normal Web API; you don't need
 to do anything special to make this work.
+
+### Creating a new release
+
+Follow the steps below to create a new release:
+
+1. Create a branch called `release-v<version>` (e.g. `release-v1.5`)
+2. Increase the version number in `appveyor.yml` in `master`
+3. Push both changes and wait for the build
+4. Copy the release notes into the release description on Github
+5. Publish the new release
