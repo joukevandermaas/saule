@@ -25,7 +25,8 @@ public IQueryable<Person> GetPeople()
 }
 ```
 
-> **Note**: Saule only supports the `sort` and `filter` query parameters.
+> **Note**: Saule supports the `sort`, `include` (for relationships) and `filter`
+> query parameters.
 > The same attribute may support other queries in the future.
 
 ```
@@ -181,3 +182,78 @@ public static void Register(HttpConfiguration config)
     config.ConfigureJsonApi(jsonApiConfig);
 }
 ```
+
+## Disabling default includes
+
+By default, Saule includes all available relationships in the response. If this is
+not what you want, you can disable this behavior using the `DisableDefaultIncludedAttribute`.
+When you add this attribute to an action method, it will only include relationships
+specifically requested by clients using the `include` query parameter.
+
+Note that even if you do not use this attribute, if the client provides the `include` parameter,
+Saule will not include anything that was not requested. For example, if your `Person` model
+has `Job` and `Friends` relationships, and the client requests `include=friends`, `Job` will
+not be returned in the response.
+
+## Manually handling queries
+
+Saule can apply sorting, filtering, includes and pagination to responses
+automatically. If you would rather do this yourself, or if your setup is
+not compatible with Saules implementation, you can also manually apply the
+query parameters. In order to do this, you must use the `HandlesQueryAttribute`:
+
+```csharp
+[ReturnsResource(typeof(PersonResource))]
+public class PeopleController : ApiController
+{
+    [HttpGet]
+    [HandlesQuery]
+    [Paginated]
+    [Route("people")]
+    public IEnumerable<Person> GetPeople(QueryContext context)
+    {
+        IEnumerable<Person> data = GetSomePeople();
+
+        bool? hideLastName;
+        // if we want to include car or job, then we return response as is as it already has them
+        // otherwise we clear it
+        bool includeCar = context.Include.Includes.Any(p => p.Name == nameof(Person.Car));
+        bool includeJob = context.Include.Includes.Any(p => p.Name == nameof(Person.Job));
+
+        context.Filter.TryGetValue("HideLastName", out hideLastName);
+
+        if (hideLastName.GetValueOrDefault() || !includeCar)
+        {
+            foreach (var person in data)
+            {
+                if (hideLastName.GetValueOrDefault())
+                {
+                    person.LastName = null;
+                }
+
+                if (!includeCar)
+                    person.Car = null;
+
+                if (!includeJob)
+                    person.Job = null;
+            }
+        }
+
+        int? minAge;
+        if (context.Filter.TryGetValue("MinAge", out minAge) && minAge.HasValue)
+        {
+            data = data.Where(person => person.Age >= minAge);
+        }
+
+        if (context.Pagination.PerPage.HasValue)
+        {
+            data = data.Take(context.Pagination.PerPage.Value);
+        }
+
+        return data;
+    }
+}
+```
+
+The `QueryContext` parameter value is provided by Saule and contains the query
+information requested by the client.
