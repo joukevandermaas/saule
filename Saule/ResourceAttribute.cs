@@ -11,9 +11,15 @@
         /// <param name="name">The name of the attribute.</param>
         public ResourceAttribute(string name)
         {
+            InternalName = name;
             Name = name.ToDashed();
             PropertyName = name.ToPascalCase();
         }
+
+        /// <summary>
+        /// Gets the name of the attribute as provided from the ApiResource definition.
+        /// </summary>
+        public string InternalName { get; }
 
         /// <summary>
         /// Gets the name of the attribute in dashed JSON API format.

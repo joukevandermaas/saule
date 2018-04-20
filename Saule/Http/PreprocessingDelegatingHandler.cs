@@ -62,7 +62,7 @@ namespace Saule.Http
 
             PrepareUrlPathBuilder(jsonApi, request, config);
 
-            return jsonApi.PreprocessContent(content, resource, request.RequestUri);
+            return jsonApi.PreprocessContent(content, resource, request.RequestUri, config);
         }
 
         /// <inheritdoc/>

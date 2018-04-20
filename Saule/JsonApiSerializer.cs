@@ -31,7 +31,7 @@ namespace Saule
             return result.ResourceSerializer.Serialize(jsonSerializer);
         }
 
-        public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri)
+        public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri, JsonApiConfiguration config)
         {
             var result = new PreprocessResult
             {
@@ -75,6 +75,7 @@ namespace Saule
                         value: dataObject,
                         type: resource,
                         baseUrl: requestUri,
+                        propertyNameConverter: config.PropertyNameConverter,
                         urlBuilder: UrlPathBuilder,
                         paginationContext: QueryContext?.Pagination,
                         includeContext: QueryContext?.Include);

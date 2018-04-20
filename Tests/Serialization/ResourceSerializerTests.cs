@@ -522,6 +522,20 @@ namespace Tests.Serialization
             Assert.Null(result["data"]["attributes"]["number-of-employees"]);
         }
 
+        [Fact(DisplayName = "Can serialize attributes with camelCase")]
+        public void SerializeWithCamelCase()
+        {
+            var person = new Person(false, "1");
+            var serializer = new ResourceSerializer(person, new PersonResource(),
+                GetUri(id: "123/camelCase"), DefaultPathBuilder, null, null, new CamelCasePropertyNameConverter());
+
+            var result = serializer.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.NotNull(result["data"]["attributes"]["firstName"]);
+            Assert.NotNull(result["data"]["attributes"]["lastName"]);
+        }
+
         [Fact(DisplayName = "A compound document MUST NOT include more than one resource object for each type and id pair")]
         public void ResourceObjectsAreNotDuplicated()
         {

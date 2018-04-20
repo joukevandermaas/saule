@@ -20,6 +20,14 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
+        [Route("people/{id}/usingJsonApiAttributeFilter")]
+        [JsonApi]
+        public Person GetPersonUsingJsonApiAttributeFitler(string id)
+        {
+            return Get.Person(id);
+        }
+
+        [HttpGet]
         [AllowsQuery]
         [Route("query/people")]
         public IEnumerable<Person> QueryPeople()
