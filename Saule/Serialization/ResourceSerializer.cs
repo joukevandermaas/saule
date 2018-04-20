@@ -267,12 +267,12 @@ namespace Saule.Serialization
         {
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
-                    node.SourceObject.IncludesProperty(a.Name))
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
                 .Select(a =>
                     new
                     {
-                        Key = _propertyNameConverter.ToJsonPropertyName(a.Name),
-                        Value = node.SourceObject.GetValueOfProperty(a.Name)
+                        Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
+                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
                     })
                 .ToDictionary(
                     kvp => kvp.Key,
