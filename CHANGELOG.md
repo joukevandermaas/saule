@@ -1,4 +1,10 @@
-## `master` (upcoming 1.7)
+## Master (upcoming 1.8)
+
+## Version 1.7.1
+
+- [**BUGFIX**] Support camel case serialization for nested properties in attributes and meta hashes
+
+## Version 1.7
 
 - [**BUGFIX**] Serialise complex objects correctly (#149 by @laurence79)
 - [**BUGFIX**] Do not require Accept header (#151 by @bjornharrtell)

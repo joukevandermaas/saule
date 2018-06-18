@@ -47,7 +47,7 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
-            serializer.ContractResolver = new JsonApiContractResolver();
+            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             _serializer = serializer;
 
             if (_value == null)
