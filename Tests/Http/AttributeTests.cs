@@ -33,14 +33,13 @@ namespace Tests.Http
             Assert.Throws<ArgumentException>(() =>
                 new ReturnsResourceAttribute(type));
         }
-        
-        [Fact(DisplayName = "JsonApiAttribute responds to HttpGets with Json Api even when content-type header is not 'application/vnd.api+json'")]
+
+        [Fact(DisplayName = "JsonApiAttribute responds to HttpGets with Json Api even when accept header is not 'application/vnd.api+json'")]
         public async Task JsonApiAttributeRespondsWithJsonApi()
         {
             using (var server = new NewSetupJsonApiServer())
             {
-                var client = server.GetClient();
-                client.DefaultRequestHeaders.Accept.Clear();
+                var client = server.GetClient(addDefaultHeaders: false);
 
                 var result = await client.GetJsonResponseAsync("api/people/123/usingJsonApiAttributeFilter");
 
