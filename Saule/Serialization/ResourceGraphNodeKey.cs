@@ -17,7 +17,7 @@ namespace Saule.Serialization
             obj.ThrowIfNull(nameof(obj));
             resource.ThrowIfNull(nameof(resource));
 
-            Type = resource.ResourceType.ToDashed();
+            Type = resource.ResourceType;
             if (obj != null)
             {
                 Id = obj.GetValueOfProperty(resource.IdProperty)?.ToString();

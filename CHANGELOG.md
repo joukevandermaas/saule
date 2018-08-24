@@ -1,5 +1,9 @@
 ## Master (upcoming 1.8)
 
+## Version 1.7.2
+
+- [**BUGFIX**] Support camel case serialization for relationship names
+
 ## Version 1.7.1
 
 - [**BUGFIX**] Support camel case serialization for nested properties in attributes and meta hashes
