@@ -331,7 +331,7 @@ namespace Saule.Serialization
                     item["data"] = data;
                 }
 
-                response[kv.Key] = item;
+                response[_propertyNameConverter.ToJsonPropertyName(kv.Key)] = item;
             }
 
             return response;
