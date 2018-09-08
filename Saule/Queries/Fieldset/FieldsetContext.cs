@@ -30,8 +30,7 @@ namespace Saule.Queries.Fieldset
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Empty;
-            //return Includes != null && Includes.Any() ? "include=" + string.Join(",", Includes.Select(p => p.ToString())) : string.Empty;
+            return Properties != null && Properties.Any() ? string.Join("&", Properties.Select(p => p.ToString())) : string.Empty;
         }
     }
 }
