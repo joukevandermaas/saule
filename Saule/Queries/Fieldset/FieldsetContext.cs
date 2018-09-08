@@ -11,7 +11,7 @@ namespace Saule.Queries.Fieldset
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldsetContext"/> class.
         /// </summary>
-        /// <param name="filedsets">query string that might contain Fieldset keyword</param>
+        /// <param name="queryParams">query string that might contain Fieldset keyword</param>
         public FieldsetContext(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
 			Properties =
