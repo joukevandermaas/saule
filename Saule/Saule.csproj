@@ -70,6 +70,8 @@
     <Compile Include="Http\JsonApiQueryValueProvider.cs" />
     <Compile Include="Http\JsonApiQueryValueProviderFactory.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
+    <Compile Include="Queries\Fieldset\FieldsetContext.cs" />
+    <Compile Include="Queries\Fieldset\FieldsetProperty.cs" />
     <Compile Include="Serialization\CamelCasePropertyNameConverter.cs" />
     <Compile Include="Serialization\DefaultPropertyNameConverter.cs" />
     <Compile Include="Serialization\IPropertyNameConverter.cs" />

@@ -78,7 +78,8 @@ namespace Saule
                         propertyNameConverter: config.PropertyNameConverter,
                         urlBuilder: UrlPathBuilder,
                         paginationContext: QueryContext?.Pagination,
-                        includeContext: QueryContext?.Include);
+                        includeContext: QueryContext?.Include,
+                        fieldsetContext: QueryContext?.Fieldset);
             }
             catch (Exception ex)
             {

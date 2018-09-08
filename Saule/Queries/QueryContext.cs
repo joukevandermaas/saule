@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Filtering;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
@@ -34,6 +35,11 @@ namespace Saule.Queries
         public IncludeContext Include { get; internal set; }
 
         /// <summary>
+        /// Gets include context
+        /// </summary>
+        public FieldsetContext Fieldset { get; internal set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether that query parameters
         /// will be handled by action itself or Saule should handle them
         /// </summary>
@@ -47,7 +53,8 @@ namespace Saule.Queries
                 Pagination?.ToString(),
                 Sort?.ToString(),
                 Filter?.ToString(),
-                Include?.ToString()
+                Include?.ToString(),
+                Fieldset?.ToString()
             };
 
             return string.Join("&", result.Where(c => !string.IsNullOrEmpty(c)));

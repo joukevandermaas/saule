@@ -36,7 +36,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -67,7 +67,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -95,7 +95,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -121,7 +121,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -146,7 +146,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             target.Serialize();
 
@@ -160,7 +160,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             target.Serialize();
 
@@ -178,7 +178,7 @@ namespace Tests.Serialization
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
-                null);
+                null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
