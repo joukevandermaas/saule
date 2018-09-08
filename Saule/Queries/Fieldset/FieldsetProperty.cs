@@ -9,7 +9,7 @@
         /// Initializes a new instance of the <see cref="FieldsetProperty"/> class.
         /// </summary>
         /// <param name="type">type for field filter</param>
-		/// <param name="fields">fields to serialize filter</param>
+        /// <param name="fields">fields to serialize filter</param>
         public FieldsetProperty(string type, string[] fields)
         {
             Type = type;

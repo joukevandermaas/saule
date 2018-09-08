@@ -131,7 +131,7 @@ namespace Saule
                 context.Sort = new SortContext(keyValuePairs);
                 context.Filter = new FilterContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
                 context.Include = new IncludeContext(keyValuePairs);
-				context.Fieldset = new FieldsetContext(keyValuePairs);
+                context.Fieldset = new FieldsetContext(keyValuePairs);
             }
 
             return context;

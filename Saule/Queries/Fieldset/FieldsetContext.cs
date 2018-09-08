@@ -14,10 +14,10 @@ namespace Saule.Queries.Fieldset
         /// <param name="queryParams">query string that might contain Fieldset keyword</param>
         public FieldsetContext(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
-			Properties =
-				from query in queryParams
-				where query.Key.StartsWith(Constants.QueryNames.Fieldset)
-				let type = query.Key.Substring(Constants.QueryNames.Fieldset.Length + 1)
+            Properties =
+                from query in queryParams
+                where query.Key.StartsWith(Constants.QueryNames.Fieldset)
+                let type = query.Key.Substring(Constants.QueryNames.Fieldset.Length + 1)
                 let fields = query.Value.Split(',')
                 select new FieldsetProperty(type, fields);
         }
