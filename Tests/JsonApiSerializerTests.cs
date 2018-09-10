@@ -68,7 +68,7 @@ namespace Tests
 
         }
 
-		[Fact(DisplayName = "Uses query fieldset expressions if specified")]
+        [Fact(DisplayName = "Uses query fieldset expressions if specified")]
         public void UsesQueryFieldsetExpressions()
         {
             var target = new JsonApiSerializer<CompanyResource>
@@ -79,10 +79,24 @@ namespace Tests
             var result = target.Serialize(companies, new Uri(DefaultUrl, "?fields[corporation]=Name,Location"));
             _output.WriteLine(result.ToString());
 
-			Assert.NotNull(result["data"][0]["attributes"]["name"]);
-			Assert.NotNull(result["data"][0]["attributes"]["location"]);
-			Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
-		}
+            Assert.NotNull(result["data"][0]["attributes"]["name"]);
+            Assert.NotNull(result["data"][0]["attributes"]["location"]);
+            Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
+        }
+
+        [Fact(DisplayName = "Returns no fields if requested field is not part of that model")]
+        public void ReturnEmptyModelForUnknownFieldsetExpressions()
+        {
+            var target = new JsonApiSerializer<CompanyResource>
+            {
+                AllowQuery = true
+            };
+            var companies = Get.Companies(1).ToList();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, "?fields[corporation]=Notafield"));
+            _output.WriteLine(result.ToString());
+
+            Assert.False(((JToken)result["data"][0]["attributes"]).HasValues);
+        }
 
         [Fact(DisplayName = "Does not allow null Uri")]
         public void HasAContract()
