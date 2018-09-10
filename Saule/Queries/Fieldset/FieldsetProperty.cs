@@ -29,7 +29,7 @@
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"filter[{Type}]={string.Join(",", Fields)}";
+            return $"fields[{Type}]={string.Join(",", Fields)}";
         }
     }
 }
