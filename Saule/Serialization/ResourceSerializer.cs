@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
 
@@ -14,6 +15,7 @@ namespace Saule.Serialization
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
         private readonly IncludeContext _includeContext;
+        private readonly FieldsetContext _fieldsetContext;
         private readonly ApiResource _resource;
         private readonly object _value;
         private readonly IPropertyNameConverter _propertyNameConverter;
@@ -28,6 +30,7 @@ namespace Saule.Serialization
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
             IncludeContext includeContext,
+            FieldsetContext fieldsetContext,
             IPropertyNameConverter propertyNameConverter = null)
         {
             _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
@@ -37,6 +40,7 @@ namespace Saule.Serialization
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includeContext = includeContext;
+            _fieldsetContext = fieldsetContext;
             _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
         }
 
@@ -248,7 +252,17 @@ namespace Saule.Serialization
                 }
             }
 
-            var attributes = SerializeAttributes(node);
+            JObject attributes = null;
+            if (_fieldsetContext != null && _fieldsetContext.Properties.Count(property => property.Type == node.Key.Type) > 0)
+            {
+                FieldsetProperty fieldset = _fieldsetContext.Properties.Where(property => property.Type == node.Key.Type).First();
+                attributes = SerializeAttributes(node, fieldset);
+            }
+            else
+            {
+                attributes = SerializeAttributes(node);
+            }
+
             if (attributes != null)
             {
                 response["attributes"] = attributes;
@@ -268,6 +282,24 @@ namespace Saule.Serialization
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
+                .Select(a =>
+                    new
+                    {
+                        Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
+                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
+                    })
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value);
+
+            return JObject.FromObject(attributeHash, _serializer);
+        }
+
+        private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
+        {
+            var attributeHash = node.Resource.Attributes
+                .Where(a =>
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
                 .Select(a =>
                     new
                     {

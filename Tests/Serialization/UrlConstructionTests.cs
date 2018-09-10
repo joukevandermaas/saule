@@ -27,7 +27,7 @@ namespace Tests.Serialization
         public void HandlesQueryParams()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123", "a=b&c=d"), DefaultPathBuilder, null, null);
+                GetUri("123", "a=b&c=d"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -47,7 +47,7 @@ namespace Tests.Serialization
         {
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
-                GetUri(), DefaultPathBuilder, null, null);
+                GetUri(), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -63,7 +63,7 @@ namespace Tests.Serialization
         public void NoSelfLinksInObject()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -76,7 +76,7 @@ namespace Tests.Serialization
         public void SelfLink()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -89,7 +89,7 @@ namespace Tests.Serialization
         public void NoTopLevelLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonNoLinksResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -102,7 +102,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 10), null);
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 10), null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -110,7 +110,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 4), null);
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 4), null, null);
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("next").Query);
@@ -123,7 +123,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "0"), pageSizeDefault: 10), null);
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "0"), pageSizeDefault: 10), null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -131,7 +131,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(), DefaultPathBuilder,
-                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), pageSizeDefault: 10), null);
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), pageSizeDefault: 10), null, null);
             result = target.Serialize();
 
             var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);
@@ -144,7 +144,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                 GetUri(query: "q=a"), DefaultPathBuilder,
-                new PaginationContext(GetQuery("q", "a"), pageSizeDefault: 4), null);
+                new PaginationContext(GetQuery("q", "a"), pageSizeDefault: 4), null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -159,7 +159,7 @@ namespace Tests.Serialization
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
                GetUri(), DefaultPathBuilder,
-                new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), pageSizeDefault: 4), null);
+                new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), pageSizeDefault: 4), null, null);
 
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -172,7 +172,7 @@ namespace Tests.Serialization
         public void SerializesRelationshipLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -194,7 +194,7 @@ namespace Tests.Serialization
             var person = Get.Person();
             person.Friends = Get.People(1);
             var target = new ResourceSerializer(person, new PersonResource(),
-                GetUri("123"), new CanonicalUrlPathBuilder(), null, null);
+                GetUri("123"), new CanonicalUrlPathBuilder(), null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -213,7 +213,7 @@ namespace Tests.Serialization
         public void BuildsRightLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -229,7 +229,7 @@ namespace Tests.Serialization
         public void NoRelLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonNoJobLinksResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -242,7 +242,7 @@ namespace Tests.Serialization
         public void NoRelRelLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonJobOnlySelfLinksResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -257,7 +257,7 @@ namespace Tests.Serialization
         public void NoRelSelfLinks()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonJobOnlyRelatedLinksResource(),
-                GetUri("123"), DefaultPathBuilder, null, null);
+                GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -272,7 +272,7 @@ namespace Tests.Serialization
         public void UrlBuilder()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
-                GetUri("123"), new EmptyUrlBuilder(), null, null);
+                GetUri("123"), new EmptyUrlBuilder(), null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 

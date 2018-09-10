@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Filtering;
 using Saule.Queries.Including;
 using Saule.Queries.Sorting;
@@ -28,6 +29,7 @@ namespace Saule.Http
 
             queryContext.Sort = new SortContext(queryParams);
             queryContext.Filter = new FilterContext(queryParams);
+            queryContext.Fieldset = new FieldsetContext(queryParams);
 
             if (queryContext.Include == null)
             {

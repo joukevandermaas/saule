@@ -19,6 +19,7 @@
             public const string Sorting = "sort";
             public const string Filtering = "filter";
             public const string Including = "include";
+            public const string Fieldset = "fields";
         }
 
         public static class QueryValues
