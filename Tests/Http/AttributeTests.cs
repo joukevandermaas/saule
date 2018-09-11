@@ -5,6 +5,8 @@ using Tests.Models;
 using Xunit;
 using System.Threading.Tasks;
 using Tests.Helpers;
+using Xunit.Abstractions;
+using System.Linq;
 
 namespace Tests.Http
 {
@@ -43,7 +45,7 @@ namespace Tests.Http
 
                 var result = await client.GetJsonResponseAsync("api/people/123/usingJsonApiAttributeFilter");
 
-                Assert.NotNull(result["data"]["attributes"]["first-name"]);
+                Assert.NotEmpty(result["data"]["attributes"].Children());
             }
         }
     }
