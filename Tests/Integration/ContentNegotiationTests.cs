@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Saule;
 using Saule.Http;
 using Tests.Helpers;
@@ -24,6 +22,23 @@ namespace Tests.Integration
             public ObsoleteSetup(ObsoleteSetupJsonApiServer server)
             {
                 _server = server;
+            }
+
+            [Fact(DisplayName = "Servers MUST not respond with json api unless requested Content-Type is 'application/vnd.api+json' or action filter is set to 'JsonApiAttribute'")]
+            public async Task MustNotReturnJsonApiResponse()
+            {
+                var target = _server.GetClient();
+
+                var result = await target.GetAsync("api/companies/");
+                Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
+
+                target.DefaultRequestHeaders.Clear();
+
+                result = await target.GetAsync("api/companies/");
+                Assert.Equal("application/json", result.Content.Headers.ContentType.MediaType);
+
+                result = await target.GetAsync("api/v2/companies/");
+                Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
             }
 
             [Theory(DisplayName = "Servers MUST return content type 'application/vnd.api+json'")]

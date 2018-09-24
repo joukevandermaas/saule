@@ -127,7 +127,7 @@ namespace Saule.Http
                 try
                 {
                     var json = JToken.Parse(await reader.ReadToEndAsync());
-                    return new ResourceDeserializer(json, type).Deserialize();
+                    return new ResourceDeserializer(json, type, _config.PropertyNameConverter).Deserialize();
                 }
                 catch (JsonApiException ex)
                 {

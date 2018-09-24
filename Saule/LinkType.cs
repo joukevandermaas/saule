@@ -24,6 +24,11 @@ namespace Saule
         Related = 2,
 
         /// <summary>
+        /// Only top section links
+        /// </summary>
+        Top = 4,
+
+        /// <summary>
         /// Generate all possible links
         /// </summary>
         All = ~None

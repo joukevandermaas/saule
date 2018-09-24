@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Filtering;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
@@ -79,15 +80,21 @@ namespace Saule
         /// </summary>
         /// <param name="object">The object to serialize.</param>
         /// <param name="requestUri">The request uri that prompted the response.</param>
+        /// <param name="config">The configuration to be used for serialization.</param>
         /// <returns>A <see cref="JToken"/> representing the object.</returns>
-        public JToken Serialize(object @object, Uri requestUri)
+        public JToken Serialize(object @object, Uri requestUri, JsonApiConfiguration config = null)
         {
+            if (config == null)
+            {
+                config = new JsonApiConfiguration();
+            }
+
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
 
             _serializer.QueryContext = queryContext;
 
-            var preprocessResult = _serializer.PreprocessContent(@object, new T(), requestUri);
+            var preprocessResult = _serializer.PreprocessContent(@object, new T(), requestUri, config);
             return JsonApiSerializer.Serialize(preprocessResult);
         }
 
@@ -96,10 +103,16 @@ namespace Saule
         /// </summary>
         /// <param name="object">Json to convert</param>
         /// <param name="type">Type to convert to</param>
+        /// <param name="config">The configuration to be used for deserialization</param>
         /// <returns>Json converted into the specified type of object</returns>
-        public object Deserialize(JToken @object, Type type)
+        public object Deserialize(JToken @object, Type type, JsonApiConfiguration config = null)
         {
-            var target = new ResourceDeserializer(@object, type);
+            if (config == null)
+            {
+                config = new JsonApiConfiguration();
+            }
+
+            var target = new ResourceDeserializer(@object, type, config.PropertyNameConverter);
             return target.Deserialize();
         }
 
@@ -118,6 +131,7 @@ namespace Saule
                 context.Sort = new SortContext(keyValuePairs);
                 context.Filter = new FilterContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
                 context.Include = new IncludeContext(keyValuePairs);
+                context.Fieldset = new FieldsetContext(keyValuePairs);
             }
 
             return context;

@@ -68,19 +68,34 @@ namespace Tests
 
         }
 
-        [Fact(DisplayName = "Does not include relationship data when the relationship is null")]
-        public void DoesNotIncludeNullData()
+        [Fact(DisplayName = "Uses query fieldset expressions if specified")]
+        public void UsesQueryFieldsetExpressions()
         {
-            var target = new JsonApiSerializer<PersonResource>();
-            var model = new Person()
+            var target = new JsonApiSerializer<CompanyResource>
             {
-                Identifier = "Id",
-                Job = null
+                AllowQuery = true
             };
+            var companies = Get.Companies(1).ToList();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, "?fields[corporation]=Name,Location"));
+            _output.WriteLine(result.ToString());
 
-            var result = target.Serialize(model, DefaultUrl);
+            Assert.NotNull(result["data"][0]["attributes"]["name"]);
+            Assert.NotNull(result["data"][0]["attributes"]["location"]);
+            Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
+        }
 
-             Assert.Null(result["data"]["relationships"]["job"]["data"]);
+        [Fact(DisplayName = "Returns no fields if requested field is not part of that model")]
+        public void ReturnEmptyModelForUnknownFieldsetExpressions()
+        {
+            var target = new JsonApiSerializer<CompanyResource>
+            {
+                AllowQuery = true
+            };
+            var companies = Get.Companies(1).ToList();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, "?fields[corporation]=Notafield"));
+            _output.WriteLine(result.ToString());
+
+            Assert.False(((JToken)result["data"][0]["attributes"]).HasValues);
         }
 
         [Fact(DisplayName = "Does not allow null Uri")]

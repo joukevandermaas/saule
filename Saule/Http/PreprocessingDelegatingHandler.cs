@@ -62,34 +62,15 @@ namespace Saule.Http
 
             PrepareUrlPathBuilder(jsonApi, request, config);
 
-            return jsonApi.PreprocessContent(content, resource, request.RequestUri);
+            return jsonApi.PreprocessContent(content, resource, request.RequestUri, config);
         }
 
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var result = await base.SendAsync(request, cancellationToken);
-            var hasMediaType = request.Headers.Accept.Any(x => x.MediaType == Constants.MediaType);
 
-            var statusCode = (int)result.StatusCode;
-            if (!hasMediaType || (statusCode >= 400 && statusCode < 500))
-            {
-                // probably malformed request or not found
-                return result;
-            }
-
-            var value = result.Content as ObjectContent;
-
-            var content = PreprocessRequest(value?.Value, request, _config);
-
-            if (content.ErrorContent != null)
-            {
-                result.StatusCode = ApiError.IsClientError(content.ErrorContent)
-                    ? HttpStatusCode.BadRequest
-                    : HttpStatusCode.InternalServerError;
-            }
-
-            request.Properties.Add(Constants.PropertyNames.PreprocessResult, content);
+            JsonApiProcessor.ProcessRequest(request, result, _config, requiresMediaType: true);
 
             return result;
         }

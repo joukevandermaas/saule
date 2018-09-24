@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
 
@@ -14,8 +15,10 @@ namespace Saule.Serialization
         private readonly Uri _baseUrl;
         private readonly PaginationContext _paginationContext;
         private readonly IncludeContext _includeContext;
+        private readonly FieldsetContext _fieldsetContext;
         private readonly ApiResource _resource;
         private readonly object _value;
+        private readonly IPropertyNameConverter _propertyNameConverter;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
         private JsonSerializer _serializer;
@@ -26,14 +29,18 @@ namespace Saule.Serialization
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
-            IncludeContext includeContext)
+            IncludeContext includeContext,
+            FieldsetContext fieldsetContext,
+            IPropertyNameConverter propertyNameConverter = null)
         {
+            _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
             _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includeContext = includeContext;
+            _fieldsetContext = fieldsetContext;
             _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
         }
 
@@ -44,7 +51,7 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
-            serializer.ContractResolver = new JsonApiContractResolver();
+            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             _serializer = serializer;
 
             if (_value == null)
@@ -123,7 +130,10 @@ namespace Saule.Serialization
         {
             var result = new JObject();
 
-            if (_resource.LinkType.HasFlag(LinkType.Self))
+            // if resource has Top only and not Self, then we render it.
+            // otherwise to preserve back compatibility if Self is enabled, then we also render it
+            if ((_resource.LinkType.HasFlag(LinkType.Top) && !_resource.LinkType.HasFlag(LinkType.Self))
+                || _resource.LinkType.HasFlag(LinkType.Self))
             {
                 result.Add("self", _baseUrl);
             }
@@ -245,7 +255,17 @@ namespace Saule.Serialization
                 }
             }
 
-            var attributes = SerializeAttributes(node);
+            JObject attributes = null;
+            if (_fieldsetContext != null && _fieldsetContext.Properties.Count(property => property.Type == node.Key.Type) > 0)
+            {
+                FieldsetProperty fieldset = _fieldsetContext.Properties.Where(property => property.Type == node.Key.Type).First();
+                attributes = SerializeAttributes(node, fieldset);
+            }
+            else
+            {
+                attributes = SerializeAttributes(node);
+            }
+
             if (attributes != null)
             {
                 response["attributes"] = attributes;
@@ -264,12 +284,30 @@ namespace Saule.Serialization
         {
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
-                    node.SourceObject.IncludesProperty(a.PropertyName))
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
                 .Select(a =>
                     new
                     {
-                        Key = a.Name,
-                        Value = node.SourceObject.GetValueOfProperty(a.PropertyName)
+                        Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
+                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
+                    })
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value);
+
+            return JObject.FromObject(attributeHash, _serializer);
+        }
+
+        private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
+        {
+            var attributeHash = node.Resource.Attributes
+                .Where(a =>
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
+                .Select(a =>
+                    new
+                    {
+                        Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
+                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
                     })
                 .ToDictionary(
                     kvp => kvp.Key,
@@ -323,12 +361,12 @@ namespace Saule.Serialization
                     item["links"] = links;
                 }
 
-                if (data != null && kv.Value != null && kv.Value.SourceObject != null)
+                if (data != null && kv.Value != null)
                 {
                     item["data"] = data;
                 }
 
-                response[kv.Key] = item;
+                response[_propertyNameConverter.ToJsonPropertyName(kv.Key)] = item;
             }
 
             return response;

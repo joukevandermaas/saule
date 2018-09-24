@@ -38,6 +38,16 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
+        [JsonApi]
+        [Paginated(PerPage = 12)]
+        [Route("v2/companies")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IEnumerable<Company> GetCompaniesV2()
+        {
+            return Get.Companies(100);
+        }
+
+        [HttpGet]
         [Paginated(PerPage = 12)]
         [Route("companies/querypagesize")]
         [ReturnsResource(typeof(CompanyResource))]

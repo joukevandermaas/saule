@@ -13,11 +13,13 @@ namespace Saule.Serialization
 
         private readonly JToken _object;
         private readonly Type _target;
+        private readonly IPropertyNameConverter _propertyNameConverter;
 
-        public ResourceDeserializer(JToken @object, Type target)
+        public ResourceDeserializer(JToken @object, Type target, IPropertyNameConverter propertyNameConverter = null)
         {
             _object = @object;
             _target = target;
+            _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
         }
 
         public object Deserialize()
@@ -100,13 +102,13 @@ namespace Saule.Serialization
             foreach (var attr in child["attributes"] ?? new JArray())
             {
                 var prop = attr as JProperty;
-                result.Add(prop?.Name.ToPascalCase(), prop?.Value);
+                result.Add(_propertyNameConverter.ToModelPropertyName(prop?.Name), prop?.Value);
             }
 
             foreach (var rel in child["relationships"] ?? new JArray())
             {
                 var prop = rel as JProperty;
-                result.Add(prop?.Name.ToPascalCase(), ToFlatStructure(prop?.Value));
+                result.Add(_propertyNameConverter.ToModelPropertyName(prop?.Name), ToFlatStructure(prop?.Value));
             }
 
             return result;

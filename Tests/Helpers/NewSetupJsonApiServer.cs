@@ -47,6 +47,18 @@ namespace Tests.Helpers
             return client;
         }
 
+        public HttpClient GetClient(bool addDefaultHeaders)
+        {
+            var client = _server.HttpClient;
+
+            if (addDefaultHeaders)
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.MediaType));
+            }
+
+            return client;
+        }
+
         public void Dispose()
         {
             _server.Dispose();
