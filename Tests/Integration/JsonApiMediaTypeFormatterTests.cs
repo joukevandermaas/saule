@@ -658,13 +658,16 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Passes through two 4xx errors")]
-        public async Task PassesThroughTwoHttpErrors()
+        [Theory(DisplayName = "Passes through two 4xx errors")]
+        [InlineData("api/broken/errors")]
+        // Passes through two 4xx errors when endpoint doesn't have any Resource specified
+        [InlineData("api/broken/errorsNoResource")]
+        public async Task PassesThroughTwoHttpErrors(string url)
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var response = await client.GetFullJsonResponseAsync("api/broken/errors");
+                var response = await client.GetFullJsonResponseAsync(url);
                 var errors = response.Content["errors"];
 
                 Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -674,25 +677,6 @@ namespace Tests.Integration
                 Assert.Equal("Error 2.", errors[1]["title"]);
                 Assert.Equal("Type 2", errors[1]["code"]);
            }
-        }
-
-
-        [Fact(DisplayName = "Passes through two 4xx errors when endpoint doesn't have any Resource specified")]
-        public async Task PassesThroughTwoHttpErrorsWhenNoResourceIsSpecified()
-        {
-            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
-            {
-                var client = server.GetClient();
-                var response = await client.GetFullJsonResponseAsync("api/broken/errorsNoResource");
-                var errors = response.Content["errors"];
-
-                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-                Assert.Equal(2, errors.Count());
-                Assert.Equal("Error 1.", errors[0]["title"]);
-                Assert.Equal("Type 1", errors[0]["code"]);
-                Assert.Equal("Error 2.", errors[1]["title"]);
-                Assert.Equal("Type 2", errors[1]["code"]);
-            }
         }
 
         [Fact(DisplayName = "Passes through one 400 error")]
