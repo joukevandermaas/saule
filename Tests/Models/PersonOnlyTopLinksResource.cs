@@ -7,7 +7,7 @@ namespace Tests.Models
         public PersonOnlyTopLinksResource()
         {
             WithId(nameof(Person.Identifier));
-            WithLinks(LinkType.Top);
+            WithLinks(LinkType.TopSelf);
 
             Attribute(nameof(Person.FirstName));
             Attribute(nameof(Person.LastName));

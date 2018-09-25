@@ -85,10 +85,10 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/123", selfLink);
         }
 
-        [Fact(DisplayName = "Adds top level self link if only LinkType.Top is specified")]
+        [Fact(DisplayName = "Adds top level self link if only LinkType.TopSelf is specified")]
         public void TopLinkOnlyLink()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonOnlyTopLinksResource(),
+            var target = new ResourceSerializer(Get.People(1), new PersonOnlyTopLinksResource(),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -97,7 +97,7 @@ namespace Tests.Serialization
 
             Assert.Equal("/api/people/123", selfLink);
 
-            Assert.Null(result["data"]["links"]);
+            Assert.Null(result["data"][0]["links"]);
         }
 
         [Fact(DisplayName = "Omits top level links if so requested")]
