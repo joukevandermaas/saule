@@ -48,6 +48,23 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
+        [Route("api/broken/errorsNoResource")]
+        public HttpResponseMessage TwoErrorsNoResource()
+        {
+            return Request.CreateResponse(HttpStatusCode.BadRequest, new List<HttpError>()
+            {
+                new HttpError("Error 1")
+                {
+                    ExceptionType = "Type 1"
+                },
+                new HttpError("Error 2")
+                {
+                    ExceptionType = "Type 2"
+                }
+            });
+        }
+
+        [HttpGet]
         [Route("api/broken/error")]
         [ReturnsResource(typeof(PersonResource))]
         public HttpResponseMessage OneError()
