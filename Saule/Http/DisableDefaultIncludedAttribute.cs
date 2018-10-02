@@ -11,7 +11,7 @@ namespace Saule.Http
     /// This attribute is only relevant when requesting a resource without an
     /// explicit include parameter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public sealed class DisableDefaultIncludedAttribute : ActionFilterAttribute
     {
         /// <summary>
