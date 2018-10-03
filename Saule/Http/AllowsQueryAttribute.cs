@@ -15,7 +15,7 @@ namespace Saule.Http
     /// If the collection implements <see cref="IQueryable{T}"/>, the query will be executed
     /// efficiently.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public sealed class AllowsQueryAttribute : ActionFilterAttribute
     {
         /// <summary>
