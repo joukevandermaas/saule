@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Saule;
 using Saule.Queries;
 using Saule.Queries.Filtering;
-using Saule.Queries.Sorting;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
@@ -118,6 +116,20 @@ namespace Tests.Queries
             var expected = people.Where(c => c.LastName == "Russel").ToList();
 
             var query = GetQuery(new[] { "LastName" }, new[] { "Russel" });
+
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
+                as IQueryable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies filtering on strings with multiple values")]
+        public void WorksOnStringsMultiple()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.Where(c => c.LastName == "Russel" || c.LastName == "Comma,Test").ToList();
+
+            var query = GetQuery(new[] { "LastName" }, new[] { "Russel,\"Comma,Test\"" });
 
             var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IQueryable<Person>;

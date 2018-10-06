@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\FilterExpressions\StringMultiQueryFilterExpression.cs" />
     <Compile Include="Http\HandlesQueryAttribute.cs" />
     <Compile Include="Http\JsonApiAttribute.cs" />
     <Compile Include="Http\JsonApiProcessor.cs" />
