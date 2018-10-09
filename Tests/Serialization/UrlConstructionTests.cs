@@ -106,9 +106,9 @@ namespace Tests.Serialization
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
-            var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
+            var selfLink = result["links"].Value<string>("self");
 
-            Assert.Equal("/api/people/123", selfLink);
+            Assert.EndsWith("/api/people/123", selfLink);
 
             Assert.Null(result["data"][0]["links"]);
         }
