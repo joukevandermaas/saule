@@ -115,14 +115,14 @@ namespace Tests.Serialization
             var job = result["data"]["relationships"]["job"]["links"];
             var friends = result["data"]["relationships"]["friends"]["links"];
 
-            var self = result["links"]["self"].Value<Uri>().AbsolutePath;
+            var self = result["links"]["self"].Value<string>();
             var jobSelf = job["self"].Value<Uri>().AbsolutePath;
             var jobRelated = job["related"].Value<Uri>().AbsolutePath;
             var friendsSelf = friends["self"].Value<Uri>().AbsolutePath;
             var friendsRelated = friends["related"].Value<Uri>().AbsolutePath;
             var included = result["included"][0]["links"]["self"].Value<Uri>().AbsolutePath;
 
-            Assert.Equal("/api/people/abc", self);
+            Assert.EndsWith("/api/people/abc", self);
             Assert.Equal("/api/people/abc/relationships/employer/", jobSelf);
             Assert.Equal("/api/people/abc/employer/", jobRelated);
             Assert.Equal("/api/people/abc/relationships/friends/", friendsSelf);

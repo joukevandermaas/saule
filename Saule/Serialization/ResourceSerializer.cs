@@ -132,7 +132,7 @@ namespace Saule.Serialization
 
             if (_resource.LinkType.HasFlag(LinkType.Self))
             {
-                result.Add("self", _baseUrl);
+                result.Add("self", _baseUrl.AbsoluteUri);
             }
 
             var queryStrings = new PaginationQuery(_paginationContext);
