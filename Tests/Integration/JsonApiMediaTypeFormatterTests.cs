@@ -658,13 +658,16 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Passes through two 4xx errors")]
-        public async Task PassesThroughTwoHttpErrors()
+        [Theory(DisplayName = "Passes through two 4xx errors")]
+        [InlineData("api/broken/errors")]
+        // Passes through two 4xx errors when endpoint doesn't have any Resource specified
+        [InlineData("api/broken/errorsNoResource")]
+        public async Task PassesThroughTwoHttpErrors(string url)
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {
                 var client = server.GetClient();
-                var response = await client.GetFullJsonResponseAsync("api/broken/errors");
+                var response = await client.GetFullJsonResponseAsync(url);
                 var errors = response.Content["errors"];
 
                 Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
