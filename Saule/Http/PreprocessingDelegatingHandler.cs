@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -41,11 +42,12 @@ namespace Saule.Http
             PrepareQueryContext(jsonApi, request, config);
 
             ApiResource resource = null;
+            bool isHttpError = content is HttpError || content is IEnumerable<HttpError>;
             if (request.Properties.ContainsKey(Constants.PropertyNames.ResourceDescriptor))
             {
                 resource = (ApiResource)request.Properties[Constants.PropertyNames.ResourceDescriptor];
             }
-            else if (content != null && !(content is HttpError))
+            else if (content != null && !isHttpError)
             {
                 content = new JsonApiException(
                     ErrorType.Server,
@@ -55,7 +57,7 @@ namespace Saule.Http
                 };
             }
 
-            if (!(content is HttpError) && jsonApi.QueryContext?.Pagination?.PerPage > jsonApi.QueryContext?.Pagination?.PageSizeLimit)
+            if (!isHttpError && jsonApi.QueryContext?.Pagination?.PerPage > jsonApi.QueryContext?.Pagination?.PageSizeLimit)
             {
                 content = new JsonApiException(ErrorType.Client, "Page size exceeds page size limit for queries.");
             }

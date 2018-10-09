@@ -130,7 +130,8 @@ namespace Saule.Serialization
         {
             var result = new JObject();
 
-            if (_resource.LinkType.HasFlag(LinkType.Self))
+            // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
+            if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
             {
                 result.Add("self", _baseUrl.AbsoluteUri);
             }
