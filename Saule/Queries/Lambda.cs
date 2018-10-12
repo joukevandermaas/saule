@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,10 +10,10 @@ namespace Saule.Queries
 {
     internal static class Lambda
     {
-        public static Expression SelectPropertyValue(Type type, string property, string value, QueryFilterExpressionCollection queryFilter)
+        public static Expression SelectPropertyValue(Type type, string property, List<string> values, QueryFilterExpressionCollection queryFilter)
         {
             var valueType = GetPropertyType(type, property);
-            var parsedValue = TryConvert(value, valueType);
+            var parsedValues = TryConvert(values, valueType);
             var param = Expression.Parameter(type, "i");
             var propertyExpression = Expression.Property(param, property);
 
@@ -21,7 +22,7 @@ namespace Saule.Queries
             return typeof(Lambda)
                 .GetMethod(nameof(Convert), BindingFlags.Static | BindingFlags.NonPublic)
                 .MakeGenericMethod(valueType, type)
-                .Invoke(null, new[] { expression, parsedValue, propertyExpression, param })
+                .Invoke(null, new[] { expression, parsedValues, propertyExpression, param })
                 as Expression;
         }
 
@@ -37,10 +38,16 @@ namespace Saule.Queries
             return expressionFactory.Invoke(null, new object[] { propertyExpression, new[] { param } }) as Expression;
         }
 
-        internal static object TryConvert(string value, Type type)
+        internal static List<object> TryConvert(List<string> values, Type type)
         {
             var converter = TypeDescriptor.GetConverter(type);
-            return converter.ConvertFromInvariantString(value);
+            var parsedList = new List<object>();
+            foreach (string value in values)
+            {
+                parsedList.Add(converter.ConvertFromInvariantString(value));
+            }
+
+            return parsedList;
         }
 
         // Return value is used through reflection invocation

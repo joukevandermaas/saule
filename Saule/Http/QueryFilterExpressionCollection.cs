@@ -21,7 +21,6 @@ namespace Saule.Http
         public QueryFilterExpressionCollection()
         {
             SetExpression(new DefaultQueryFilterExpression<object>());
-            SetExpression(new StringMultiQueryFilterExpression());
         }
 
         /// <summary>

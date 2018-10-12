@@ -40,16 +40,20 @@ namespace Saule.Queries.Filtering
         /// <param name="name">property name</param>
         /// <param name="value">property value</param>
         /// <returns>true if property is specified. Otherwise false</returns>
-        public bool TryGetValue<T>(string name, out T value)
+        public bool TryGetValue<T>(string name, out List<T> value)
         {
             var property = Properties.FirstOrDefault(p => p.Name == name);
+            value = new List<T>();
             if (property == null)
             {
-                value = default(T);
                 return false;
             }
 
-            value = (T)Lambda.TryConvert(property.Value, typeof(T));
+            foreach (object obj in Lambda.TryConvert(property.Values, typeof(T)))
+            {
+                value.Add((T)obj);
+            }
+
             return true;
         }
 

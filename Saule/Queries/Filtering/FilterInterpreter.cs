@@ -21,7 +21,7 @@ namespace Saule.Queries.Filtering
             if (_context.Properties.Any())
             {
                  return _context.Properties
-                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Value) : p)
+                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Values) : p)
                     .Aggregate(queryable, ApplyProperty);
             }
 
@@ -33,7 +33,7 @@ namespace Saule.Queries.Filtering
             if (_context.Properties.Any())
             {
                  return _context.Properties
-                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Value) : p)
+                    .Select(p => p.Name == "Id" ? new FilterProperty(_resource.IdProperty, p.Values) : p)
                     .Aggregate(enumerable, ApplyProperty);
             }
 
@@ -57,7 +57,7 @@ namespace Saule.Queries.Filtering
 
                 enumerable = enumerable.ApplyQuery(
                     QueryMethod.Where,
-                    Lambda.SelectPropertyValue(elementType, property.Name, property.Value, _context.QueryFilters))
+                    Lambda.SelectPropertyValue(elementType, property.Name, property.Values, _context.QueryFilters))
                     as IEnumerable;
 
                 return enumerable;
@@ -74,7 +74,7 @@ namespace Saule.Queries.Filtering
             {
                 queryable = queryable.ApplyQuery(
                     QueryMethod.Where,
-                    Lambda.SelectPropertyValue(queryable.ElementType, property.Name, property.Value, _context.QueryFilters))
+                    Lambda.SelectPropertyValue(queryable.ElementType, property.Name, property.Values, _context.QueryFilters))
                     as IQueryable;
                 return queryable;
             }

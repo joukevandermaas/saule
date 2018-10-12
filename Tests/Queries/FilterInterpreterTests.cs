@@ -95,6 +95,20 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
+        [Fact(DisplayName = "Applies filtering on multiple ints")]
+        public void WorksOnMultipleInts()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.Where(c => c.Age == 20 || c.Age == 30).ToList();
+
+            var query = GetQuery(new[] { "Age" }, new[] { "20" });
+
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
+                as IQueryable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
         [Fact(DisplayName = "Applies filtering on enums (string)")]
         public void WorksOnEnumsAsStrings()
         {
@@ -102,6 +116,20 @@ namespace Tests.Queries
             var expected = companies.Where(c => c.Location == LocationType.National).ToList();
 
             var query = GetQuery(new[] { "Location" }, new[] { "national" });
+
+            var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
+                as IQueryable<Company>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies filtering on multiple enums (string)")]
+        public void WorksOnMultipleEnumsAsStrings()
+        {
+            var companies = Get.Companies(100).ToList().AsQueryable();
+            var expected = companies.Where(c => c.Location == LocationType.National || c.Location == LocationType.Local).ToList();
+
+            var query = GetQuery(new[] { "Location" }, new[] { "national,local" });
 
             var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
                 as IQueryable<Company>;

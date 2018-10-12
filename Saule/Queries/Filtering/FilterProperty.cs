@@ -1,4 +1,7 @@
-﻿namespace Saule.Queries.Filtering
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace Saule.Queries.Filtering
 {
     /// <summary>
     /// Property for filtering
@@ -9,11 +12,39 @@
         /// Initializes a new instance of the <see cref="FilterProperty"/> class.
         /// </summary>
         /// <param name="name">property name</param>
-        /// <param name="value">property value</param>
-        public FilterProperty(string name, string value)
+        /// <param name="values">property values in one string in csv notation</param>
+        public FilterProperty(string name, string values)
         {
-            Value = value;
             Name = name.ToPascalCase();
+            ValuesString = values;
+
+            // Spliting the string into multiple values with csv notation
+            Values = new List<string>();
+
+            var match = new Regex("\"(.+?)\"|(\\w+(?=,|$))").Matches(values);
+            foreach (Capture matchCapture in match)
+            {
+                var captureValue = matchCapture.Value;
+
+                // Fix for regex matching including the double quotes
+                captureValue = captureValue.StartsWith("\"") && captureValue.EndsWith("\"")
+                    ? captureValue.Substring(1, captureValue.Length - 2)
+                    : captureValue;
+
+                Values.Add(captureValue);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterProperty"/> class.
+        /// </summary>
+        /// <param name="name">property name</param>
+        /// <param name="values">property values</param>
+        public FilterProperty(string name, List<string> values)
+        {
+            Name = name.ToPascalCase();
+            Values = values;
+            ValuesString = string.Join(",", values);
         }
 
         /// <summary>
@@ -24,12 +55,17 @@
         /// <summary>
         /// Gets property value
         /// </summary>
-        public string Value { get; }
+        public List<string> Values { get; }
+
+        /// <summary>
+        /// Gets property string value
+        /// </summary>
+        public string ValuesString { get; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"filter[{Name}]={Value}";
+            return $"filter[{Name}]={ValuesString}";
         }
     }
 }
