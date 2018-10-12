@@ -33,11 +33,11 @@ namespace Tests.Serialization
 
             var jobLinks = result["data"]?["relationships"]?["job"]?["links"];
 
-            var selfLink = result["links"].Value<Uri>("self")?.PathAndQuery;
+            var selfLink = result["links"].Value<string>("self");
             var jobSelfLink = jobLinks?.Value<Uri>("self")?.PathAndQuery;
             var jobRelationLink = jobLinks?.Value<Uri>("related")?.PathAndQuery;
 
-            Assert.Equal("/api/people/123?a=b&c=d", selfLink);
+            Assert.EndsWith("/api/people/123?a=b&c=d", selfLink);
             Assert.Equal("/api/people/123/relationships/employer/", jobSelfLink);
             Assert.Equal("/api/people/123/employer/", jobRelationLink);
         }
@@ -80,9 +80,22 @@ namespace Tests.Serialization
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
-            var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
+            var selfLink = result["links"].Value<string>("self");
 
-            Assert.Equal("/api/people/123", selfLink);
+            Assert.EndsWith("/api/people/123", selfLink);
+        }
+
+        [Fact(DisplayName = "Adds top level self link without any port")]
+        public void SelfLinkNoPort()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+                new Uri("http://localhost:80/api/people/123"), DefaultPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var selfLink = result["links"].Value<string>("self");
+
+            Assert.Equal("http://localhost/api/people/123", selfLink);
         }
 
         [Fact(DisplayName = "Adds top level self link if only LinkType.TopSelf is specified")]
@@ -93,9 +106,9 @@ namespace Tests.Serialization
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
-            var selfLink = result["links"].Value<Uri>("self").AbsolutePath;
+            var selfLink = result["links"].Value<string>("self");
 
-            Assert.Equal("/api/people/123", selfLink);
+            Assert.EndsWith("/api/people/123", selfLink);
 
             Assert.Null(result["data"][0]["links"]);
         }
