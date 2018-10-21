@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Saule.Http;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace Saule.Queries
 {
@@ -22,7 +23,7 @@ namespace Saule.Queries
             return typeof(Lambda)
                 .GetMethod(nameof(Convert), BindingFlags.Static | BindingFlags.NonPublic)
                 .MakeGenericMethod(valueType, type)
-                .Invoke(null, new[] { expression, parsedValues, propertyExpression, param })
+                .Invoke(null, new object[] { expression, parsedValues, propertyExpression, param })
                 as Expression;
         }
 
@@ -50,15 +51,27 @@ namespace Saule.Queries
             return parsedList;
         }
 
+        internal static object TryConvert(string value, Type type)
+        {
+            var converter = TypeDescriptor.GetConverter(type);
+            return converter.ConvertFromInvariantString(value);
+        }
+
         // Return value is used through reflection invocation
         // ReSharper disable once UnusedMethodReturnValue.Local
         private static Expression<Func<TClass, bool>> Convert<TProperty, TClass>(
             Expression<Func<TProperty, TProperty, bool>> expression,
-            TProperty constant,
+            List<TProperty> constant,
             MemberExpression propertyExpression,
             ParameterExpression parameter)
         {
-            var curriedBody = new FilterLambdaVisitor<TProperty>(propertyExpression, constant).Visit(expression.Body);
+            // initialize the expression with a always true one to make chaining possible
+            Expression curriedBody = Expression.Lambda(Expression.Constant(true));
+            foreach (TProperty c in constant)
+            {
+                curriedBody = Expression.OrElse(curriedBody, new FilterLambdaVisitor<TProperty>(propertyExpression, c).Visit(expression.Body));
+            }
+
             return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);
         }
 

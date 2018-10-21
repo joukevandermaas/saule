@@ -16,7 +16,7 @@ namespace Saule.Queries.Filtering
         public FilterProperty(string name, string values)
         {
             Name = name.ToPascalCase();
-            ValuesString = values;
+            Value = values;
 
             // Spliting the string into multiple values with csv notation
             Values = new List<string>();
@@ -44,7 +44,7 @@ namespace Saule.Queries.Filtering
         {
             Name = name.ToPascalCase();
             Values = values;
-            ValuesString = string.Join(",", values);
+            Value = string.Join(",", values);
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace Saule.Queries.Filtering
         /// <summary>
         /// Gets property string value
         /// </summary>
-        public string ValuesString { get; }
+        public string Value { get; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"filter[{Name}]={ValuesString}";
+            return $"filter[{Name}]={Value}";
         }
     }
 }

@@ -57,6 +57,26 @@ namespace Saule.Queries.Filtering
             return true;
         }
 
+        /// <summary>
+        /// checking that specified property exists and returns converted value for it
+        /// </summary>
+        /// <typeparam name="T">Type of property</typeparam>
+        /// <param name="name">property name</param>
+        /// <param name="value">property value</param>
+        /// <returns>true if property is specified. Otherwise false</returns>
+        public bool TryGetValue<T>(string name, out T value)
+        {
+            var property = Properties.FirstOrDefault(p => p.Name == name);
+            if (property == null)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = (T)Lambda.TryConvert(property.Value, typeof(T));
+            return true;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
