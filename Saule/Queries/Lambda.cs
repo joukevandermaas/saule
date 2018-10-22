@@ -15,7 +15,7 @@ namespace Saule.Queries
         public static Expression SelectPropertyValue(Type type, string property, List<string> values, QueryFilterExpressionCollection queryFilter)
         {
             var valueType = GetPropertyType(type, property);
-            var parsedValuesAsObjects = TryConvert(values, valueType);
+            var parsedValuesAsObjects = values.Select(v => TryConvert(v, valueType)).ToList();
 
             var parsedValues = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(valueType));
             foreach (var parsedValueAsObject in parsedValuesAsObjects)
@@ -47,18 +47,6 @@ namespace Saule.Queries
             return expressionFactory.Invoke(null, new object[] { propertyExpression, new[] { param } }) as Expression;
         }
 
-        internal static List<object> TryConvert(List<string> values, Type type)
-        {
-            var converter = TypeDescriptor.GetConverter(type);
-            var parsedList = new List<object>();
-            foreach (string value in values)
-            {
-                parsedList.Add(converter.ConvertFromInvariantString(value));
-            }
-
-            return parsedList;
-        }
-
         internal static object TryConvert(string value, Type type)
         {
             var converter = TypeDescriptor.GetConverter(type);
@@ -74,7 +62,7 @@ namespace Saule.Queries
             ParameterExpression parameter)
         {
             // initialize the expression with a always true one to make chaining possible
-            Expression curriedBody = Expression.Lambda(Expression.Constant(true));
+            Expression curriedBody = Expression.Lambda(Expression.Constant(false));
             foreach (TProperty c in constant)
             {
                 curriedBody = Expression.OrElse(curriedBody, new FilterLambdaVisitor<TProperty>(propertyExpression, c).Visit(expression.Body));
