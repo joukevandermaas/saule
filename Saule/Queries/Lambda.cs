@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -14,7 +15,14 @@ namespace Saule.Queries
         public static Expression SelectPropertyValue(Type type, string property, List<string> values, QueryFilterExpressionCollection queryFilter)
         {
             var valueType = GetPropertyType(type, property);
-            var parsedValues = TryConvert(values, valueType);
+            var parsedValuesAsObjects = TryConvert(values, valueType);
+
+            var parsedValues = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(valueType));
+            foreach (var parsedValueAsObject in parsedValuesAsObjects)
+            {
+                parsedValues.Add(parsedValueAsObject);
+            }
+
             var param = Expression.Parameter(type, "i");
             var propertyExpression = Expression.Property(param, property);
 
