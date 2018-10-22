@@ -54,7 +54,7 @@ namespace Tests.Queries
                 p.Value
             }).ToList();
 
-            //Assert.Equal(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact(DisplayName = "Parses empty query string correctly")]
