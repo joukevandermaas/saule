@@ -49,7 +49,7 @@ namespace Saule.Queries.Filtering
                 return false;
             }
 
-            value = property.Values.Select(v => (T) Lambda.TryConvert(v, typeof(T))).ToList();
+            value = property.Values.Select(v => (T)Lambda.TryConvert(v, typeof(T))).ToList();
             return true;
         }
 
