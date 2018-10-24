@@ -70,6 +70,8 @@ namespace Saule.Http
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            request.Properties.Add(Constants.PropertyNames.JsonApiConfiguration, _config);
+
             var result = await base.SendAsync(request, cancellationToken);
 
             JsonApiProcessor.ProcessRequest(request, result, _config, requiresMediaType: true);
