@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Saule.Queries.Filtering
@@ -21,15 +22,10 @@ namespace Saule.Queries.Filtering
             // Spliting the string into multiple values with csv notation
             Values = new List<string>();
 
-            var match = new Regex("\"(.+?)\"|(\\w+(?=,|$))").Matches(values);
-            foreach (Capture matchCapture in match)
+            var match = new Regex("(?:,\"|^\")(\"\"|[\\w\\W]*?)(?=\",|\"$)|(?:,(?!\")|^(?!\"))([^,]*?)(?=$|,)").Matches(values);
+            foreach (Match matchCapture in match)
             {
-                var captureValue = matchCapture.Value;
-
-                // Fix for regex matching including the double quotes
-                captureValue = captureValue.StartsWith("\"") && captureValue.EndsWith("\"")
-                    ? captureValue.Substring(1, captureValue.Length - 2)
-                    : captureValue;
+                var captureValue = string.IsNullOrEmpty(matchCapture.Groups[1].Value) ? matchCapture.Groups[2].Value : matchCapture.Groups[1].Value;
 
                 Values.Add(captureValue);
             }

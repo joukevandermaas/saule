@@ -151,6 +151,20 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
+        [Fact(DisplayName = "Applies filtering on strings")]
+        public void WorksOnStringsWithSpaces()
+        {
+            var companies = Get.Companies(100).ToList().AsQueryable();
+            var expected = companies.Where(c => c.Name == "Awesome Inc.").ToList();
+
+            var query = GetQuery(new[] { "Name" }, new[] { "Aweseom Inc." });
+
+            var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
+                as IQueryable<Company>;
+
+            Assert.Equal(expected, result);
+        }
+
         [Fact(DisplayName = "Applies filtering on strings with multiple values")]
         public void WorksOnStringsMultiple()
         {
