@@ -61,11 +61,12 @@ namespace Saule.Queries
             MemberExpression propertyExpression,
             ParameterExpression parameter)
         {
-            // initialize the expression with a always true one to make chaining possible
-            Expression curriedBody = Expression.Lambda(Expression.Constant(false));
+            // initialize the expression with a always false one to make chaining possible
+            Expression curriedBody = null;
             foreach (TProperty c in constant)
             {
-                curriedBody = Expression.OrElse(curriedBody, new FilterLambdaVisitor<TProperty>(propertyExpression, c).Visit(expression.Body));
+                // Initialize expression if this is the first loop, else chain the expression with an "orElse" Expression
+                curriedBody = curriedBody == null ? new FilterLambdaVisitor<TProperty>(propertyExpression, c).Visit(expression.Body) : Expression.OrElse(curriedBody, new FilterLambdaVisitor<TProperty>(propertyExpression, c).Visit(expression.Body));
             }
 
             return Expression.Lambda<Func<TClass, bool>>(curriedBody, parameter);

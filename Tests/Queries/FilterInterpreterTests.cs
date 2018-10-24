@@ -101,7 +101,7 @@ namespace Tests.Queries
             var people = Get.People(100).ToList().AsQueryable();
             var expected = people.Where(c => c.Age == 20 || c.Age == 30).ToList();
 
-            var query = GetQuery(new[] { "Age" }, new[] { "20" });
+            var query = GetQuery(new[] { "Age" }, new[] { "20,30" });
 
             var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IQueryable<Person>;
