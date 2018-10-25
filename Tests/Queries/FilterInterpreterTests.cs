@@ -169,7 +169,7 @@ namespace Tests.Queries
             var companies = Get.Companies(100).ToList().AsQueryable();
             var expected = companies.Where(c => c.Name == "Awesome Inc.").ToList();
 
-            var query = GetQuery(new[] { "Name" }, new[] { "Aweseom Inc." });
+            var query = GetQuery(new[] { "Name" }, new[] { "Awesome Inc." });
 
             var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
                 as IQueryable<Company>;
