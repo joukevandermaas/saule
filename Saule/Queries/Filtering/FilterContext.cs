@@ -40,6 +40,26 @@ namespace Saule.Queries.Filtering
         /// <param name="name">property name</param>
         /// <param name="value">property value</param>
         /// <returns>true if property is specified. Otherwise false</returns>
+        public bool TryGetValue<T>(string name, out List<T> value)
+        {
+            var property = Properties.FirstOrDefault(p => p.Name == name);
+            value = new List<T>();
+            if (property == null)
+            {
+                return false;
+            }
+
+            value = property.Values.Select(v => (T)Lambda.TryConvert(v, typeof(T))).ToList();
+            return true;
+        }
+
+        /// <summary>
+        /// checking that specified property exists and returns converted value for it
+        /// </summary>
+        /// <typeparam name="T">Type of property</typeparam>
+        /// <param name="name">property name</param>
+        /// <param name="value">property value</param>
+        /// <returns>true if property is specified. Otherwise false</returns>
         public bool TryGetValue<T>(string name, out T value)
         {
             var property = Properties.FirstOrDefault(p => p.Name == name);
