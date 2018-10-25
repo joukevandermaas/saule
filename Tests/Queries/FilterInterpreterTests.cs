@@ -151,7 +151,7 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
-        [Fact(DisplayName = "Applies filtering on strings")]
+        [Fact(DisplayName = "Applies filtering on strings with spaces")]
         public void WorksOnStringsWithSpaces()
         {
             var companies = Get.Companies(100).ToList().AsQueryable();
@@ -172,6 +172,20 @@ namespace Tests.Queries
             var expected = people.Where(c => c.LastName == "Russel" || c.LastName == "Comma,Test").ToList();
 
             var query = GetQuery(new[] { "LastName" }, new[] { "Russel,\"Comma,Test\"" });
+
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
+                as IQueryable<Person>;
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact(DisplayName = "Applies filtering on strings with multiple values including quotes and commas")]
+        public void WorksOnStringsMultipleWithQuotes()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.Where(c => c.LastName == "\"Quote,Test").ToList();
+
+            var query = GetQuery(new[] { "LastName" }, new[] { "\"Quote,Test" });
 
             var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
                 as IQueryable<Person>;

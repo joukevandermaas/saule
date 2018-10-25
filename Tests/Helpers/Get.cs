@@ -20,7 +20,7 @@ namespace Tests.Helpers
             "Summers", "Bockman", "Duque", "Cline", "Neufeld", "Mcray", "Hix",
             "Daniel", "Baumbach", "Forry", "Bozek", "Chichester", "Petri", "Folk",
             "Yadon", "Holliday", "Paniagua", "Hofstetter", "Vasques", "Russel",
-            "Comma,Test",
+            "Comma,Test", "\"Quote,Test",
         };
 
         private static readonly string[] StreetNames =
