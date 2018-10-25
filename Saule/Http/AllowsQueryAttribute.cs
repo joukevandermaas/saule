@@ -26,10 +26,13 @@ namespace Saule.Http
         {
             var queryParams = actionContext.Request.GetQueryNameValuePairs().ToList();
             var queryContext = QueryContextUtils.GetQueryContext(actionContext);
+            var config = actionContext.Request.Properties.ContainsKey(Constants.PropertyNames.JsonApiConfiguration)
+                ? (JsonApiConfiguration)actionContext.Request.Properties[Constants.PropertyNames.JsonApiConfiguration]
+                : new JsonApiConfiguration();
 
             queryContext.Sort = new SortContext(queryParams);
             queryContext.Filter = new FilterContext(queryParams);
-            queryContext.Fieldset = new FieldsetContext(queryParams);
+            queryContext.Fieldset = new FieldsetContext(queryParams, config.PropertyNameConverter);
 
             if (queryContext.Include == null)
             {

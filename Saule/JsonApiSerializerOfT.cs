@@ -90,7 +90,7 @@ namespace Saule
             }
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
+            var queryContext = GetQueryContext(request.GetQueryNameValuePairs(), config.PropertyNameConverter);
 
             _serializer.QueryContext = queryContext;
 
@@ -116,7 +116,7 @@ namespace Saule
             return target.Deserialize();
         }
 
-        private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters)
+        private QueryContext GetQueryContext(IEnumerable<KeyValuePair<string, string>> filters, IPropertyNameConverter propertyNameConverter)
         {
             var context = new QueryContext();
             var keyValuePairs = filters as IList<KeyValuePair<string, string>> ?? filters.ToList();
@@ -131,7 +131,7 @@ namespace Saule
                 context.Sort = new SortContext(keyValuePairs);
                 context.Filter = new FilterContext(keyValuePairs) { QueryFilters = QueryFilterExpressions };
                 context.Include = new IncludeContext(keyValuePairs);
-                context.Fieldset = new FieldsetContext(keyValuePairs);
+                context.Fieldset = new FieldsetContext(keyValuePairs, propertyNameConverter);
             }
 
             return context;
