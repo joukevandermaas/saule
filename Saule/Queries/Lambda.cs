@@ -94,6 +94,7 @@ namespace Saule.Queries
                         nameof(property));
                 }
             }
+
             return propertyInfo;
         }
 
