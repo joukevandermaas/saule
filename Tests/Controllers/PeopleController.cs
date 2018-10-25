@@ -67,6 +67,7 @@ namespace Tests.Controllers
             bool includeCar = context.Include.Includes.Any(p => p.Name == nameof(Person.Car));
             bool includeJob = context.Include.Includes.Any(p => p.Name == nameof(Person.Job));
 
+
             context.Filter.TryGetValue("HideLastName", out hideLastName);
 
             if (hideLastName.GetValueOrDefault() || !includeCar)
