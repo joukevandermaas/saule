@@ -1,6 +1,6 @@
-﻿using Saule.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Saule.Serialization;
 
 namespace Saule.Queries.Fieldset
 {
