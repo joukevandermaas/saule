@@ -125,6 +125,17 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
+        [Fact(DisplayName = "Applies nested filtering on strings")]
+        public void WorksOnNestedStrings()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.Where(c => c.Job.Name == "Bookstore").ToList();
+            var query = GetQuery(new[] { "Job.Name" }, new[] { "Bookstore" });
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
+                as IQueryable<Person>;
+            Assert.Equal(expected, result);
+        }
+
         [Fact(DisplayName = "Works on enumerables")]
         public void WorksOnEnumerables()
         {

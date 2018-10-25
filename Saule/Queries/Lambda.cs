@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,9 +15,13 @@ namespace Saule.Queries
             var valueType = GetPropertyType(type, property);
             var parsedValue = TryConvert(value, valueType);
             var param = Expression.Parameter(type, "i");
-            var propertyExpression = Expression.Property(param, property);
+            Expression propertyExpression = param;
+            foreach (var member in property.Split('.'))
+            {
+                propertyExpression = Expression.PropertyOrField(propertyExpression, member);
+            }
 
-            var expression = queryFilter.GetQueryFilterExpression(type.GetProperty(property));
+            var expression = queryFilter.GetQueryFilterExpression(GetPropertyInfo(type, property));
 
             return typeof(Lambda)
                 .GetMethod(nameof(Convert), BindingFlags.Static | BindingFlags.NonPublic)
@@ -57,15 +62,39 @@ namespace Saule.Queries
 
         private static Type GetPropertyType(Type type, string property)
         {
-            var returnType = type.GetProperty(property)?.PropertyType;
-            if (returnType == null)
+            List<string> properties = property.Split('.').ToList();
+            var returnType = type;
+            foreach (string prop in properties)
             {
-                throw new ArgumentException(
-                    $"Property {property} does not exist.",
-                    nameof(property));
+                returnType = returnType.GetProperty(prop)?.PropertyType;
+                if (returnType == null)
+                {
+                    throw new ArgumentException(
+                        $"Property {property} does not exist.",
+                        nameof(property));
+                }
             }
 
             return returnType;
+        }
+
+        private static PropertyInfo GetPropertyInfo(Type type, string property)
+        {
+            List<string> properties = property.Split('.').ToList();
+            var tmpType = type;
+            PropertyInfo propertyInfo = tmpType.GetProperty(property);
+            foreach (string prop in properties)
+            {
+                propertyInfo = tmpType.GetProperty(prop);
+                tmpType = tmpType.GetProperty(prop)?.PropertyType;
+                if (tmpType == null)
+                {
+                    throw new ArgumentException(
+                        $"Property {property} does not exist.",
+                        nameof(property));
+                }
+            }
+            return propertyInfo;
         }
 
         private static MethodInfo CreateExpressionFactory(Type funcType)
