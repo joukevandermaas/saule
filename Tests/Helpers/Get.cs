@@ -19,7 +19,8 @@ namespace Tests.Helpers
         {
             "Summers", "Bockman", "Duque", "Cline", "Neufeld", "Mcray", "Hix",
             "Daniel", "Baumbach", "Forry", "Bozek", "Chichester", "Petri", "Folk",
-            "Yadon", "Holliday", "Paniagua", "Hofstetter", "Vasques", "Russel"
+            "Yadon", "Holliday", "Paniagua", "Hofstetter", "Vasques", "Russel",
+            "Comma,Test", "\"Quote,Test",
         };
 
         private static readonly string[] StreetNames =
@@ -28,7 +29,7 @@ namespace Tests.Helpers
             "Atlantic Avenue", "Lincoln Avenue", "Route 10", "Water Street",
             "Brookside Drive", "Hillcrest Drive", "Madison Avenue", "Union Street",
             "Lake Avenue", "6th Street", "Broad Street West", "Market Street",
-            "North Street", "Heritage Drive", "Cooper Street", "Route 44"
+            "North Street", "Heritage Drive", "Cooper Street", "Route 44",
         };
 
         private static readonly string[] CompanyNames =
