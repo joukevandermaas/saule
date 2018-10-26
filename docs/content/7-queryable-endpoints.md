@@ -25,7 +25,7 @@ public IQueryable<Person> GetPeople()
 }
 ```
 
-> **Note**: Saule supports the `sort`, `include` (for relationships) and `filter`
+> **Note**: Saule supports the `sort`, `include` (for relationships), `filter` and `fields`
 > query parameters.
 > The same attribute may support other queries in the future.
 
