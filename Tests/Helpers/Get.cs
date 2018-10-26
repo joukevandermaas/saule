@@ -32,6 +32,11 @@ namespace Tests.Helpers
             "North Street", "Heritage Drive", "Cooper Street", "Route 44",
         };
 
+        private static readonly string[] CompanyNames =
+        {
+            "Awesome Inc.", "Seen Better Days Co", "Stock Inc.", "Bookstore", "Office Supplies",
+        };
+
         public static IEnumerable<Person> People()
         {
             var i = 0;
@@ -95,6 +100,7 @@ namespace Tests.Helpers
         {
             return new Company(prefill: true, id: id)
             {
+                Name = CompanyNames[random.Next(CompanyNames.Length)],
                 Location = (LocationType)random.Next(Enum.GetNames(typeof(LocationType)).Length)
             };
         }
