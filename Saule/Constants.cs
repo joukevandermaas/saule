@@ -10,7 +10,6 @@
             public const string QueryContext = "Saule_QueryContext";
             public const string PreprocessResult = "Saule_PreprocessedResult";
             public const string WebApiRequestContext = "MS_RequestContext";
-            public const string JsonApiConfiguration = "Saule_JsonApiConfiguration";
         }
 
         public static class QueryNames

@@ -84,14 +84,14 @@ namespace Tests
             Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
         }
 
-        [Theory(DisplayName = "Uses query fieldset expressions if specified with lowercase fields")]
-		[InlineData("?fields[corporation]=name,NumberOfEmployees")]
-		[InlineData("?fields[corporation]=name,numberofemployees")]
-		[InlineData("?fields[corporation]=name,NUMBEROFEMPLOYEES")]
-		[InlineData("?fields[corporation]=name,numberOfEmployees")]
-		[InlineData("?fields[corporation]=name,number-of-employees")]
-		[InlineData("?fields[corporation]=name,number_of_employees")]
-		public void UsesQueryFieldsetExpressionsFieldsFormatCases(string query)
+        [Theory(DisplayName = "Uses query fieldset expressions if specified with various input string cases.")]
+        [InlineData("?fields[corporation]=name,NumberOfEmployees")]
+        [InlineData("?fields[corporation]=name,numberofemployees")]
+        [InlineData("?fields[corporation]=name,NUMBEROFEMPLOYEES")]
+        [InlineData("?fields[corporation]=name,numberOfEmployees")]
+        [InlineData("?fields[corporation]=name,number-of-employees")]
+        [InlineData("?fields[corporation]=name,number_of_employees")]
+        public void UsesQueryFieldsetExpressionsFieldsFormatCases(string query)
         {
             var target = new JsonApiSerializer<CompanyResource>
             {
