@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Saule.Serialization;
 
 namespace Saule.Queries.Fieldset
 {
