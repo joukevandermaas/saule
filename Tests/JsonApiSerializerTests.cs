@@ -84,15 +84,21 @@ namespace Tests
             Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
         }
 
-        [Fact(DisplayName = "Uses query fieldset expressions if specified with lowercase fields")]
-        public void UsesQueryFieldsetExpressionsLowercase()
+        [Theory(DisplayName = "Uses query fieldset expressions if specified with lowercase fields")]
+		[InlineData("?fields[corporation]=name,NumberOfEmployees")]
+		[InlineData("?fields[corporation]=name,numberofemployees")]
+		[InlineData("?fields[corporation]=name,NUMBEROFEMPLOYEES")]
+		[InlineData("?fields[corporation]=name,numberOfEmployees")]
+		[InlineData("?fields[corporation]=name,number-of-employees")]
+		[InlineData("?fields[corporation]=name,number_of_employees")]
+		public void UsesQueryFieldsetExpressionsFieldsFormatCases(string query)
         {
             var target = new JsonApiSerializer<CompanyResource>
             {
                 AllowQuery = true
             };
             var companies = Get.Companies(1).ToList();
-            var result = target.Serialize(companies, new Uri(DefaultUrl, "?fields[corporation]=name,number-of-employees"));
+            var result = target.Serialize(companies, new Uri(DefaultUrl, query));
             _output.WriteLine(result.ToString());
 
             Assert.NotNull(result["data"][0]["attributes"]["name"]);

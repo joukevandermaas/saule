@@ -57,6 +57,11 @@ namespace Saule
             return string.Join(string.Empty, cased.ToArray());
         }
 
+        public static string ToComparablePropertyName(this string propertyName)
+        {
+            return propertyName.Replace("_", string.Empty).Replace("-", string.Empty).ToUpperInvariant();
+        }
+
         public static string SubstringToSeperator(this string source, string seperator)
         {
             var to = source.IndexOf(seperator);

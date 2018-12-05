@@ -300,7 +300,7 @@ namespace Saule.Serialization
         {
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
-                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(_propertyNameConverter.ToJsonPropertyName(a.InternalName)))
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
                 .Select(a =>
                     new
                     {

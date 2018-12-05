@@ -17,7 +17,7 @@ namespace Saule.Queries.Fieldset
         public FieldsetProperty(string type, string[] fields, IPropertyNameConverter propertyNameConverter)
         {
             Type = type;
-            Fields = fields.Select(f => propertyNameConverter.ToJsonPropertyName(f)).ToArray();
+            Fields = fields.Select(f => f.ToComparablePropertyName()).ToArray();
         }
 
         /// <summary>
