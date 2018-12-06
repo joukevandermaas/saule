@@ -1,4 +1,6 @@
-﻿namespace Saule.Queries.Fieldset
+﻿using System.Linq;
+
+namespace Saule.Queries.Fieldset
 {
     /// <summary>
     /// Property for fieldset
@@ -13,7 +15,7 @@
         public FieldsetProperty(string type, string[] fields)
         {
             Type = type;
-            Fields = fields;
+            Fields = fields.Select(f => f.ToComparablePropertyName()).ToArray();
         }
 
         /// <summary>

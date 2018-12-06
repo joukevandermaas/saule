@@ -84,6 +84,28 @@ namespace Tests
             Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
         }
 
+        [Theory(DisplayName = "Uses query fieldset expressions if specified with various input string cases.")]
+        [InlineData("?fields[corporation]=name,NumberOfEmployees")]
+        [InlineData("?fields[corporation]=name,numberofemployees")]
+        [InlineData("?fields[corporation]=name,NUMBEROFEMPLOYEES")]
+        [InlineData("?fields[corporation]=name,numberOfEmployees")]
+        [InlineData("?fields[corporation]=name,number-of-employees")]
+        [InlineData("?fields[corporation]=name,number_of_employees")]
+        public void UsesQueryFieldsetExpressionsFieldsFormatCases(string query)
+        {
+            var target = new JsonApiSerializer<CompanyResource>
+            {
+                AllowQuery = true
+            };
+            var companies = Get.Companies(1).ToList();
+            var result = target.Serialize(companies, new Uri(DefaultUrl, query));
+            _output.WriteLine(result.ToString());
+
+            Assert.NotNull(result["data"][0]["attributes"]["name"]);
+            Assert.Null(result["data"][0]["attributes"]["location"]);
+            Assert.NotNull(result["data"][0]["attributes"]["number-of-employees"]);
+        }
+
         [Fact(DisplayName = "Returns no fields if requested field is not part of that model")]
         public void ReturnEmptyModelForUnknownFieldsetExpressions()
         {
