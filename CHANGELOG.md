@@ -4,7 +4,7 @@
 - [**FEATURE**] Added support for searching of multiple fields via the filter query parameter (#205 by @phyberapex)
 - [**FEATURE**] Added support for using the attributes (DisableDefaultIncludedAttribute, AllowsQueryAttribute, and PaginatedAttribute ) on class level (#204 by @dejarp)
 - [**FEATURE**] Added new LinkType (LinkType.TopSelf) to only include a self link for the top level element (#202 by @sergey-litvinov-work)
-- [**FEATURE**] Added sparse fieldset to the query parameter for queryable endpoints (#199 by @phyberapex)
+- [**FEATURE**] Added sparse fieldset to the query parameter for queryable endpoints (#199, #209, #212 by @phyberapex, #210 by @dejarp)
 - [**BUGFIX**] Support camel case serialization for relationship names
 
 ## Version 1.7.1
