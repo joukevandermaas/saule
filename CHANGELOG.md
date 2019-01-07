@@ -1,4 +1,8 @@
-## Master (upcoming 1.8)
+## Master (upcoming 1.9)
+
+
+
+## Version 1.8
 
 - [**BUGFIX**] Removing port from the URL if the port is a standard port (#206 by @sergey-litvinov-work)
 - [**FEATURE**] Added support for searching of multiple fields via the filter query parameter (#205 by @phyberapex)
