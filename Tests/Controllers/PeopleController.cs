@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Saule.Http;
@@ -123,13 +124,28 @@ namespace Tests.Controllers
             return data;
         }
 
-
         [HttpPost]
         [Route("people/{id}")]
         public Person PostPerson(string id, Person person)
         {
             person.Identifier = id;
             return person;
+        }
+
+        [HttpPost]
+        [BulkExtRouteAttribute("people", multiple: false)]
+        public Person PostNewPerson(Person person)
+        {
+            person.Identifier = Guid.NewGuid().ToString();
+            return person;
+        }
+
+        [HttpPost]
+        [BulkExtRouteAttribute("people", multiple: true)]
+        public IEnumerable<Person> PostNewPeople(IEnumerable<Person> people)
+        {
+            var newPeople = people.Select(p => { p.Identifier = Guid.NewGuid().ToString(); return p; } );
+            return newPeople;
         }
 
         [HttpGet]

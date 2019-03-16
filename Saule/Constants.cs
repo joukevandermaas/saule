@@ -3,6 +3,7 @@
     internal static class Constants
     {
         public const string MediaType = "application/vnd.api+json";
+        public const string MediaTypeBulkExtension = "application/vnd.api+json; ext=bulk";
 
         public static class PropertyNames
         {

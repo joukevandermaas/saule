@@ -18,6 +18,7 @@ namespace Tests.Integration
             private readonly ObsoleteSetupJsonApiServer _server;
 
             private readonly string _personContent = Properties.Resources.PersonResourceString;
+            private readonly string _peopleContent = Properties.Resources.PeopleResourceString;
 
             public ObsoleteSetup(ObsoleteSetupJsonApiServer server)
             {
@@ -51,6 +52,39 @@ namespace Tests.Integration
                 var result = await target.GetAsync(path);
 
                 Assert.Equal("application/vnd.api+json", result.Content.Headers.ContentType.MediaType);
+            }
+
+            [Theory(DisplayName = "Servers MUST respond with '200 OK' to valid POST content")]
+            [InlineData(Paths.SingleResource)]
+            public async Task MustReturn200OKOnCreate(string path)
+            {
+                var target = _server.GetClient();
+                var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                
+                HttpContent content = new StringContent(_personContent);
+                content.Headers.ContentType = mediaType;
+
+                var result = await target.PostAsync(path, content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+
+            [Theory(DisplayName = "Servers MUST respond with '200 OK' to valid POST content for bulk extension")]
+            [InlineData(Paths.ResourceCollection)]
+            public async Task MustReturn200OKOnCreateBulk(string path)
+            {
+                var target = _server.GetClient();
+
+                var mediaType = new MediaTypeHeaderValue(Constants.MediaType);
+                mediaType.Parameters.Add(new NameValueHeaderValue("ext", "bulk"));
+                HttpContent content = new StringContent(_peopleContent);
+                content.Headers.ContentType = mediaType;
+
+                var result = await target.PostAsync(path, content);
+
+                var resultContent = await result.Content.ReadAsStringAsync();
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
             [Theory(DisplayName = "Servers MUST respond with '415 Not supported' to media type parameters in content-type header")]
