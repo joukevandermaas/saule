@@ -70,6 +70,8 @@
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="Queries\Fieldset\FieldsetContext.cs" />
     <Compile Include="Queries\Fieldset\FieldsetProperty.cs" />
+    <Compile Include="Queries\Pagination\IPagedResult.cs" />
+    <Compile Include="Queries\Pagination\PagedResult.cs" />
     <Compile Include="Serialization\CamelCasePropertyNameConverter.cs" />
     <Compile Include="Serialization\DefaultPropertyNameConverter.cs" />
     <Compile Include="Serialization\IPropertyNameConverter.cs" />

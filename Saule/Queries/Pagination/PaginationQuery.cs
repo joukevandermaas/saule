@@ -7,6 +7,12 @@ namespace Saule.Queries.Pagination
     internal class PaginationQuery
     {
         public PaginationQuery(PaginationContext context)
+            : this(context, null)
+        {
+
+        }
+
+        public PaginationQuery(PaginationContext context, object value)
         {
             if (context == null)
             {
@@ -26,6 +32,11 @@ namespace Saule.Queries.Pagination
             PreviousPage = isNumber && page > 0
                 ? CreateQueryString(context.ClientFilters, page - 1)
                 : null;
+            if (value is IPagedResult paged && context.PerPage.GetValueOrDefault(0) != 0)
+            {
+                var totalPages = (int)Math.Ceiling((double)paged.TotalResultsCount / context.PerPage.Value);
+                LastPage = CreateQueryString(context.ClientFilters, totalPages);
+            }
         }
 
         public string FirstPage { get; }
@@ -33,6 +44,8 @@ namespace Saule.Queries.Pagination
         public string NextPage { get; }
 
         public string PreviousPage { get; }
+
+        public string LastPage { get; set; }
 
         private static string CreateQueryString(
             IDictionary<string, string> clientFilters,

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Saule.Serialization;
 
 namespace Saule
@@ -52,27 +53,29 @@ namespace Saule
                 }
 
                 var dataObject = @object;
+                var unwrappedObject = @object is IPagedResult paged ? paged.Items : @object;
 
                 if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
                     if (QueryContext.Filter != null)
                     {
-                        dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filter, resource);
+                        unwrappedObject = Query.ApplyFiltering(unwrappedObject, QueryContext.Filter, resource);
                     }
 
                     if (QueryContext.Sort != null)
                     {
-                        dataObject = Query.ApplySorting(dataObject, QueryContext.Sort, resource);
+                        unwrappedObject = Query.ApplySorting(unwrappedObject, QueryContext.Sort, resource);
                     }
 
                     if (QueryContext.Pagination != null)
                     {
-                        dataObject = Query.ApplyPagination(dataObject, QueryContext.Pagination, resource);
+                        unwrappedObject = Query.ApplyPagination(unwrappedObject, QueryContext.Pagination, resource);
                     }
                 }
 
                 result.ResourceSerializer = new ResourceSerializer(
                         value: dataObject,
+                        unwrappedValue: unwrappedObject,
                         type: resource,
                         baseUrl: requestUri,
                         propertyNameConverter: config.PropertyNameConverter,
