@@ -53,7 +53,7 @@ namespace Saule
                 }
 
                 var dataObject = @object;
-                var unwrappedObject = @object is IPagedResult paged ? paged.Items : @object;
+                var unwrappedObject = @object is IPagedResult ? ((IPagedResult)@object).Items : @object;
 
                 if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
