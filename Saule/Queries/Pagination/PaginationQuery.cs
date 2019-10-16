@@ -9,7 +9,6 @@ namespace Saule.Queries.Pagination
         public PaginationQuery(PaginationContext context)
             : this(context, null)
         {
-
         }
 
         public PaginationQuery(PaginationContext context, object value)

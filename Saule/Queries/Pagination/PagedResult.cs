@@ -12,7 +12,10 @@ namespace Saule.Queries.Pagination
         /// <inheritdoc/>
         public int TotalResultsCount { get; set; }
 
-        IEnumerable IPagedResult.Items { get { return Data; } }
+        IEnumerable IPagedResult.Items
+        {
+            get { return Data; }
+        }
 
         /// <summary>
         /// Gets or sets gets data items as IList
