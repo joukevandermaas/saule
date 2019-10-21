@@ -26,7 +26,7 @@ namespace Saule.Queries.Pagination
             int page;
             var isNumber = int.TryParse(context.ClientFilters[Constants.QueryNames.PageNumber] ?? string.Empty, out page);
 
-            FirstPage = CreateQueryString(context.ClientFilters, 0);
+            FirstPage = CreateQueryString(context.ClientFilters, context.FirstPageNumber);
             NextPage = CreateQueryString(context.ClientFilters, isNumber ? page + 1 : 1);
             PreviousPage = isNumber && page > 0
                 ? CreateQueryString(context.ClientFilters, page - 1)

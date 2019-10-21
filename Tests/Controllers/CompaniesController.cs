@@ -88,5 +88,18 @@ namespace Tests.Controllers
                 Data = Get.Companies(20).ToList()
             };
         }
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20, FirstPageNumber = 1)]
+        [Route("companies/paged-result-first-page")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetCompaniesWithPagingAndFirstPage()
+        {
+            return new PagedResult<Company>()
+            {
+                TotalResultsCount = 100,
+                Data = Get.Companies(20).ToList()
+            };
+        }
     }
 }
