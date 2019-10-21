@@ -85,7 +85,7 @@ namespace Tests.Controllers
             return new PagedResult<Company>()
             {
                 TotalResultsCount = 100,
-                Data = Get.Companies(20).ToList()
+                Data = Get.Companies(100).ToList()
             };
         }
 
@@ -98,7 +98,7 @@ namespace Tests.Controllers
             return new PagedResult<Company>()
             {
                 TotalResultsCount = 100,
-                Data = Get.Companies(20).ToList()
+                Data = Get.Companies(100).ToList()
             };
         }
 

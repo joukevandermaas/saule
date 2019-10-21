@@ -27,13 +27,15 @@ namespace Saule.Queries.Pagination
             var isNumber = int.TryParse(context.ClientFilters[Constants.QueryNames.PageNumber] ?? string.Empty, out page);
 
             FirstPage = CreateQueryString(context.ClientFilters, context.FirstPageNumber);
-            NextPage = CreateQueryString(context.ClientFilters, isNumber ? page + 1 : 1);
+            NextPage = CreateQueryString(context.ClientFilters, isNumber ? page + 1 : context.FirstPageNumber + 1);
             PreviousPage = isNumber && page > 0
                 ? CreateQueryString(context.ClientFilters, page - 1)
                 : null;
             if (context.TotalResultsCount.HasValue && context.PerPage.GetValueOrDefault(0) != 0)
             {
-                var totalPages = (int)Math.Ceiling((double)context.TotalResultsCount / context.PerPage.Value);
+                // we also should add firstPage as if it's not a zero, then total page count should be shifted based on firstPageNumber
+                // with 60 elements and 20 page size. if firstPage is 0, then lastPage should be 2. If firstPage is 1, then lastPage should be 3
+                var totalPages = (int)Math.Ceiling((double)context.TotalResultsCount / context.PerPage.Value) - 1 + context.FirstPageNumber;
                 LastPage = CreateQueryString(context.ClientFilters, totalPages);
             }
         }
