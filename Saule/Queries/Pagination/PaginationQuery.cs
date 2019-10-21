@@ -31,10 +31,9 @@ namespace Saule.Queries.Pagination
             PreviousPage = isNumber && page > 0
                 ? CreateQueryString(context.ClientFilters, page - 1)
                 : null;
-            if (value is IPagedResult && context.PerPage.GetValueOrDefault(0) != 0)
+            if (context.TotalResultsCount.HasValue && context.PerPage.GetValueOrDefault(0) != 0)
             {
-                var paged = (IPagedResult)value;
-                var totalPages = (int)Math.Ceiling((double)paged.TotalResultsCount / context.PerPage.Value);
+                var totalPages = (int)Math.Ceiling((double)context.TotalResultsCount / context.PerPage.Value);
                 LastPage = CreateQueryString(context.ClientFilters, totalPages);
             }
         }

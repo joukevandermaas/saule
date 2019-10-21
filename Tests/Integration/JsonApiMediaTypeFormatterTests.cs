@@ -433,19 +433,11 @@ namespace Tests.Integration
             }
         }
 
-        [Fact(DisplayName = "Paged result calculates page counts")]
-        public async Task PagedResult()
-        {
-            await PagedResultInternal("api/companies/paged-result", 0);
-        }
-
-        [Fact(DisplayName = "Paged result calculates page counts and correct first page number")]
-        public async Task PagedResultWithFirstPage()
-        {
-            await PagedResultInternal("api/companies/paged-result-first-page", 1);
-        }
-
-        private async Task PagedResultInternal(string baseUrl, int firstPageNumber)
+        [InlineData("api/companies/paged-result", 0)]
+        [InlineData("api/companies/paged-result-first-page", 1)]
+        [InlineData("api/companies/paged-result-queryable", 0)]
+        [Theory(DisplayName = "Paged result calculates page counts")]
+        public async Task PagedResult(object baseUrl, int firstPageNumber)
         {
             using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
             {

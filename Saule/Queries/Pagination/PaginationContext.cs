@@ -58,6 +58,11 @@ namespace Saule.Queries.Pagination
         public int FirstPageNumber { get; internal set; }
 
         /// <summary>
+        /// Gets total results count based on the endpoint response if it's IQueryable or PagedResult instance
+        /// </summary>
+        public int? TotalResultsCount { get; internal set; }
+
+        /// <summary>
         /// Gets client filters
         /// </summary>
         public IDictionary<string, string> ClientFilters { get; }

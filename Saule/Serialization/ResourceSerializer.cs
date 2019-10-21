@@ -18,7 +18,6 @@ namespace Saule.Serialization
         private readonly FieldsetContext _fieldsetContext;
         private readonly ApiResource _resource;
         private readonly object _value;
-        private readonly object _unwrappedValue;
         private readonly IPropertyNameConverter _propertyNameConverter;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
@@ -33,26 +32,11 @@ namespace Saule.Serialization
             IncludeContext includeContext,
             FieldsetContext fieldsetContext,
             IPropertyNameConverter propertyNameConverter = null)
-            : this(value, value, type, baseUrl, urlBuilder, paginationContext, includeContext, fieldsetContext, propertyNameConverter)
-        {
-        }
-
-        public ResourceSerializer(
-            object value,
-            object unwrappedValue,
-            ApiResource type,
-            Uri baseUrl,
-            IUrlPathBuilder urlBuilder,
-            PaginationContext paginationContext,
-            IncludeContext includeContext,
-            FieldsetContext fieldsetContext,
-            IPropertyNameConverter propertyNameConverter = null)
         {
             _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
             _urlBuilder = urlBuilder;
             _resource = type;
             _value = value;
-            _unwrappedValue = unwrappedValue;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includeContext = includeContext;
@@ -75,7 +59,7 @@ namespace Saule.Serialization
                 return SerializeNull();
             }
 
-            var graph = new ResourceGraph(_unwrappedValue, _resource, _includedGraphPaths);
+            var graph = new ResourceGraph(_value, _resource, _includedGraphPaths);
             var dataSection = SerializeData(graph);
             var includesSection = SerializeIncludes(graph);
             var metaSection = SerializeMetadata();
@@ -107,7 +91,7 @@ namespace Saule.Serialization
 
         private JToken SerializeMetadata()
         {
-            var valueType = _unwrappedValue.GetType();
+            var valueType = _value.GetType();
             var isCollection = false;
 
             if (typeof(IEnumerable).IsAssignableFrom(valueType))
@@ -116,7 +100,7 @@ namespace Saule.Serialization
                 valueType = valueType.GetGenericTypeParameterOfCollection() ?? valueType;
             }
 
-            var metaObject = _resource.GetMetadata(_unwrappedValue, valueType, isCollection);
+            var metaObject = _resource.GetMetadata(_value, valueType, isCollection);
 
             if (metaObject is JToken)
             {
@@ -198,7 +182,7 @@ namespace Saule.Serialization
 
         private JToken SerializeData(ResourceGraph graph)
         {
-            var isCollection = _unwrappedValue.IsCollectionType();
+            var isCollection = _value.IsCollectionType();
 
             var tokens = graph.DataNodes.Select(n => SerializeNode(n, isCollection));
 

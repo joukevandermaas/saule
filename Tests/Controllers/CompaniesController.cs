@@ -101,5 +101,14 @@ namespace Tests.Controllers
                 Data = Get.Companies(20).ToList()
             };
         }
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20)]
+        [Route("companies/paged-result-queryable")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IQueryable<Company> GetCompaniesWithPagingAndQueryable()
+        {
+            return Get.Companies(100).AsQueryable();
+        }
     }
 }
