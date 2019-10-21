@@ -136,7 +136,7 @@ namespace Saule.Serialization
                 result.Add("self", _baseUrl.AbsoluteUri);
             }
 
-            var queryStrings = new PaginationQuery(_paginationContext);
+            var queryStrings = new PaginationQuery(_paginationContext, _value);
 
             var left = _baseUrl.GetLeftPart(UriPartial.Path);
 
@@ -153,6 +153,11 @@ namespace Saule.Serialization
             if (queryStrings.PreviousPage != null)
             {
                 result["prev"] = new Uri(left + queryStrings.PreviousPage);
+            }
+
+            if (queryStrings.LastPage != null)
+            {
+                result["last"] = new Uri(left + queryStrings.LastPage);
             }
 
             return result;
@@ -300,7 +305,7 @@ namespace Saule.Serialization
         {
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
-                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(_propertyNameConverter.ToJsonPropertyName(a.InternalName)))
+                    node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
                 .Select(a =>
                     new
                     {

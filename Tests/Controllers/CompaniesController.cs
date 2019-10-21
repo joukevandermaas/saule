@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using Saule.Http;
+using Saule.Queries.Pagination;
 using Tests.Helpers;
 using Tests.Models;
 
@@ -73,5 +75,40 @@ namespace Tests.Controllers
 	    {
 		    return Get.Companies(20);
 	    }
-	}
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20)]
+        [Route("companies/paged-result")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetCompaniesWithPaging()
+        {
+            return new PagedResult<Company>()
+            {
+                TotalResultsCount = 100,
+                Data = Get.Companies(100).ToList()
+            };
+        }
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20, FirstPageNumber = 1)]
+        [Route("companies/paged-result-first-page")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetCompaniesWithPagingAndFirstPage()
+        {
+            return new PagedResult<Company>()
+            {
+                TotalResultsCount = 100,
+                Data = Get.Companies(100).ToList()
+            };
+        }
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20)]
+        [Route("companies/paged-result-queryable")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public IQueryable<Company> GetCompaniesWithPagingAndQueryable()
+        {
+            return Get.Companies(100).AsQueryable();
+        }
+    }
 }

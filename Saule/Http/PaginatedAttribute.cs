@@ -18,6 +18,7 @@ namespace Saule.Http
     {
         private int? _perPage;
         private int? _queryPageSizeLimit;
+        private int _firstPageNumber = 0;
 
         /// <summary>
         /// Gets or sets the number of items to return per response.
@@ -72,6 +73,27 @@ namespace Saule.Http
         }
 
         /// <summary>
+        /// Gets or sets the first page number. Default value is 0
+        /// </summary>
+        public int FirstPageNumber
+        {
+            get
+            {
+                return _firstPageNumber;
+            }
+
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(FirstPageNumber), value, "The first page should be more or equal to 0.");
+                }
+
+                _firstPageNumber = value;
+            }
+        }
+
+        /// <summary>
         /// See base class documentation.
         /// </summary>
         /// <param name="actionContext">The action context.</param>
@@ -80,7 +102,8 @@ namespace Saule.Http
             var paginationContext = new PaginationContext(
                 actionContext.Request.GetQueryNameValuePairs(),
                 _perPage,
-                _queryPageSizeLimit);
+                _queryPageSizeLimit,
+                _firstPageNumber);
 
             var query = GetQueryContext(actionContext);
 

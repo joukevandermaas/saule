@@ -64,6 +64,11 @@ namespace Saule.Queries
             GetGenericMethodInfo(_ => default(IEnumerable<int>).Where(default(Func<int, bool>))),
             QueryType.Predicate);
 
+        public static QueryMethod Count => new QueryMethod(
+            GetGenericMethodInfo(_ => default(IQueryable<int>).Count()),
+            GetGenericMethodInfo(_ => default(IEnumerable<int>).Count()),
+            QueryType.Simple);
+
         public object ApplyTo(IQueryable queryable, params object[] arguments)
         {
             var invokeArgs = new[] { queryable }.Concat(arguments).ToArray();

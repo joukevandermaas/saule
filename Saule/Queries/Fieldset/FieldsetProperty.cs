@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Saule.Serialization;
 
 namespace Saule.Queries.Fieldset
 {
@@ -13,11 +12,10 @@ namespace Saule.Queries.Fieldset
         /// </summary>
         /// <param name="type">type for field filter</param>
         /// <param name="fields">fields to serialize filter</param>
-        /// <param name="propertyNameConverter">the IPropertyNameConverter to use when formatting fields</param>
-        public FieldsetProperty(string type, string[] fields, IPropertyNameConverter propertyNameConverter)
+        public FieldsetProperty(string type, string[] fields)
         {
             Type = type;
-            Fields = fields.Select(f => propertyNameConverter.ToJsonPropertyName(f)).ToArray();
+            Fields = fields.Select(f => f.ToComparablePropertyName()).ToArray();
         }
 
         /// <summary>
