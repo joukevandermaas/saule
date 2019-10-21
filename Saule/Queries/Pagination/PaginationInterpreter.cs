@@ -24,13 +24,6 @@ namespace Saule.Queries.Pagination
                 .Where(i => i.IsGenericType)
                 .Any(i => i.GetGenericTypeDefinition() == typeof(IOrderedQueryable<>));
 
-            // if we don't have totalResultsCount in the context
-            // then we will try to get it from IQueryable by executing one more query before Order\Skip\Take
-            if (!_context.TotalResultsCount.HasValue && _context.PerPage.GetValueOrDefault() != 0)
-            {
-                _context.TotalResultsCount = (int)queryable.ApplyQuery(QueryMethod.Count);
-            }
-
             var ordered = isOrdered ? queryable : OrderById(queryable);
 
             var filtered = ordered.ApplyQuery(QueryMethod.Skip, _context.Page * _context.PerPage) as IQueryable;
@@ -41,11 +34,6 @@ namespace Saule.Queries.Pagination
 
         public IEnumerable Apply(IEnumerable queryable)
         {
-            if (!_context.TotalResultsCount.HasValue && _context.PerPage.GetValueOrDefault() != 0)
-            {
-                _context.TotalResultsCount = (int)queryable.ApplyQuery(QueryMethod.Count);
-            }
-
             var filtered = queryable.ApplyQuery(QueryMethod.Skip, _context.Page * _context.PerPage) as IEnumerable;
             filtered = filtered.ApplyQuery(QueryMethod.Take, _context.PerPage) as IEnumerable;
 
