@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Saule.Queries;
 using Saule.Queries.Fieldset;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
@@ -116,14 +116,12 @@ namespace Saule.Serialization
             {
                 return new ResourceGraphPathSet.All();
             }
-            else if (context.Includes != null && context.Includes.Any())
+
+            if (context.Includes != null && context.Includes.Any())
             {
                 return new ResourceGraphPathSet(_includeContext.Includes.Select(i => i.Name));
             }
-            else
-            {
-                return new ResourceGraphPathSet.All();
-            }
+            return new ResourceGraphPathSet.All();
         }
 
         private JToken CreateTopLevelLinks(int count)
@@ -136,7 +134,7 @@ namespace Saule.Serialization
                 result.Add("self", _baseUrl.AbsoluteUri);
             }
 
-            var queryStrings = new PaginationQuery(_paginationContext, _value);
+            var queryStrings = new PaginationQuery(_paginationContext);
 
             var left = _baseUrl.GetLeftPart(UriPartial.Path);
 
@@ -153,11 +151,6 @@ namespace Saule.Serialization
             if (queryStrings.PreviousPage != null)
             {
                 result["prev"] = new Uri(left + queryStrings.PreviousPage);
-            }
-
-            if (queryStrings.LastPage != null)
-            {
-                result["last"] = new Uri(left + queryStrings.LastPage);
             }
 
             return result;
@@ -192,22 +185,13 @@ namespace Saule.Serialization
                 {
                     return new JArray();
                 }
-                else
-                {
-                    return JArray.FromObject(tokens);
-                }
+                return JArray.FromObject(tokens);
             }
-            else
+            if (!tokens.Any())
             {
-                if (!tokens.Any())
-                {
-                    return JValue.CreateNull();
-                }
-                else
-                {
-                    return tokens.First();
-                }
+                return JValue.CreateNull();
             }
+            return tokens.First();
         }
 
         private JArray SerializeIncludes(ResourceGraph graph)
@@ -234,10 +218,7 @@ namespace Saule.Serialization
             {
                 return null;
             }
-            else
-            {
-                return JArray.FromObject(tokens);
-            }
+            return JArray.FromObject(tokens);
         }
 
         private JObject SerializeNode(ResourceGraphNode node, bool isCollection)
@@ -259,9 +240,9 @@ namespace Saule.Serialization
             }
 
             JObject attributes = null;
-            if (_fieldsetContext != null && _fieldsetContext.Properties.Count(property => property.Type == node.Key.Type) > 0)
+            if (_fieldsetContext != null && _fieldsetContext.Properties.Any(property => property.Type == node.Key.Type))
             {
-                FieldsetProperty fieldset = _fieldsetContext.Properties.Where(property => property.Type == node.Key.Type).First();
+                FieldsetProperty fieldset = _fieldsetContext.Properties.First(property => property.Type == node.Key.Type);
                 attributes = SerializeAttributes(node, fieldset);
             }
             else
@@ -321,7 +302,7 @@ namespace Saule.Serialization
 
         private JObject SerializeRelationships(ResourceGraphNode node)
         {
-            if (node.Relationships.Count == 0)
+            if (!node.Relationships.Any())
             {
                 return null;
             }
@@ -377,11 +358,6 @@ namespace Saule.Serialization
 
         private JToken SerializeRelationshipData(ResourceGraphNode node, ResourceGraphRelationship relationship)
         {
-            // short circuit if not included in graph
-            if (!relationship.Included)
-            {
-                return null;
-            }
 
             // check if the relationship property exists on the underlying model and if not bail with null
             // NOTE: this logic refers to https://github.com/joukevandermaas/saule/issues/159
@@ -389,31 +365,28 @@ namespace Saule.Serialization
             {
                 return null;
             }
-            else if (relationship.Relationship.Kind == RelationshipKind.BelongsTo)
+
+            if (relationship.Relationship.Kind == RelationshipKind.BelongsTo)
             {
                 if (relationship.SourceObject == null)
                 {
                     return JValue.CreateNull();
                 }
-                else
-                {
-                    return JObject.FromObject(new ResourceGraphNodeKey(relationship.SourceObject, relationship.Relationship.RelatedResource));
-                }
+                return JObject.FromObject(new ResourceGraphNodeKey(relationship.SourceObject, relationship.Relationship.RelatedResource));
             }
-            else if (relationship.Relationship.Kind == RelationshipKind.HasMany)
+
+            if (relationship.Relationship.Kind == RelationshipKind.HasMany)
             {
                 var content = new JArray();
-                foreach (var o in (System.Collections.IEnumerable)relationship.SourceObject ?? new object[0])
+
+                foreach (var sourceObject in (IEnumerable)relationship.SourceObject ?? new JArray())
                 {
-                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(o, relationship.Relationship.RelatedResource)));
+                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(sourceObject, relationship.Relationship.RelatedResource)));
                 }
 
                 return content;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private JObject AddUrl(JObject @object, string name, string path)
