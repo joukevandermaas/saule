@@ -14,7 +14,7 @@ namespace Saule.Queries.Pagination
         /// <param name="filters">query string that might contain Page keyword</param>
         /// <param name="pageSizeDefault">default page size</param>
         public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault)
-            : this(filters, pageSizeDefault, null)
+            : this(filters, pageSizeDefault, null, null)
         {
         }
 
@@ -24,7 +24,8 @@ namespace Saule.Queries.Pagination
         /// <param name="filters">query string that might contain Page keyword</param>
         /// <param name="pageSizeDefault">default page size</param>
         /// <param name="pageSizeLimit">maximum page size</param>
-        public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault, int? pageSizeLimit)
+        /// <param name="firstPageNumber">the first page number</param>
+        public PaginationContext(IEnumerable<KeyValuePair<string, string>> filters, int? pageSizeDefault, int? pageSizeLimit, int? firstPageNumber)
         {
             var keyValuePairs = filters as IList<KeyValuePair<string, string>> ?? filters.ToList();
 
@@ -33,6 +34,7 @@ namespace Saule.Queries.Pagination
             Page = GetNumber();
             PerPage = GetSize(pageSizeDefault);
             PageSizeLimit = pageSizeLimit;
+            FirstPageNumber = firstPageNumber ?? 0;
         }
 
         /// <summary>
@@ -49,6 +51,16 @@ namespace Saule.Queries.Pagination
         /// Gets maximum page size
         /// </summary>
         public int? PageSizeLimit { get; internal set; }
+
+        /// <summary>
+        /// Gets the first page that. Default value is 0
+        /// </summary>
+        public int FirstPageNumber { get; internal set; }
+
+        /// <summary>
+        /// Gets total results count based on the endpoint response if it's IQueryable or PagedResult instance
+        /// </summary>
+        public int? TotalResultsCount { get; internal set; }
 
         /// <summary>
         /// Gets client filters
