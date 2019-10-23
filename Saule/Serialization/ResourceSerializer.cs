@@ -133,7 +133,7 @@ namespace Saule.Serialization
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
             if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
             {
-                result.Add("self", _baseUrl.AbsoluteUri);
+                result.Add("self", _baseUrl.ToString());
             }
 
             var queryStrings = new PaginationQuery(_paginationContext, _value);
