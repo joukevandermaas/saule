@@ -98,6 +98,45 @@ namespace Tests.Serialization
             Assert.Equal("http://localhost/api/people/123", selfLink);
         }
 
+        [Fact(DisplayName = "Adds top level self link without any port for https")]
+        public void SelfLinkNoPortHttps()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+                new Uri("https://localhost:443/api/people/123"), DefaultPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var selfLink = result["links"].Value<string>("self");
+
+            Assert.Equal("https://localhost/api/people/123", selfLink);
+        }
+
+        [Fact(DisplayName = "Adds top level self link without any port and with correct encoding")]
+        public void SelfLinkNoEncoding()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+                new Uri("https://localhost:443/api/people?page[number]=1&page[size]=10"), DefaultPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var selfLink = result["links"].Value<string>("self");
+
+            Assert.Equal("https://localhost/api/people?page[number]=1&page[size]=10", selfLink);
+        }
+
+        [Fact(DisplayName = "Adds top level self link without any port and with correct encoding based on already encoded value")]
+        public void SelfLinkNoEncodingBasedOnEncoded()
+        {
+            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+                new Uri("https://localhost:443/api/people?page%5Bnumber%5D=1&page%5Bsize%5D=10"), DefaultPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var selfLink = result["links"].Value<string>("self");
+
+            Assert.Equal("https://localhost/api/people?page[number]=1&page[size]=10", selfLink);
+        }
+
         [Fact(DisplayName = "Adds top level self link if only LinkType.TopSelf is specified")]
         public void TopLinkOnlyLink()
         {
