@@ -205,6 +205,28 @@ namespace Tests.Serialization
             Assert.Equal("?page[number]=0", nextLink);
         }
 
+        [Fact(DisplayName = "Adds previous link with shifted first page number and only if needed")]
+        public void PreviousLinkWithShiftedFirstPage()
+        {
+            var people = Get.People(5);
+            var target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), pageSizeDefault: 10, null, firstPageNumber:1), null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            Assert.Equal(null, result["links"]["prev"]);
+
+            target = new ResourceSerializer(people, new PersonResource(),
+                GetUri(), DefaultPathBuilder,
+                new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 10, null, firstPageNumber: 1), null, null);
+            result = target.Serialize();
+
+            var nextLink = Uri.UnescapeDataString(result["links"].Value<Uri>("prev").Query);
+            Assert.Equal("?page[number]=1", nextLink);
+        }
+
+
         [Fact(DisplayName = "Keeps other query parameters when paginating")]
         public void PaginationQueryParams()
         {
