@@ -121,6 +121,7 @@ namespace Saule.Serialization
             {
                 return new ResourceGraphPathSet(_includeContext.Includes.Select(i => i.Name));
             }
+
             return new ResourceGraphPathSet.All();
         }
 
@@ -190,12 +191,15 @@ namespace Saule.Serialization
                 {
                     return new JArray();
                 }
+
                 return JArray.FromObject(tokens);
             }
+
             if (!tokens.Any())
             {
                 return JValue.CreateNull();
             }
+
             return tokens.First();
         }
 
@@ -223,6 +227,7 @@ namespace Saule.Serialization
             {
                 return null;
             }
+
             return JArray.FromObject(tokens);
         }
 
@@ -377,6 +382,7 @@ namespace Saule.Serialization
                 {
                     return JValue.CreateNull();
                 }
+
                 return JObject.FromObject(new ResourceGraphNodeKey(relationship.SourceObject, relationship.Relationship.RelatedResource));
             }
 
@@ -391,6 +397,7 @@ namespace Saule.Serialization
 
                 return content;
             }
+
             return null;
         }
 
