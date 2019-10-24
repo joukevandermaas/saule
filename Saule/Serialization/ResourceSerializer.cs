@@ -368,7 +368,6 @@ namespace Saule.Serialization
 
         private JToken SerializeRelationshipData(ResourceGraphNode node, ResourceGraphRelationship relationship)
         {
-
             // check if the relationship property exists on the underlying model and if not bail with null
             // NOTE: this logic refers to https://github.com/joukevandermaas/saule/issues/159
             if (node.SourceObject.GetType().GetProperty(relationship.Relationship.PropertyName) == null)
