@@ -37,13 +37,20 @@ namespace Saule.Queries.Pagination
                 return false;
             }
 
-            if (!obj.GetType().IsGenericType
-                || obj.GetType().GetGenericTypeDefinition() != typeof(PagedResult<>))
+            // we need to check the whole hierarchy of classes
+            var type = obj.GetType();
+            while (type != null)
             {
-                return false;
+                if (type.IsGenericType
+                    && type.GetGenericTypeDefinition() == typeof(PagedResult<>))
+                {
+                    return true;
+                }
+
+                type = type.BaseType;
             }
 
-            return true;
+            return false;
         }
 
         private static object UnwrapPagedResult(object obj)
