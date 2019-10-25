@@ -434,6 +434,7 @@ namespace Tests.Integration
         }
 
         [InlineData("api/companies/paged-result", 0)]
+        [InlineData("api/companies/paged-result-custom", 0)]
         [InlineData("api/companies/paged-result-first-page", 1)]
         [Theory(DisplayName = "Paged result calculates page counts")]
         public async Task PagedResult(object baseUrl, int firstPageNumber)
