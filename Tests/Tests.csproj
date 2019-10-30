@@ -131,6 +131,7 @@
     <Compile Include="Models\CompanyWithCustomersResource.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerResource.cs" />
+    <Compile Include="Models\CustomPagedResult.cs" />
     <Compile Include="Models\GuidAsRelation.cs" />
     <Compile Include="Models\GuidAsId.cs" />
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />

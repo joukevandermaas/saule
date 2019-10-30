@@ -90,6 +90,19 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20)]
+        [Route("companies/paged-result-custom")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetCompaniesWithCustomPaging()
+        {
+            return new CustomPagedResult<Company>()
+            {
+                TotalResultsCount = 100,
+                Data = Get.Companies(100).ToList()
+            };
+        }
+
+        [HttpGet]
         [Paginated(PerPage = 20, PageSizeLimit = 20, FirstPageNumber = 1)]
         [Route("companies/paged-result-first-page")]
         [ReturnsResource(typeof(CompanyResource))]
