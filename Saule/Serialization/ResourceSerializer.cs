@@ -137,14 +137,17 @@ namespace Saule.Serialization
         {
             var result = new JObject();
 
-            var self = id == null ?
-                _urlBuilder.BuildCanonicalPath(_resource) :
-                _urlBuilder.BuildCanonicalPath(_resource, id);
-
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
             if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
             {
-                AddUrl(result, "self", self);
+                if (id != null && !_baseUrl.AbsolutePath.EndsWith(id))
+                {
+                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource,id).TrimEnd('/'));
+                }
+                else
+                {
+                    result.Add("self", _baseUrl.ToString());
+                }
             }
 
             var queryStrings = new PaginationQuery(_paginationContext, _value);
@@ -265,7 +268,7 @@ namespace Saule.Serialization
 
                 if (!string.IsNullOrEmpty(self) && node.Resource.LinkType.HasFlag(LinkType.Self))
                 {
-                    response["links"] = AddUrl(new JObject(), "self", self);
+                    response["links"] = AddUrl(new JObject(), "self", self.TrimEnd('/'));
                 }
             }
 
@@ -435,7 +438,7 @@ namespace Saule.Serialization
             }
 
             var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
-            @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));
+            @object.Add(name, new Uri(start, path));
 
             return @object;
         }
