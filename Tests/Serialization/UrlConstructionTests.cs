@@ -84,7 +84,7 @@ namespace Tests.Serialization
         {
             var people = Get.People(5);
             var target = new ResourceSerializer(people, new PersonResource(),
-                 new Uri("http://localhost:80/api/location/123/people/"), CustomPathBuilder, null, null, null);
+                 new Uri("http://localhost:80/api/location/123/people"), CustomPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
 
@@ -97,7 +97,7 @@ namespace Tests.Serialization
                 Assert.Equal("/api/location/123/people/" + elem.Value<string>("id") + "/", links.Value<Uri>("self").AbsolutePath);
             }
 
-            Assert.EndsWith("/api/location/123/people/", selfLink);
+            Assert.EndsWith("/api/location/123/people", selfLink);
         }
 
         [Fact(DisplayName = "Item does not have self link in single element")]
@@ -138,7 +138,7 @@ namespace Tests.Serialization
 
             Assert.Equal("http://localhost/api/people/123", selfLink);
         }
-     
+
         [Fact(DisplayName = "Adds top level self link without any port for https")]
         public void SelfLinkNoPortHttps()
         {
