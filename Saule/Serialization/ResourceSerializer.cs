@@ -69,7 +69,13 @@ namespace Saule.Serialization
                 ["data"] = dataSection
             };
 
-            var links = CreateTopLevelLinks(dataSection is JArray ? dataSection.Count() : 0);
+            var isCollection = _value.IsCollectionType();
+            string id = null;
+            if (!isCollection){
+                id = dataSection["id"]?.ToString();
+            }
+
+            var links = CreateTopLevelLinks(dataSection is JArray ? dataSection.Count() : 0, id);
 
             if (links.HasValues)
             {
@@ -126,14 +132,21 @@ namespace Saule.Serialization
             }
         }
 
-        private JToken CreateTopLevelLinks(int count)
+        private JToken CreateTopLevelLinks(int count, string id = null)
         {
             var result = new JObject();
 
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
             if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
             {
-                result.Add("self", _baseUrl.ToString());
+                if (id != null && !_baseUrl.AbsolutePath.EndsWith(id))
+                {
+                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource, id));
+                }
+                else
+                {
+                    result.Add("self", _baseUrl.ToString());
+                }
             }
 
             var queryStrings = new PaginationQuery(_paginationContext, _value);
