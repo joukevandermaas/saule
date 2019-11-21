@@ -71,7 +71,8 @@ namespace Saule.Serialization
 
             var isCollection = _value.IsCollectionType();
             string id = null;
-            if (!isCollection){
+            if (!isCollection)
+            {
                 id = dataSection["id"]?.ToString();
             }
 
