@@ -142,7 +142,7 @@ namespace Saule.Serialization
             {
                 if (id != null && !_baseUrl.AbsolutePath.EndsWith(id))
                 {
-                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource,id).TrimEnd('/'));
+                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource, id));
                 }
                 else
                 {
@@ -268,7 +268,7 @@ namespace Saule.Serialization
 
                 if (!string.IsNullOrEmpty(self) && node.Resource.LinkType.HasFlag(LinkType.Self))
                 {
-                    response["links"] = AddUrl(new JObject(), "self", self.TrimEnd('/'));
+                    response["links"] = AddUrl(new JObject(), "self", self);
                 }
             }
 
@@ -438,7 +438,7 @@ namespace Saule.Serialization
             }
 
             var start = new Uri(_baseUrl.GetLeftPart(UriPartial.Authority).EnsureEndsWith("/"));
-            @object.Add(name, new Uri(start, path));
+            @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));
 
             return @object;
         }

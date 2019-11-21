@@ -127,7 +127,7 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/abc/employer/", jobRelated);
             Assert.Equal("/api/people/abc/relationships/friends/", friendsSelf);
             Assert.Equal("/api/people/abc/friends/", friendsRelated);
-            Assert.Equal("/api/corporations/456", included);
+            Assert.Equal("/api/corporations/456/", included);
         }
 
         [Fact(DisplayName = "Uses custom id property in collections")]
@@ -274,7 +274,7 @@ namespace Tests.Serialization
             var included = result["included"] as JArray;
             var job = included?[0];
             Assert.Equal(2, included?.Count);
-            Assert.Equal("http://example.com/api/corporations/456", included?[0]?["links"].Value<Uri>("self").ToString());
+            Assert.Equal("http://example.com/api/corporations/456/", included?[0]?["links"].Value<Uri>("self").ToString());
 
             Assert.Equal(DefaultObject.Job.Id, job?["id"]);
             Assert.NotNull(job?["attributes"]);
