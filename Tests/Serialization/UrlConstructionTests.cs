@@ -17,13 +17,14 @@ namespace Tests.Serialization
 
         private static Uri DefaultUrl => new Uri("http://example.com/");
         private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
+        private static IUrlPathBuilder CustomPathBuilder => new DefaultUrlPathBuilder("/api/location/123");
 
         public UrlConstructionTests(ITestOutputHelper output)
         {
             _output = output;
         }
 
-        [Fact(DisplayName = "Handles query parameters correctly")]
+        [Fact(DisplayName = "Handles query parameters correctly single resource")]
         public void HandlesQueryParams()
         {
             var target = new ResourceSerializer(Get.Person(), new PersonResource(),
@@ -42,6 +43,25 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/123/employer/", jobRelationLink);
         }
 
+        [Fact(DisplayName = "Handles query parameters correctly collection resource")]
+        public void HandlesQueryParamsCollection()
+        {
+            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
+                GetUri(null, "a=b&c=d"), DefaultPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var jobLinks = result["data"][0]?["relationships"]?["job"]?["links"];
+
+            var selfLink = result["links"].Value<string>("self");
+            var jobSelfLink = jobLinks?.Value<Uri>("self")?.PathAndQuery;
+            var jobRelationLink = jobLinks?.Value<Uri>("related")?.PathAndQuery;
+
+            Assert.EndsWith("/api/people?a=b&c=d", selfLink);
+            Assert.Equal("/api/people/0/relationships/employer/", jobSelfLink);
+            Assert.Equal("/api/people/0/employer/", jobRelationLink);
+        }
+
         [Fact(DisplayName = "Items have self links in a collection")]
         public void SelfLinksInCollection()
         {
@@ -57,6 +77,27 @@ namespace Tests.Serialization
                 Assert.NotNull(links);
                 Assert.Equal("/api/people/" + elem.Value<string>("id") + "/", links.Value<Uri>("self").AbsolutePath);
             }
+        }
+
+        [Fact(DisplayName = "Items have self links in a collection with custom route and top self link")]
+        public void SelfLinksInCollectionCustomRoute()
+        {
+            var people = Get.People(5);
+            var target = new ResourceSerializer(people, new PersonResource(),
+                 new Uri("http://localhost:80/api/location/123/people"), CustomPathBuilder, null, null, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var selfLink = result["links"].Value<string>("self");
+
+            foreach (var elem in result["data"])
+            {
+                var links = elem["links"];
+                Assert.NotNull(links);
+                Assert.Equal("/api/location/123/people/" + elem.Value<string>("id") + "/", links.Value<Uri>("self").AbsolutePath);
+            }
+
+            Assert.EndsWith("/api/location/123/people", selfLink);
         }
 
         [Fact(DisplayName = "Item does not have self link in single element")]
@@ -114,7 +155,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port and with correct encoding")]
         public void SelfLinkNoEncoding()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
                 new Uri("https://localhost:443/api/people?page[number]=1&page[size]=10"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -127,7 +168,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port and with correct encoding based on already encoded value")]
         public void SelfLinkNoEncodingBasedOnEncoded()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
                 new Uri("https://localhost:443/api/people?page%5Bnumber%5D=1&page%5Bsize%5D=10"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -367,8 +408,7 @@ namespace Tests.Serialization
 
             var job = result["data"]["relationships"]["job"];
 
-            Assert.Equal(null,
-               job["links"]);
+            Assert.Equal(null, job["links"]);
         }
 
         private static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
@@ -378,8 +418,8 @@ namespace Tests.Serialization
 
         private static Uri GetUri(string id = null, string query = null)
         {
-            var path = "/api/people/";
-            if (id != null) path += id;
+            var path = "/api/people";
+            if (id != null) path += $"/{id}";
             if (query != null) path += "?" + query;
 
             return new Uri(DefaultUrl, path);
