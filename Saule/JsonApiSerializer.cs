@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Saule.Serialization;
 
 namespace Saule
@@ -52,6 +53,11 @@ namespace Saule
                 }
 
                 var dataObject = @object;
+                if (QueryContext != null && QueryContext.Pagination != null)
+                {
+                    // weare trying to extract TotalResultsCount from the dataObject
+                    dataObject = new PagedResultQuery(QueryContext.Pagination).Apply(dataObject);
+                }
 
                 if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {

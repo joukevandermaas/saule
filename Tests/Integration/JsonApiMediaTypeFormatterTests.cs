@@ -433,6 +433,79 @@ namespace Tests.Integration
             }
         }
 
+        [InlineData("api/companies/paged-result", 0)]
+        [InlineData("api/companies/paged-result-custom", 0)]
+        [InlineData("api/companies/paged-result-first-page", 1)]
+        [Theory(DisplayName = "Paged result calculates page counts")]
+        public async Task PagedResult(object baseUrl, int firstPageNumber)
+        {
+            using (var server = new NewSetupJsonApiServer(new JsonApiConfiguration()))
+            {
+                var client = server.GetClient();
+                // endpoint will return totalCount 100 items so we can calculate page numbers based on it
+
+                // validate 100 pages by 1 page size
+                var result = await client.GetFullJsonResponseAsync($"{baseUrl}?page[size]=1");
+                var resultCount = ((JArray)result.Content["data"])?.Count;
+                var last = result.Content["links"]["last"].Value<string>();
+                var first = result.Content["links"]["first"].Value<string>();
+                var next = result.Content["links"]["next"].Value<string>();
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(1, resultCount);
+                Assert.EndsWith($"{baseUrl}?page[size]=1&page[number]={99 + firstPageNumber}", last);
+                Assert.EndsWith($"{baseUrl}?page[size]=1&page[number]={firstPageNumber}", first);
+                Assert.EndsWith($"{baseUrl}?page[size]=1&page[number]={firstPageNumber + 1}", next);
+
+                // 12 pages by 9 page size
+                result = await client.GetFullJsonResponseAsync($"{baseUrl}?page[size]=9");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                last = result.Content["links"]["last"].Value<string>();
+                first = result.Content["links"]["first"].Value<string>();
+                next = result.Content["links"]["next"].Value<string>();
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(9, resultCount);
+                Assert.EndsWith($"{baseUrl}?page[size]=9&page[number]={11 + firstPageNumber}", last);
+                Assert.EndsWith($"{baseUrl}?page[size]=9&page[number]={firstPageNumber}", first);
+                Assert.EndsWith($"{baseUrl}?page[size]=9&page[number]={firstPageNumber + 1}", next);
+
+                // 10 pages by 10 page size
+                result = await client.GetFullJsonResponseAsync($"{baseUrl}?page[size]=10");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                last = result.Content["links"]["last"].Value<string>();
+                first = result.Content["links"]["first"].Value<string>();
+                next = result.Content["links"]["next"].Value<string>();
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(10, resultCount);
+                Assert.EndsWith($"{baseUrl}?page[size]=10&page[number]={9 + firstPageNumber}", last);
+                Assert.EndsWith($"{baseUrl}?page[size]=10&page[number]={firstPageNumber}", first);
+                Assert.EndsWith($"{baseUrl}?page[size]=10&page[number]={firstPageNumber + 1}", next);
+
+                // 5 pages by 20 default page size
+                result = await client.GetFullJsonResponseAsync($"{baseUrl}");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                last = result.Content["links"]["last"].Value<string>();
+                first = result.Content["links"]["first"].Value<string>();
+                next = result.Content["links"]["next"].Value<string>();
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(20, resultCount);
+                Assert.EndsWith($"{baseUrl}?page[number]={4 + firstPageNumber}", last);
+                Assert.EndsWith($"{baseUrl}?page[number]={firstPageNumber}", first);
+                Assert.EndsWith($"{baseUrl}?page[number]={firstPageNumber + 1}", next);
+
+                // 3rd page with 20 default page size
+                result = await client.GetFullJsonResponseAsync($"{baseUrl}?page[number]=2");
+                resultCount = ((JArray)result.Content["data"])?.Count;
+                last = result.Content["links"]["last"].Value<string>();
+                first = result.Content["links"]["first"].Value<string>();
+                next = result.Content["links"]["next"].Value<string>();
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(20, resultCount);
+                Assert.EndsWith($"{baseUrl}?page[number]={4 + firstPageNumber}", last);
+                Assert.EndsWith($"{baseUrl}?page[number]={firstPageNumber}", first);
+                Assert.EndsWith($"{baseUrl}?page[number]=3", next);
+            }
+        }
+
         [Fact(DisplayName = "Applies sorting when appropriate")]
         public async Task AppliesSorting()
         {
