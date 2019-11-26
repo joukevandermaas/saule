@@ -79,6 +79,28 @@ namespace Tests.Serialization
             }
         }
 
+        [Fact(DisplayName = "Self Link Single Resource Casing")]
+        public void SelfLinkSingleResourceCasing()
+        {
+            var person = new PersonWithDifferentId(false, "Allen");
+
+            var lowerTarget = new ResourceSerializer(person, new PersonWithDifferentIdResource(),
+                 GetUri("allen"), DefaultPathBuilder, null, null, null);
+            var upperTarget = new ResourceSerializer(person, new PersonWithDifferentIdResource(),
+                GetUri("Allen"), DefaultPathBuilder, null, null, null);
+
+            var lowerResult = lowerTarget.Serialize();
+            _output.WriteLine(lowerResult.ToString());
+            var upperResult = upperTarget.Serialize();
+            _output.WriteLine(upperResult.ToString());
+
+            var selfLinkLower = lowerResult["links"].Value<string>("self");
+            var selfLinkUpper = upperResult["links"].Value<string>("self");
+
+            Assert.EndsWith("/api/people/allen", selfLinkLower);
+            Assert.EndsWith("/api/people/Allen", selfLinkUpper);
+        }
+
         [Fact(DisplayName = "Items have self links in a collection with custom route and top self link")]
         public void SelfLinksInCollectionCustomRoute()
         {
