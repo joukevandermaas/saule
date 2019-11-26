@@ -62,25 +62,6 @@ namespace Tests.Serialization
             Assert.Equal("/api/people/0/employer/", jobRelationLink);
         }
 
-        [Fact(DisplayName = "Handles query parameters correctly collection resource")]
-        public void HandlesQueryParamsCollection()
-        {
-            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
-                GetUri(null, "a=b&c=d"), DefaultPathBuilder, null, null, null);
-            var result = target.Serialize();
-            _output.WriteLine(result.ToString());
-
-            var jobLinks = result["data"][0]?["relationships"]?["job"]?["links"];
-
-            var selfLink = result["links"].Value<string>("self");
-            var jobSelfLink = jobLinks?.Value<Uri>("self")?.PathAndQuery;
-            var jobRelationLink = jobLinks?.Value<Uri>("related")?.PathAndQuery;
-
-            Assert.EndsWith("/api/people?a=b&c=d", selfLink);
-            Assert.Equal("/api/people/0/relationships/employer/", jobSelfLink);
-            Assert.Equal("/api/people/0/employer/", jobRelationLink);
-        }
-
         [Fact(DisplayName = "Items have self links in a collection")]
         public void SelfLinksInCollection()
         {
