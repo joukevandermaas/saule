@@ -116,6 +116,32 @@ namespace Tests.Controllers
         }
 
         [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20, FirstPageNumber = 1)]
+        [Route("companies/paged-result-empty-first-page")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetEmpyCompaniesFirstPage()
+        {
+            return new PagedResult<Company>()
+            {
+                TotalResultsCount = 0,
+                Data = new List<Company>()
+            };
+        }
+
+        [HttpGet]
+        [Paginated(PerPage = 20, PageSizeLimit = 20)]
+        [Route("companies/paged-result-empty")]
+        [ReturnsResource(typeof(CompanyResource))]
+        public PagedResult<Company> GetEmpyCompanies()
+        {
+            return new PagedResult<Company>()
+            {
+                TotalResultsCount = 0,
+                Data = new List<Company>()
+            };
+        }
+
+        [HttpGet]
         [Paginated(PerPage = 20, PageSizeLimit = 20)]
         [Route("companies/paged-result-queryable")]
         [ReturnsResource(typeof(CompanyResource))]
