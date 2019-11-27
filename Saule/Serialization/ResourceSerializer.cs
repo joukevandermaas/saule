@@ -140,7 +140,7 @@ namespace Saule.Serialization
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
             if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
             {
-                if (id != null && !_baseUrl.AbsolutePath.EndsWith(id))
+                if (id != null && !_baseUrl.AbsolutePath.EndsWith(id, StringComparison.InvariantCultureIgnoreCase))
                 {
                     AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource, id));
                 }
