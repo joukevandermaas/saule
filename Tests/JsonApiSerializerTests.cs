@@ -68,7 +68,7 @@ namespace Tests
 
         }
 
-        [Fact(DisplayName = "Uses query fieldset expressions if specified")]
+        [Fact(DisplayName = "Uses query fieldset expressions on attributes if specified")]
         public void UsesQueryFieldsetExpressions()
         {
             var target = new JsonApiSerializer<CompanyResource>
@@ -82,6 +82,22 @@ namespace Tests
             Assert.NotNull(result["data"][0]["attributes"]["name"]);
             Assert.NotNull(result["data"][0]["attributes"]["location"]);
             Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
+        }
+        
+        [Fact(DisplayName = "Uses query fieldset expressions also on relationships if specified")]
+        public void UsesQueryFieldsetExpressionsOnRelationships()
+        {
+            var target = new JsonApiSerializer<PersonResource>
+            {
+                AllowQuery = true
+            };
+            var people = Get.People(1).ToList();
+            var result = target.Serialize(people, new Uri(DefaultUrl, "?fields[person]=Job"));
+            _output.WriteLine(result.ToString());
+
+            var relationships = result["data"][0]["relationships"];
+
+            Assert.Null(relationships["family-members"]);
         }
 
         [Theory(DisplayName = "Uses query fieldset expressions if specified with various input string cases.")]

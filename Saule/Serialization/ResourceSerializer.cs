@@ -263,23 +263,21 @@ namespace Saule.Serialization
                 }
             }
 
-            JObject attributes = null;
+            FieldsetProperty fieldset = null;
             if (_fieldsetContext != null && _fieldsetContext.Properties.Any(property => property.Type == node.Key.Type))
             {
-                FieldsetProperty fieldset = _fieldsetContext.Properties.First(property => property.Type == node.Key.Type);
-                attributes = SerializeAttributes(node, fieldset);
+                fieldset = _fieldsetContext.Properties.First(property => property.Type == node.Key.Type);
             }
-            else
-            {
-                attributes = SerializeAttributes(node);
-            }
+
+            var attributes = fieldset != null ? SerializeAttributes(node, fieldset) : SerializeAttributes(node);
 
             if (attributes != null)
             {
                 response["attributes"] = attributes;
             }
 
-            var relationships = SerializeRelationships(node);
+            var relationships = SerializeRelationships(node, fieldset);
+
             if (relationships != null)
             {
                 response["relationships"] = relationships;
@@ -324,7 +322,7 @@ namespace Saule.Serialization
             return JObject.FromObject(attributeHash, _serializer);
         }
 
-        private JObject SerializeRelationships(ResourceGraphNode node)
+        private JObject SerializeRelationships(ResourceGraphNode node,  FieldsetProperty fieldset)
         {
             if (!node.Relationships.Any())
             {
@@ -335,6 +333,11 @@ namespace Saule.Serialization
 
             foreach (var kv in node.Relationships)
             {
+                if (fieldset != null && !fieldset.Fields.Contains(kv.Value.Relationship.Name.ToComparablePropertyName()))
+                {
+                    continue;
+                }
+
                 var relationship = kv.Value.Relationship;
 
                 var item = new JObject();
