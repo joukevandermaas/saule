@@ -35,7 +35,9 @@ namespace Saule.Queries.Pagination
             {
                 // we also should add firstPage as if it's not a zero, then total page count should be shifted based on firstPageNumber
                 // with 60 elements and 20 page size. if firstPage is 0, then lastPage should be 2. If firstPage is 1, then lastPage should be 3
-                var totalPages = (int)Math.Ceiling((double)context.TotalResultsCount / context.PerPage.Value) - 1 + context.FirstPageNumber;
+                int totalPages = context.TotalResultsCount == 0
+                    ? context.FirstPageNumber
+                    : (int)Math.Ceiling((double)context.TotalResultsCount / context.PerPage.Value) - 1 + context.FirstPageNumber;
                 LastPage = CreateQueryString(context.ClientFilters, totalPages);
             }
         }
