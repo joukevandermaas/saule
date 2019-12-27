@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Saule
 {
     internal static class ObjectExtensions
     {
-        public static object GetValueOfProperty(this object obj, string propertyName)
+        public static object GetValueOfProperty(this object obj, string propertyName, bool searchForInternals = false)
         {
             if (obj == null || propertyName == null)
             {
@@ -34,13 +35,20 @@ namespace Saule
                 }
             }
 
-            var propertyInfo = obj.GetType().GetProperty(propertyName);
+            BindingFlags flags = searchForInternals
+                ? BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
+
+                // these are default binding flags based from source
+                // https://referencesource.microsoft.com/#mscorlib/system/type.cs,719
+                : BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public;
+
+            var propertyInfo = obj.GetType().GetProperty(propertyName, flags);
             if (propertyInfo != null)
             {
                 return propertyInfo.GetValue(obj);
             }
 
-            var fieldInfo = obj.GetType().GetField(propertyName);
+            var fieldInfo = obj.GetType().GetField(propertyName, flags);
             if (fieldInfo != null)
             {
                 return fieldInfo.GetValue(obj);

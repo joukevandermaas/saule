@@ -151,13 +151,25 @@ namespace Tests.Queries
             Assert.Equal(expected, result);
         }
 
+        [Fact(DisplayName = "Applies nested filtering on strings")]
+        public void WorksOnNestedStrings()
+        {
+            var people = Get.People(100).ToList().AsQueryable();
+            var expected = people.Where(c => c.Job.Name == "Bookstore").ToList();
+            var query = GetQuery(new[] { "Job.Name" }, new[] { "Bookstore" });
+            var result = Query.ApplyFiltering(people, new FilterContext(query), new PersonResource())
+                as IQueryable<Person>;
+  
+            Assert.Equal(expected, result);
+        }
+
         [Fact(DisplayName = "Applies filtering on strings with spaces")]
         public void WorksOnStringsWithSpaces()
         {
             var companies = Get.Companies(100).ToList().AsQueryable();
             var expected = companies.Where(c => c.Name == "Awesome Inc.").ToList();
 
-            var query = GetQuery(new[] { "Name" }, new[] { "Aweseom Inc." });
+            var query = GetQuery(new[] { "Name" }, new[] { "Awesome Inc." });
 
             var result = Query.ApplyFiltering(companies, new FilterContext(query), new CompanyResource())
                 as IQueryable<Company>;
