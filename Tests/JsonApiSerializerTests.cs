@@ -84,7 +84,7 @@ namespace Tests
             Assert.Null(result["data"][0]["attributes"]["number-of-employees"]);
         }
         
-        [Fact(DisplayName = "Uses query fieldset expressions also on relationships if specified")]
+        [Fact(DisplayName = "Uses query fieldset expressions on relationships if specified")]
         public void UsesQueryFieldsetExpressionsOnRelationships()
         {
             var target = new JsonApiSerializer<PersonResource>
@@ -98,6 +98,7 @@ namespace Tests
             var relationships = result["data"][0]["relationships"];
 
             Assert.Null(relationships["family-members"]);
+            Assert.NotNull(relationships["job"]);
         }
 
         [Theory(DisplayName = "Uses query fieldset expressions if specified with various input string cases.")]
