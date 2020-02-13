@@ -51,7 +51,7 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
-            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
+            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter, _resource);
             _serializer = serializer;
 
             if (_value == null)
@@ -114,6 +114,7 @@ namespace Saule.Serialization
                 return metaObject as JToken;
             }
 
+            _serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             return metaObject == null ? null : JToken.FromObject(metaObject, _serializer);
         }
 
@@ -288,6 +289,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, _serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
@@ -295,7 +297,8 @@ namespace Saule.Serialization
                     new
                     {
                         Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
-                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
+                        Value = serializedSourceObject.SelectToken(_propertyNameConverter.ToJsonPropertyName(a.InternalName)) ??
+                            serializedSourceObject.SelectToken(a.PropertyName)
                     })
                 .ToDictionary(
                     kvp => kvp.Key,
@@ -306,6 +309,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
         {
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, _serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
@@ -313,7 +317,8 @@ namespace Saule.Serialization
                     new
                     {
                         Key = _propertyNameConverter.ToJsonPropertyName(a.InternalName),
-                        Value = node.SourceObject.GetValueOfProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName))
+                        Value = serializedSourceObject.SelectToken(_propertyNameConverter.ToJsonPropertyName(a.InternalName)) ??
+                            serializedSourceObject.SelectToken(a.PropertyName)
                     })
                 .ToDictionary(
                     kvp => kvp.Key,
