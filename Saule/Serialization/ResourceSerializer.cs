@@ -22,6 +22,7 @@ namespace Saule.Serialization
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
         private JsonSerializer _serializer;
+        private JsonSerializer _sourceSerializer;
 
         public ResourceSerializer(
             object value,
@@ -51,8 +52,11 @@ namespace Saule.Serialization
 
         public JObject Serialize(JsonSerializer serializer)
         {
-            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter, _resource);
+            serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             _serializer = serializer;
+
+            _sourceSerializer = JsonApiSerializer.GetJsonSerializer(_serializer.Converters);
+            _sourceSerializer.ContractResolver = new SourceContractResolver(_propertyNameConverter, _resource);
 
             if (_value == null)
             {
@@ -114,7 +118,6 @@ namespace Saule.Serialization
                 return metaObject as JToken;
             }
 
-            _serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             return metaObject == null ? null : JToken.FromObject(metaObject, _serializer);
         }
 
@@ -289,7 +292,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _serializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
@@ -309,7 +312,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
         {
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _serializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
