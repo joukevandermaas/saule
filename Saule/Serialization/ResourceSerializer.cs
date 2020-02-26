@@ -292,6 +292,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
+            // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
             var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
@@ -312,6 +313,7 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
         {
+            // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
             var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
