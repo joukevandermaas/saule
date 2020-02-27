@@ -112,6 +112,7 @@
     <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
     <Compile Include="Controllers\StaticController.cs" />
+    <Compile Include="Helpers\DateISOConverter.cs" />
     <Compile Include="Helpers\Get.cs" />
     <Compile Include="Helpers\HttpClientExtensions.cs" />
     <Compile Include="Helpers\NewSetupJsonApiServer.cs" />
@@ -149,6 +150,8 @@
     <Compile Include="Models\PersonWithDefaultIdResource.cs" />
     <Compile Include="Models\PersonWithDifferentId.cs" />
     <Compile Include="Models\PersonWithDifferentIdResource.cs" />
+    <Compile Include="Models\PersonWithJsonConverters.cs" />
+    <Compile Include="Models\PersonWithJsonConvertersResource.cs" />
     <Compile Include="Models\PersonWithNoId.cs" />
     <Compile Include="Models\PersonWithNoJob.cs" />
     <Compile Include="Controllers\PeopleController.cs" />

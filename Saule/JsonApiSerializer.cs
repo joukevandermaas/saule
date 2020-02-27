@@ -95,6 +95,17 @@ namespace Saule
             return result;
         }
 
+        internal static JsonSerializer GetJsonSerializer(IEnumerable<JsonConverter> converters)
+        {
+            var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            foreach (var converter in converters)
+            {
+                serializer.Converters.Add(converter);
+            }
+
+            return serializer;
+        }
+
         private static List<ApiError> GetAsError(object @object)
         {
             var exception = @object as Exception;
@@ -116,17 +127,6 @@ namespace Saule
             }
 
             return null;
-        }
-
-        private static JsonSerializer GetJsonSerializer(IEnumerable<JsonConverter> converters)
-        {
-            var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            foreach (var converter in converters)
-            {
-                serializer.Converters.Add(converter);
-            }
-
-            return serializer;
         }
     }
 }

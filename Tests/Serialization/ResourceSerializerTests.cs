@@ -708,6 +708,23 @@ namespace Tests.Serialization
             });
         }
 
+        [Fact(DisplayName = "Use Json Converters when seirializing")]
+        public void SerializeUsingJsonConverter()
+        {
+            var person = new PersonWithJsonConverters();
+
+            var target = new ResourceSerializer(person, new PersonWithJsonConvertersResource(),
+                GetUri(id: "1"), DefaultPathBuilder, null, null, null);
+
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            // Using a Json converter
+            Assert.Equal(result["data"]["attributes"]["birthday"], "1992-09-28");
+            // Not using a converter
+            Assert.Equal(result["data"]["attributes"]["work-aniversary"], "2019-04-27T00:00:00");
+        }
+
         internal static IEnumerable<KeyValuePair<string, string>> GetQuery(string key, string value)
         {
             yield return new KeyValuePair<string, string>(key, value);
