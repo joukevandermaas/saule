@@ -75,6 +75,7 @@
     <Compile Include="Serialization\CamelCasePropertyNameConverter.cs" />
     <Compile Include="Serialization\DefaultPropertyNameConverter.cs" />
     <Compile Include="Serialization\IPropertyNameConverter.cs" />
+    <Compile Include="Serialization\SourceContractResolver.cs" />
     <Compile Include="StringDictionaryExtensions.cs" />
     <Compile Include="FormatterPriority.cs" />
     <Compile Include="Http\DisableDefaultIncludedAttribute.cs" />
