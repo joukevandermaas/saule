@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,7 +23,7 @@ namespace Saule.Serialization
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
         private JsonSerializer _serializer;
-        private JsonSerializer _sourceSerializer;
+        private Dictionary<ApiResource, JsonSerializer> _sourceSerializers;
 
         public ResourceSerializer(
             object value,
@@ -43,6 +44,7 @@ namespace Saule.Serialization
             _includeContext = includeContext;
             _fieldsetContext = fieldsetContext;
             _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
+            _sourceSerializers = new Dictionary<ApiResource, JsonSerializer>();
         }
 
         public JObject Serialize()
@@ -54,9 +56,6 @@ namespace Saule.Serialization
         {
             serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             _serializer = serializer;
-
-            _sourceSerializer = JsonApiSerializer.GetJsonSerializer(_serializer.Converters);
-            _sourceSerializer.ContractResolver = new SourceContractResolver(_propertyNameConverter, _resource);
 
             if (_value == null)
             {
@@ -292,8 +291,10 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
+            var serializer = GetSourceSerializer(node.Resource);
+
             // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
@@ -313,8 +314,10 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
         {
+            var serializer = GetSourceSerializer(node.Resource);
+
             // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
@@ -438,6 +441,21 @@ namespace Saule.Serialization
             @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));
 
             return @object;
+        }
+
+        private JsonSerializer GetSourceSerializer(ApiResource resource)
+        {
+            JsonSerializer serializer;
+            if (_sourceSerializers.TryGetValue(resource, out serializer))
+            {
+                return serializer;
+            }
+
+            serializer = JsonApiSerializer.GetJsonSerializer(_serializer.Converters);
+            serializer.ContractResolver = new SourceContractResolver(_propertyNameConverter, resource);
+
+            _sourceSerializers.Add(resource, serializer);
+            return serializer;
         }
     }
 }
