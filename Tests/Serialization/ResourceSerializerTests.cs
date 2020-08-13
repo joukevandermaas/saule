@@ -412,6 +412,33 @@ namespace Tests.Serialization
 
             Assert.Equal(3, included.Count);
         }
+        
+        [Fact(DisplayName = "If object is included, then Included has all attributes with the values")]
+        public void IncludedResourceHasAttributes()
+        {
+            var person = new Person(true)
+            {
+                Car = new Car(true),
+                Job = new Company(true)
+            };
+            
+            var include = new IncludeContext(GetQuery("include", "car,job"));
+            var target = new ResourceSerializer(person, DefaultResource,
+                GetUri(id: "123"), DefaultPathBuilder, null, include, null);
+            var result = target.Serialize();
+            _output.WriteLine(result.ToString());
+
+            var included = result["included"] as JArray;
+
+            Assert.Equal(2, included.Count);
+
+            var corporation = included.FirstOrDefault(node => node.Value<string>("type") == "corporation");
+            Assert.Equal("Awesome, Inc.", corporation["attributes"]["name"]);
+            Assert.Equal(24, corporation["attributes"]["number-of-employees"]);
+            
+            var car = included.FirstOrDefault(node => node.Value<string>("type") == "car");
+            Assert.Equal("Duster", car["attributes"]["model"]);
+        }
 
         [Fact(DisplayName = "Handles null relationships and attributes correctly")]
         public void HandlesNullValues()
