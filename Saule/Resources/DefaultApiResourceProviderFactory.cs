@@ -11,8 +11,9 @@ namespace Saule.Resources
         public IApiResourceProvider Create(HttpRequestMessage request)
         {
             object resource;
-            if (request.Properties.TryGetValue(Constants.PropertyNames.ResourceDescriptor, out resource) && resource is ApiResource apiResource)
+            if (request.Properties.TryGetValue(Constants.PropertyNames.ResourceDescriptor, out resource) && resource is ApiResource)
             {
+                var apiResource = (ApiResource)resource;
                 return new DefaultApiResourceProvider(apiResource);
             }
 
