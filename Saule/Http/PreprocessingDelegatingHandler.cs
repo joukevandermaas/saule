@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using Saule.Queries;
 using Saule.Queries.Pagination;
+using Saule.Resources;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -43,11 +44,15 @@ namespace Saule.Http
 
             ApiResource resource = null;
             bool isHttpError = content is HttpError || content is IEnumerable<HttpError>;
-            if (request.Properties.ContainsKey(Constants.PropertyNames.ResourceDescriptor))
+            IApiResourceProvider resourceProvider = null;
+
+            if (!isHttpError)
             {
-                resource = (ApiResource)request.Properties[Constants.PropertyNames.ResourceDescriptor];
+                resourceProvider = config.ApiResourceProviderFactory.Create(request);
+                resource = resourceProvider?.Resolve(content);
             }
-            else if (content != null && !isHttpError)
+
+            if (resource == null && content != null && !isHttpError)
             {
                 content = new JsonApiException(
                     ErrorType.Server,
@@ -64,7 +69,7 @@ namespace Saule.Http
 
             PrepareUrlPathBuilder(jsonApi, request, config);
 
-            return jsonApi.PreprocessContent(content, resource, request.RequestUri, config);
+            return jsonApi.PreprocessContent(content, request.RequestUri, config, resourceProvider);
         }
 
         /// <inheritdoc/>

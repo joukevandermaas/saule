@@ -12,6 +12,7 @@ using Saule.Queries.Filtering;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
 using Saule.Queries.Sorting;
+using Saule.Resources;
 using Saule.Serialization;
 
 namespace Saule
@@ -93,8 +94,9 @@ namespace Saule
             var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
 
             _serializer.QueryContext = queryContext;
+            var apiResourceProvider = new DefaultApiResourceProvider(new T());
 
-            var preprocessResult = _serializer.PreprocessContent(@object, new T(), requestUri, config);
+            var preprocessResult = _serializer.PreprocessContent(@object, requestUri, config, apiResourceProvider);
             return JsonApiSerializer.Serialize(preprocessResult);
         }
 

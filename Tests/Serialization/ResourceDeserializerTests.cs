@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Serialization;
 using System.Linq;
 using Saule;
+using Saule.Resources;
 using Tests.Helpers;
 using Tests.Models;
 using Xunit;
@@ -23,11 +24,12 @@ namespace Tests.Serialization
             _person.Friends = Get.People(1);
             _person.FamilyMembers = Get.People(2);
             _people = Get.People(5).ToArray();
+            var personResourceProvider = new DefaultApiResourceProvider(new PersonResource());
             var singleSerializer = new ResourceSerializer(
-            _person, new PersonResource(), new Uri("http://example.com/people/1"),
+            _person, personResourceProvider, new Uri("http://example.com/people/1"),
             new DefaultUrlPathBuilder(), null, null, null);
             var multiSerializer = new ResourceSerializer(
-                _people, new PersonResource(), new Uri("http://example.com/people/"),
+                _people, personResourceProvider, new Uri("http://example.com/people/"),
                 new DefaultUrlPathBuilder(), null, null, null);
 
             _singleJson = JToken.Parse(singleSerializer.Serialize().ToString());
@@ -52,7 +54,7 @@ namespace Tests.Serialization
             var camelCasePropertyNameConverter = new CamelCasePropertyNameConverter();
 
             var singleSerializer = new ResourceSerializer(
-                _person, new PersonResource(), new Uri("http://example.com/people/1"),
+                _person, new DefaultApiResourceProvider(new PersonResource()), new Uri("http://example.com/people/1"),
                 new DefaultUrlPathBuilder(), null, null, null, camelCasePropertyNameConverter);
 
             var singleJson = JToken.Parse(singleSerializer.Serialize().ToString());

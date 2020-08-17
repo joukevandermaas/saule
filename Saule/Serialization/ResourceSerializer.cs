@@ -8,6 +8,7 @@ using Saule.Queries;
 using Saule.Queries.Fieldset;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
+using Saule.Resources;
 
 namespace Saule.Serialization
 {
@@ -17,17 +18,18 @@ namespace Saule.Serialization
         private readonly PaginationContext _paginationContext;
         private readonly IncludeContext _includeContext;
         private readonly FieldsetContext _fieldsetContext;
-        private readonly ApiResource _resource;
+        private readonly ApiResource _topResource;
+        private readonly IApiResourceProvider _apiResourceProvider;
         private readonly object _value;
         private readonly IPropertyNameConverter _propertyNameConverter;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
+        private readonly Dictionary<ApiResource, JsonSerializer> _sourceSerializers;
         private JsonSerializer _serializer;
-        private Dictionary<ApiResource, JsonSerializer> _sourceSerializers;
 
         public ResourceSerializer(
             object value,
-            ApiResource type,
+            IApiResourceProvider apiResourceProvider,
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
@@ -37,7 +39,7 @@ namespace Saule.Serialization
         {
             _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
             _urlBuilder = urlBuilder;
-            _resource = type;
+            _apiResourceProvider = apiResourceProvider;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
@@ -45,6 +47,7 @@ namespace Saule.Serialization
             _fieldsetContext = fieldsetContext;
             _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
             _sourceSerializers = new Dictionary<ApiResource, JsonSerializer>();
+            _topResource = apiResourceProvider.Resolve(value);
         }
 
         public JObject Serialize()
@@ -62,7 +65,7 @@ namespace Saule.Serialization
                 return SerializeNull();
             }
 
-            var graph = new ResourceGraph(_value, _resource, _includedGraphPaths);
+            var graph = new ResourceGraph(_value, _apiResourceProvider, _includedGraphPaths);
             var dataSection = SerializeData(graph);
             var includesSection = SerializeIncludes(graph);
             var metaSection = SerializeMetadata();
@@ -110,7 +113,7 @@ namespace Saule.Serialization
                 valueType = valueType.GetGenericTypeParameterOfCollection() ?? valueType;
             }
 
-            var metaObject = _resource.GetMetadata(_value, valueType, isCollection);
+            var metaObject = _topResource.GetMetadata(_value, valueType, isCollection);
 
             if (metaObject is JToken)
             {
@@ -140,11 +143,11 @@ namespace Saule.Serialization
             var result = new JObject();
 
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
-            if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
+            if (_topResource.LinkType.HasFlag(LinkType.TopSelf) || _topResource.LinkType.HasFlag(LinkType.Self))
             {
                 if (id != null && !_baseUrl.AbsolutePath.EndsWith(id, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource, id));
+                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_topResource, id));
                 }
                 else
                 {

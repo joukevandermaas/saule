@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json.Linq;
 using Saule;
+using Saule.Resources;
 using Saule.Serialization;
 using Tests.Helpers;
 using Tests.Models;
@@ -32,7 +33,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -63,7 +64,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -91,7 +92,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -117,7 +118,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -142,7 +143,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -156,7 +157,7 @@ namespace Tests.Serialization
 
             target = new ResourceSerializer(
                 companies,
-                mock.Object,
+                new DefaultApiResourceProvider(mock.Object),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
@@ -174,7 +175,7 @@ namespace Tests.Serialization
 
             var target = new ResourceSerializer(
                 company,
-                new CompanyResource(),
+                new DefaultApiResourceProvider(new CompanyResource()),
                 new Uri("http://localhost/people/123"),
                 new DefaultUrlPathBuilder(),
                 null,
