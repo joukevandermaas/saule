@@ -122,12 +122,17 @@ namespace Tests.Integration
         {
             public ApiResource Resolve(object dataObject)
             {
-                switch (dataObject)
+                if (dataObject is Circle)
                 {
-                    case Circle _: return new CircleResource();
-                    case Rectangle _: return new RectangleResource();
-                    default: return new ShapeResource();
+                    return new CircleResource();
                 }
+
+                if (dataObject is Rectangle)
+                {
+                    return new RectangleResource();
+                }
+
+                return new ShapeResource();
             }
         }
     }
