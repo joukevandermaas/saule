@@ -10,7 +10,8 @@ namespace Saule.Resources
         /// <inheritdoc/>
         public IApiResourceProvider Create(HttpRequestMessage request)
         {
-            if (request.Properties.TryGetValue(Constants.PropertyNames.ResourceDescriptor, out object resource) && resource is ApiResource apiResource)
+            object resource;
+            if (request.Properties.TryGetValue(Constants.PropertyNames.ResourceDescriptor, out resource) && resource is ApiResource apiResource)
             {
                 return new DefaultApiResourceProvider(apiResource);
             }
