@@ -91,10 +91,11 @@ namespace Saule
             }
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            ReturnsResourceAttribute.AddResourceToRequest(request, new T());
             var queryContext = GetQueryContext(request.GetQueryNameValuePairs());
 
             _serializer.QueryContext = queryContext;
-            var apiResourceProvider = new DefaultApiResourceProvider(new T());
+            var apiResourceProvider = config.ApiResourceProviderFactory.Create(request);
 
             var preprocessResult = _serializer.PreprocessContent(@object, requestUri, config, apiResourceProvider);
             return JsonApiSerializer.Serialize(preprocessResult);

@@ -63,6 +63,36 @@ namespace Tests.Integration
             }
         }
         
+        [Fact(DisplayName = "If null ApiResourceProvider is returned, then we should expect an error")]
+        public async Task RequiresApiResourceProviderInstance()
+        {
+            var config = new JsonApiConfiguration()
+            {
+                ApiResourceProviderFactory = new NullApiResourceProviderFactory()
+            };
+            using (var server = new NewSetupJsonApiServer(config))
+            {
+                var client = server.GetClient();
+                // id 1 is mapped to circle object
+                var result = await client.GetJsonResponseAsync("api/shape/1");
+                _output.WriteLine(result.ToString());
+
+                var errors = result["errors"];
+                Assert.Equal(1, errors.Count());
+
+                var error = errors[0];
+
+                Assert.Equal("https://github.com/joukevandermaas/saule/wiki",
+                    error["links"]["about"].Value<string>());
+
+                Assert.Equal("Saule.JsonApiException",
+                    error["code"].Value<string>());
+
+                Assert.Equal("Saule.JsonApiException: ApiResourceProviderFactory returned null but it should always return an instance of IApiResourceProvider.",
+                    error["detail"].Value<string>());
+            }
+        }
+        
         [Fact(DisplayName = "Get a specific rectangle and validate the attributes")]
         public async Task GetSpecificRectangle()
         {
@@ -80,25 +110,25 @@ namespace Tests.Integration
         }
 
         
-        private static void ValidateRectangle(JToken rectangle2, string expectedId)
+        private static void ValidateRectangle(JToken rectangle, string expectedId)
         {
-            Assert.Equal("rectangle", rectangle2["type"]);
-            Assert.Equal(expectedId, rectangle2["id"]);
-            Assert.Equal("Purple", rectangle2["attributes"]["color"]);
-            Assert.Equal(10, rectangle2["attributes"]["left"].Value<int>());
-            Assert.Equal(10, rectangle2["attributes"]["top"].Value<int>());
-            Assert.Equal(100, rectangle2["attributes"]["width"].Value<int>());
-            Assert.Equal(100, rectangle2["attributes"]["height"].Value<int>());
-            Assert.Equal(5, rectangle2["attributes"].Count());
+            Assert.Equal("rectangle", rectangle["type"]);
+            Assert.Equal(expectedId, rectangle["id"]);
+            Assert.Equal("Purple", rectangle["attributes"]["color"]);
+            Assert.Equal(10, rectangle["attributes"]["left"].Value<int>());
+            Assert.Equal(10, rectangle["attributes"]["top"].Value<int>());
+            Assert.Equal(100, rectangle["attributes"]["width"].Value<int>());
+            Assert.Equal(100, rectangle["attributes"]["height"].Value<int>());
+            Assert.Equal(5, rectangle["attributes"].Count());
         }
 
-        private static void ValidateCircle(JToken circle1, string expectedId)
+        private static void ValidateCircle(JToken circle, string expectedId)
         {
-            Assert.Equal("circle", circle1["type"]);
-            Assert.Equal(expectedId, circle1["id"]);
-            Assert.Equal("Purple", circle1["attributes"]["color"]);
-            Assert.Equal(42, circle1["attributes"]["radius"].Value<decimal>());
-            Assert.Equal(2, circle1["attributes"].Count());
+            Assert.Equal("circle", circle["type"]);
+            Assert.Equal(expectedId, circle["id"]);
+            Assert.Equal("Purple", circle["attributes"]["color"]);
+            Assert.Equal(42, circle["attributes"]["radius"].Value<decimal>());
+            Assert.Equal(2, circle["attributes"].Count());
         }
 
         private NewSetupJsonApiServer CreateServer()
@@ -115,6 +145,14 @@ namespace Tests.Integration
             public IApiResourceProvider Create(HttpRequestMessage request)
             {
                 return new ShapeApiResourceProvider();
+            }
+        }
+        
+        public class NullApiResourceProviderFactory : IApiResourceProviderFactory
+        {
+            public IApiResourceProvider Create(HttpRequestMessage request)
+            {
+                return null;
             }
         }
 

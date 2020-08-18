@@ -49,7 +49,20 @@ namespace Saule.Http
             if (!isHttpError)
             {
                 resourceProvider = config.ApiResourceProviderFactory.Create(request);
-                resource = resourceProvider?.Resolve(content);
+                if (resourceProvider == null)
+                {
+                    content = new JsonApiException(
+                        ErrorType.Server,
+                        "ApiResourceProviderFactory returned null but it should always return an instance of IApiResourceProvider.")
+                    {
+                        HelpLink = "https://github.com/joukevandermaas/saule/wiki"
+                    };
+                    isHttpError = true;
+                }
+                else
+                {
+                    resource = resourceProvider.Resolve(content);
+                }
             }
 
             if (resource == null && content != null && !isHttpError)
