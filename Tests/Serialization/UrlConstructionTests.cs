@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Saule;
 using Saule.Queries.Pagination;
+using Saule.Resources;
 using Saule.Serialization;
 using Tests.Helpers;
 using Tests.Models;
@@ -19,6 +20,9 @@ namespace Tests.Serialization
         private static IUrlPathBuilder DefaultPathBuilder => new DefaultUrlPathBuilder("/api");
         private static IUrlPathBuilder CustomPathBuilder => new DefaultUrlPathBuilder("/api/location/123");
 
+        private static IApiResourceProvider PersonResourceProvider =>
+            new DefaultApiResourceProvider(new PersonResource());
+
         public UrlConstructionTests(ITestOutputHelper output)
         {
             _output = output;
@@ -27,7 +31,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles query parameters correctly single resource")]
         public void HandlesQueryParams()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123", "a=b&c=d"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -46,7 +50,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Handles query parameters correctly collection resource")]
         public void HandlesQueryParamsCollection()
         {
-            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
+            var target = new ResourceSerializer(Get.People(1), PersonResourceProvider,
                 GetUri(null, "a=b&c=d"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -66,7 +70,7 @@ namespace Tests.Serialization
         public void SelfLinksInCollection()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -84,9 +88,9 @@ namespace Tests.Serialization
         {
             var person = new PersonWithDifferentId(false, "Allen");
 
-            var lowerTarget = new ResourceSerializer(person, new PersonWithDifferentIdResource(),
+            var lowerTarget = new ResourceSerializer(person, new DefaultApiResourceProvider(new PersonWithDifferentIdResource()),
                  GetUri("allen"), DefaultPathBuilder, null, null, null);
-            var upperTarget = new ResourceSerializer(person, new PersonWithDifferentIdResource(),
+            var upperTarget = new ResourceSerializer(person, new DefaultApiResourceProvider(new PersonWithDifferentIdResource()),
                 GetUri("Allen"), DefaultPathBuilder, null, null, null);
 
             var lowerResult = lowerTarget.Serialize();
@@ -105,7 +109,7 @@ namespace Tests.Serialization
         public void SelfLinksInCollectionCustomRoute()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                  new Uri("http://localhost:80/api/location/123/people"), CustomPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -125,7 +129,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Item does not have self link in single element")]
         public void NoSelfLinksInObject()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -138,7 +142,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link")]
         public void SelfLink()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -151,7 +155,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port")]
         public void SelfLinkNoPort()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 new Uri("http://localhost:80/api/people/123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -164,7 +168,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port for https")]
         public void SelfLinkNoPortHttps()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 new Uri("https://localhost:443/api/people/123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -177,7 +181,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port and with correct encoding")]
         public void SelfLinkNoEncoding()
         {
-            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
+            var target = new ResourceSerializer(Get.People(1), PersonResourceProvider,
                 new Uri("https://localhost:443/api/people?page[number]=1&page[size]=10"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -190,7 +194,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link without any port and with correct encoding based on already encoded value")]
         public void SelfLinkNoEncodingBasedOnEncoded()
         {
-            var target = new ResourceSerializer(Get.People(1), new PersonResource(),
+            var target = new ResourceSerializer(Get.People(1), PersonResourceProvider,
                 new Uri("https://localhost:443/api/people?page%5Bnumber%5D=1&page%5Bsize%5D=10"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -203,7 +207,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Adds top level self link if only LinkType.TopSelf is specified")]
         public void TopLinkOnlyLink()
         {
-            var target = new ResourceSerializer(Get.People(1), new PersonOnlyTopLinksResource(),
+            var target = new ResourceSerializer(Get.People(1), new DefaultApiResourceProvider(new PersonOnlyTopLinksResource()),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -218,7 +222,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Omits top level links if so requested")]
         public void NoTopLevelLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonNoLinksResource(),
+            var target = new ResourceSerializer(Get.Person(), new DefaultApiResourceProvider(new PersonNoLinksResource()),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -230,7 +234,7 @@ namespace Tests.Serialization
         public void NextLink()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 10), null, null);
             var result = target.Serialize();
@@ -238,7 +242,7 @@ namespace Tests.Serialization
 
             Assert.Equal(null, result["links"]["next"]);
 
-            target = new ResourceSerializer(people, new PersonResource(),
+            target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 4), null, null);
             result = target.Serialize();
@@ -251,7 +255,7 @@ namespace Tests.Serialization
         public void PreviousLink()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "0"), pageSizeDefault: 10), null, null);
             var result = target.Serialize();
@@ -259,7 +263,7 @@ namespace Tests.Serialization
 
             Assert.Equal(null, result["links"]["prev"]);
 
-            target = new ResourceSerializer(people, new PersonResource(),
+            target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), pageSizeDefault: 10), null, null);
             result = target.Serialize();
@@ -272,7 +276,7 @@ namespace Tests.Serialization
         public void PreviousLinkWithShiftedFirstPage()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "1"), pageSizeDefault: 10, pageSizeLimit:null, firstPageNumber:1), null, null);
             var result = target.Serialize();
@@ -280,7 +284,7 @@ namespace Tests.Serialization
 
             Assert.Equal(null, result["links"]["prev"]);
 
-            target = new ResourceSerializer(people, new PersonResource(),
+            target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(), DefaultPathBuilder,
                 new PaginationContext(GetQuery(Constants.QueryNames.PageNumber, "2"), pageSizeDefault: 10, pageSizeLimit:null, firstPageNumber: 1), null, null);
             result = target.Serialize();
@@ -294,7 +298,7 @@ namespace Tests.Serialization
         public void PaginationQueryParams()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                 GetUri(query: "q=a"), DefaultPathBuilder,
                 new PaginationContext(GetQuery("q", "a"), pageSizeDefault: 4), null, null);
 
@@ -309,7 +313,7 @@ namespace Tests.Serialization
         public void FirstLink()
         {
             var people = Get.People(5);
-            var target = new ResourceSerializer(people, new PersonResource(),
+            var target = new ResourceSerializer(people, PersonResourceProvider,
                GetUri(), DefaultPathBuilder,
                 new PaginationContext(Enumerable.Empty<KeyValuePair<string, string>>(), pageSizeDefault: 4), null, null);
 
@@ -323,7 +327,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Serializes relationships' links")]
         public void SerializesRelationshipLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             
             var result = target.Serialize();
@@ -345,7 +349,7 @@ namespace Tests.Serialization
         {
             var person = Get.Person();
             person.Friends = Get.People(1);
-            var target = new ResourceSerializer(person, new PersonResource(),
+            var target = new ResourceSerializer(person, PersonResourceProvider,
                 GetUri("123"), new CanonicalUrlPathBuilder(), null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -364,7 +368,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Builds absolute links correctly")]
         public void BuildsRightLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -380,7 +384,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Omits relationship links if so requested")]
         public void NoRelLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonNoJobLinksResource(),
+            var target = new ResourceSerializer(Get.Person(), new DefaultApiResourceProvider(new PersonNoJobLinksResource()),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -393,7 +397,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Omits relationship related links if so requested")]
         public void NoRelRelLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonJobOnlySelfLinksResource(),
+            var target = new ResourceSerializer(Get.Person(), new DefaultApiResourceProvider(new PersonJobOnlySelfLinksResource()),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -408,7 +412,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Omits relationship self links if so requested")]
         public void NoRelSelfLinks()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonJobOnlyRelatedLinksResource(),
+            var target = new ResourceSerializer(Get.Person(), new DefaultApiResourceProvider(new PersonJobOnlyRelatedLinksResource()),
                 GetUri("123"), DefaultPathBuilder, null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());
@@ -423,7 +427,7 @@ namespace Tests.Serialization
         [Fact(DisplayName = "Does not generate links when url builder returns nothing")]
         public void UrlBuilder()
         {
-            var target = new ResourceSerializer(Get.Person(), new PersonResource(),
+            var target = new ResourceSerializer(Get.Person(), PersonResourceProvider,
                 GetUri("123"), new EmptyUrlBuilder(), null, null, null);
             var result = target.Serialize();
             _output.WriteLine(result.ToString());

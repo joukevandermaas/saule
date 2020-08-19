@@ -10,25 +10,28 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Saule.Queries.Including;
+using Saule.Resources;
 
 namespace Saule.Serialization
 {
     internal class ResourceGraph
     {
         private readonly IDictionary<ResourceGraphNodeKey, ResourceGraphNode> _nodes;
+        private readonly IApiResourceProvider _apiResourceProvider;
 
         public ResourceGraph(
             object obj,
-            ApiResource resource,
+            IApiResourceProvider apiResourceProvider,
             ResourceGraphPathSet includePaths)
         {
             obj.ThrowIfNull(nameof(obj));
-            resource.ThrowIfNull(nameof(resource));
+            apiResourceProvider.ThrowIfNull(nameof(apiResourceProvider));
             includePaths.ThrowIfNull(nameof(includePaths));
 
             _nodes = new Dictionary<ResourceGraphNodeKey, ResourceGraphNode>();
+            _apiResourceProvider = apiResourceProvider;
 
-            Build(obj, resource, includePaths, 0);
+            Build(obj, null, includePaths, 0);
         }
 
         public IEnumerable<ResourceGraphNode> DataNodes
@@ -64,10 +67,15 @@ namespace Saule.Serialization
             {
                 foreach (var o in (IEnumerable)obj)
                 {
-                    Build(o, resource, includePaths, depth);
+                    Build(o, null, includePaths, depth);
                 }
 
                 return;
+            }
+
+            if (resource == null)
+            {
+                resource = _apiResourceProvider.Resolve(obj);
             }
 
             // keys (type & id pair) uniquely identifier each resource in a compount document

@@ -111,6 +111,7 @@
     <Compile Include="ApiResourceTests.cs" />
     <Compile Include="Controllers\BrokenController.cs" />
     <Compile Include="Controllers\CompaniesController.cs" />
+    <Compile Include="Controllers\ShapeController.cs" />
     <Compile Include="Controllers\StaticController.cs" />
     <Compile Include="Helpers\DateISOConverter.cs" />
     <Compile Include="Helpers\Get.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Helpers\ExpressionComparer.cs" />
     <Compile Include="Http\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Http\QueryFilterExpressionCollectionTests.cs" />
+    <Compile Include="Integration\JsonApiFormatterInheritenceTests.cs" />
     <Compile Include="Integration\PropertyNameConverterTests.cs" />
     <Compile Include="Integration\JsonApiMediaTypeFormatterTests.cs" />
     <Compile Include="Models\Car.cs" />
@@ -137,6 +139,12 @@
     <Compile Include="Models\GuidAsId.cs" />
     <Compile Include="Helpers\ObsoleteSetupJsonApiServer.cs" />
     <Compile Include="Helpers\Paths.cs" />
+    <Compile Include="Models\Inheritance\Circle.cs" />
+    <Compile Include="Models\Inheritance\CircleResource.cs" />
+    <Compile Include="Models\Inheritance\Rectangle.cs" />
+    <Compile Include="Models\Inheritance\RectangleResource.cs" />
+    <Compile Include="Models\Inheritance\Shape.cs" />
+    <Compile Include="Models\Inheritance\ShapeResource.cs" />
     <Compile Include="Models\LazyPerson.cs" />
     <Compile Include="Models\PersonFilter.cs" />
     <Compile Include="Models\PersonJobOnlyRelatedLinksResource.cs" />

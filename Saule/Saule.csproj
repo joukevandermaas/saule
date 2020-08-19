@@ -72,6 +72,10 @@
     <Compile Include="Queries\Fieldset\FieldsetProperty.cs" />
     <Compile Include="Queries\Pagination\PagedResult.cs" />
     <Compile Include="Queries\Pagination\PagedResultQuery.cs" />
+    <Compile Include="Resources\DefaultApiResourceProvider.cs" />
+    <Compile Include="Resources\DefaultApiResourceProviderFactory.cs" />
+    <Compile Include="Resources\IApiResourceProvider.cs" />
+    <Compile Include="Resources\IApiResourceProviderFactory.cs" />
     <Compile Include="Serialization\CamelCasePropertyNameConverter.cs" />
     <Compile Include="Serialization\DefaultPropertyNameConverter.cs" />
     <Compile Include="Serialization\IPropertyNameConverter.cs" />

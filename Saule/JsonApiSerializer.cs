@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
 using Saule.Queries.Pagination;
+using Saule.Resources;
 using Saule.Serialization;
 
 namespace Saule
@@ -32,7 +33,7 @@ namespace Saule
             return result.ResourceSerializer.Serialize(jsonSerializer);
         }
 
-        public PreprocessResult PreprocessContent(object @object, ApiResource resource, Uri requestUri, JsonApiConfiguration config)
+        public PreprocessResult PreprocessContent(object @object, Uri requestUri, JsonApiConfiguration config, IApiResourceProvider apiResourceProvider)
         {
             var result = new PreprocessResult
             {
@@ -61,6 +62,7 @@ namespace Saule
 
                 if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
+                    var resource = apiResourceProvider.Resolve(dataObject);
                     if (QueryContext.Filter != null)
                     {
                         dataObject = Query.ApplyFiltering(dataObject, QueryContext.Filter, resource);
@@ -79,7 +81,7 @@ namespace Saule
 
                 result.ResourceSerializer = new ResourceSerializer(
                         value: dataObject,
-                        type: resource,
+                        apiResourceProvider: apiResourceProvider,
                         baseUrl: requestUri,
                         propertyNameConverter: config.PropertyNameConverter,
                         urlBuilder: UrlPathBuilder,
