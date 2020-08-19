@@ -12,12 +12,16 @@ namespace Tests.Controllers
     {
         [HttpGet]
         [Route("shapes")]
+        [AllowsQuery]
         public IEnumerable<Shape> GetAllShapes()
         {
             return new Shape[]
             {
                 new Circle(true, "1"),
-                new Rectangle(true, "2"),
+                new Rectangle(true, "2")
+                {
+                    Color = "Green"
+                },
                 new Circle(true, "3"),
             };
         }

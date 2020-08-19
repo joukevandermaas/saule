@@ -93,6 +93,68 @@ namespace Tests.Integration
             }
         }
         
+        [Fact(DisplayName = "Filter base shapes that have green color and sort them")]
+        public async Task QueryGreenShapes()
+        {
+            using (var server = CreateServer())
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/shapes?filter[color]=Green&sort=color");
+                _output.WriteLine(result.ToString());
+
+                var items = result["data"] as JArray;
+                Assert.Equal(1, items.Count);
+
+                var rectangle = items[0];
+                
+                ValidateRectangle(rectangle, "2");
+            }
+        }
+
+        [Fact(DisplayName = "Filter base shapes that have purple color and sort them by id in descending order")]
+        public async Task QueryPurpleShapes()
+        {
+            using (var server = CreateServer())
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/shapes?filter[color]=Purple&sort=-id");
+                _output.WriteLine(result.ToString());
+
+                var items = result["data"] as JArray;
+                Assert.Equal(2, items.Count);
+
+                var circle1 = items[0];
+                var circle2 = items[1];
+                
+                // since sort by id is desc, it should be backward
+                ValidateCircle(circle1, "3");
+                ValidateCircle(circle2, "1");
+            }
+        }
+        
+        [Fact(DisplayName = "Filter by property in the inherited object gives an error as property is missing in base object")]
+        public async Task FilterInheritedObjectGivesError()
+        {
+            using (var server = CreateServer())
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/shapes?filter[left]=10&sort=-id");
+                _output.WriteLine(result.ToString());
+
+                var errors = result["errors"];
+                Assert.Equal(1, errors.Count());
+
+                var error = errors[0];
+
+                Assert.Equal("Saule.JsonApiException",
+                    error["code"].Value<string>());
+
+                Assert.Contains("Saule.JsonApiException: Attribute 'left' not found.",
+                    error["detail"].Value<string>());
+            }
+        }
+
+        
         [Fact(DisplayName = "Get a specific rectangle and validate the attributes")]
         public async Task GetSpecificRectangle()
         {
@@ -114,7 +176,7 @@ namespace Tests.Integration
         {
             Assert.Equal("rectangle", rectangle["type"]);
             Assert.Equal(expectedId, rectangle["id"]);
-            Assert.Equal("Purple", rectangle["attributes"]["color"]);
+            Assert.Equal("Green", rectangle["attributes"]["color"]);
             Assert.Equal(10, rectangle["attributes"]["left"].Value<int>());
             Assert.Equal(10, rectangle["attributes"]["top"].Value<int>());
             Assert.Equal(100, rectangle["attributes"]["width"].Value<int>());
