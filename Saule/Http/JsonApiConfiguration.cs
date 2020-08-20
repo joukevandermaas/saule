@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Saule.Resources;
 using Saule.Serialization;
 
 namespace Saule.Http
@@ -36,5 +37,10 @@ namespace Saule.Http
         /// Gets the expressions that are used to evaluate filter queries on a per-type basis.
         /// </summary>
         public QueryFilterExpressionCollection QueryFilterExpressions { get; } = new QueryFilterExpressionCollection();
+
+        /// <summary>
+        /// Gets or sets the factory that creates request specific ApiResourceProvider
+        /// </summary>
+        public IApiResourceProviderFactory ApiResourceProviderFactory { get; set; } = new DefaultApiResourceProviderFactory();
     }
 }
