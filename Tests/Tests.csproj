@@ -141,6 +141,8 @@
     <Compile Include="Helpers\Paths.cs" />
     <Compile Include="Models\Inheritance\Circle.cs" />
     <Compile Include="Models\Inheritance\CircleResource.cs" />
+    <Compile Include="Models\Inheritance\Group.cs" />
+    <Compile Include="Models\Inheritance\GroupResource.cs" />
     <Compile Include="Models\Inheritance\Rectangle.cs" />
     <Compile Include="Models\Inheritance\RectangleResource.cs" />
     <Compile Include="Models\Inheritance\Shape.cs" />
