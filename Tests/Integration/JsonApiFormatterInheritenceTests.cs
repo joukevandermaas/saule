@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -170,6 +171,60 @@ namespace Tests.Integration
                 ValidateRectangle(rectangle, "2");
             }
         }
+        
+        [Fact(DisplayName = "Get a group and validation relationship")]
+        public async Task GetGroup()
+        {
+            using (var server = CreateServer())
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/groups");
+                _output.WriteLine(result.ToString());
+
+                var items = result["data"] as JArray;
+                Assert.Equal(1, items.Count);
+
+                var group = items[0];
+                Assert.Equal("group", group["type"]);
+                Assert.Equal("1", group["id"]);
+                Assert.Equal("Group 1", group["attributes"]["name"]);
+
+                var relationships = group["relationships"]["shapes"]["data"] as JArray;
+                Assert.Equal(3, relationships.Count);
+                Assert.Equal("circle", relationships[0]["type"]);
+                Assert.Equal("1", relationships[0]["id"]);
+                
+                Assert.Equal("rectangle", relationships[1]["type"]);
+                Assert.Equal("2", relationships[1]["id"]);
+                
+                Assert.Equal("circle", relationships[2]["type"]);
+                Assert.Equal("3", relationships[2]["id"]);
+            }
+        }
+        
+        [Fact(DisplayName = "Get a group with included shapes and validate types and shapes itself")]
+        public async Task GetGroupWithIncludes()
+        {
+            using (var server = CreateServer())
+            {
+                var client = server.GetClient();
+                var result = await client.GetJsonResponseAsync("api/groups?include=shapes");
+                _output.WriteLine(result.ToString());
+
+                var items = result["data"] as JArray;
+                var included = result["included"] as JArray; 
+                Assert.Equal(1, items.Count);
+                Assert.Equal(3, included.Count);
+                
+                var circle1 = included[0];
+                var rectangle2 = included[1];
+                var circle3 = included[2];
+                
+                ValidateCircle(circle1,"1");
+                ValidateRectangle(rectangle2, "2");
+                ValidateCircle(circle3,"3");
+            }
+        }
 
         
         private static void ValidateRectangle(JToken rectangle, string expectedId)
@@ -222,17 +277,37 @@ namespace Tests.Integration
         {
             public ApiResource Resolve(object dataObject)
             {
-                if (dataObject is Circle)
+                var type = dataObject.GetType();
+
+                if (type.IsEnumerable() || type.IsArray)
+                    type = type.GetGenericTypeParameterOfCollection();
+                
+                if (type == typeof(Group))
+                {
+                    return new GroupResource();
+                }
+
+                if (type == typeof(Circle))
                 {
                     return new CircleResource();
                 }
 
-                if (dataObject is Rectangle)
+                if (type == typeof(Rectangle))
                 {
                     return new RectangleResource();
                 }
 
                 return new ShapeResource();
+            }
+
+            public ApiResource ResolveRelationship(object dataObject, ApiResource relationship)
+            {
+                if (relationship is ShapeResource)
+                {
+                    return Resolve(dataObject);
+                }
+
+                return new GroupResource();
             }
         }
     }

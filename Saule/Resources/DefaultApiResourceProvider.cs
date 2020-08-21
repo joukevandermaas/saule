@@ -24,5 +24,11 @@
         {
             return ApiResource;
         }
+
+        /// <inheritdoc/>
+        public virtual ApiResource ResolveRelationship(object dataObject, ApiResource relationship)
+        {
+            return relationship;
+        }
     }
 }

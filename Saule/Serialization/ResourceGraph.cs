@@ -52,7 +52,7 @@ namespace Saule.Serialization
 
         private void Build(
             object obj,
-            ApiResource resource,
+            ApiResource relatedResource,
             ResourceGraphPathSet includePaths,
             int depth,
             string propertyName = null)
@@ -73,9 +73,17 @@ namespace Saule.Serialization
                 return;
             }
 
-            if (resource == null)
+            ApiResource resource;
+
+            // if we are serializing top object, then we just resolve it based on api resource of the endpoint
+            // but if are processing relationship's includes, then we need to resolve it based on the relationship itself
+            if (relatedResource == null)
             {
                 resource = _apiResourceProvider.Resolve(obj);
+            }
+            else
+            {
+                resource = _apiResourceProvider.ResolveRelationship(obj, relatedResource);
             }
 
             // keys (type & id pair) uniquely identifier each resource in a compount document

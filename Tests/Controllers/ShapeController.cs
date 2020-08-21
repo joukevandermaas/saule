@@ -6,13 +6,13 @@ using Tests.Models.Inheritance;
 
 namespace Tests.Controllers
 {
-    [ReturnsResource(typeof(ShapeResource))]
     [RoutePrefix("api")]
     public class ShapeController : ApiController
     {
         [HttpGet]
         [Route("shapes")]
         [AllowsQuery]
+        [ReturnsResource(typeof(ShapeResource))]
         public IEnumerable<Shape> GetAllShapes()
         {
             return new Shape[]
@@ -28,9 +28,26 @@ namespace Tests.Controllers
         
         [HttpGet]
         [Route("shape/{id}")]
+        [ReturnsResource(typeof(ShapeResource))]
         public Shape GetShape(string id)
         {
             return GetAllShapes().FirstOrDefault(s => s.Id == id);
+        }
+
+        [HttpGet]
+        [Route("groups")]
+        [AllowsQuery]
+        [DisableDefaultIncluded]
+        [ReturnsResource(typeof(GroupResource))]
+        public IEnumerable<Group> GetGroup()
+        {
+            return new[]
+            {
+                new Group(true, "1")
+                {
+                    Shapes = GetAllShapes().ToList()
+                }
+            };
         }
     }
 }

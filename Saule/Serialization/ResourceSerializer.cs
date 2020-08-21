@@ -424,7 +424,8 @@ namespace Saule.Serialization
 
                 foreach (var sourceObject in (IEnumerable)relationship.SourceObject ?? new JArray())
                 {
-                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(sourceObject, relationship.Relationship.RelatedResource)));
+                    var resource = _apiResourceProvider.ResolveRelationship(sourceObject, relationship.Relationship.RelatedResource);
+                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(sourceObject, resource)));
                 }
 
                 return content;
