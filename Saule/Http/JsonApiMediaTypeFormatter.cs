@@ -155,7 +155,7 @@ namespace Saule.Http
 
         private async Task WriteJsonToStream(JToken json, Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 2048, true))
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), 2048, true))
             {
                 await writer.WriteAsync(json.ToString(Formatting.None, _config.JsonConverters.ToArray()));
             }
