@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Saule.Queries;
+using Saule.Queries.Fieldset;
 using Saule.Queries.Filtering;
 using Saule.Queries.Including;
 using Saule.Queries.Sorting;
@@ -33,6 +34,7 @@ namespace Saule.Http
             queryContext.IsHandledQuery = true;
             queryContext.Sort = new SortContext(queryParams);
             queryContext.Filter = new FilterContext(queryParams);
+            queryContext.Fieldset = new FieldsetContext(queryParams);
 
             if (queryContext.Include == null)
             {
@@ -41,17 +43,6 @@ namespace Saule.Http
             else
             {
                 queryContext.Include.SetIncludes(queryParams);
-            }
-
-            // we validate if action has QueryContext parameter
-            // and if it has it, then we pass it
-            var parameters = actionContext.ActionDescriptor.GetParameters();
-            foreach (var parameter in parameters)
-            {
-                if (parameter.ParameterType == typeof(QueryContext))
-                {
-                    actionContext.ActionArguments[parameter.ParameterName] = queryContext;
-                }
             }
 
             base.OnActionExecuting(actionContext);

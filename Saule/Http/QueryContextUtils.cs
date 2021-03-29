@@ -19,6 +19,17 @@ namespace Saule.Http
             {
                 query = new QueryContext();
                 actionContext.Request.Properties.Add(Constants.PropertyNames.QueryContext, query);
+
+                // we validate if action has QueryContext parameter
+                // and if it has it, then we pass it
+                var parameters = actionContext.ActionDescriptor.GetParameters();
+                foreach (var parameter in parameters)
+                {
+                    if (parameter.ParameterType == typeof(QueryContext))
+                    {
+                        actionContext.ActionArguments[parameter.ParameterName] = query;
+                    }
+                }
             }
 
             return query;
