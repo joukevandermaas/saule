@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Saule.Http;
 using Saule.Queries;
+using Saule.Queries.Pagination;
 using Saule.Serialization;
 
 namespace Saule
@@ -52,6 +53,11 @@ namespace Saule
                 }
 
                 var dataObject = @object;
+                if (QueryContext != null && QueryContext.Pagination != null)
+                {
+                    // weare trying to extract TotalResultsCount from the dataObject
+                    dataObject = new PagedResultQuery(QueryContext.Pagination).Apply(dataObject);
+                }
 
                 if (QueryContext != null && !QueryContext.IsHandledQuery)
                 {
@@ -89,6 +95,17 @@ namespace Saule
             return result;
         }
 
+        internal static JsonSerializer GetJsonSerializer(IEnumerable<JsonConverter> converters)
+        {
+            var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            foreach (var converter in converters)
+            {
+                serializer.Converters.Add(converter);
+            }
+
+            return serializer;
+        }
+
         private static List<ApiError> GetAsError(object @object)
         {
             var exception = @object as Exception;
@@ -110,17 +127,6 @@ namespace Saule
             }
 
             return null;
-        }
-
-        private static JsonSerializer GetJsonSerializer(IEnumerable<JsonConverter> converters)
-        {
-            var serializer = new JsonSerializer { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            foreach (var converter in converters)
-            {
-                serializer.Converters.Add(converter);
-            }
-
-            return serializer;
         }
     }
 }
