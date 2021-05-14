@@ -47,7 +47,7 @@ namespace Saule.Http
             }
 
             var contentType = actionContext.Request.Content?.Headers?.ContentType;
-            if (contentType != null && contentType.Parameters.Any())
+            if (contentType != null && contentType.Parameters.Where(p => p.Name != "ext").Any())
             {
                 // client is sending json api media type with parameters
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.UnsupportedMediaType);

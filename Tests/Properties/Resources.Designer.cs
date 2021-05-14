@@ -62,6 +62,33 @@ namespace Tests.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;data&quot;: [{
+        ///    &quot;type&quot;: &quot;person&quot;,
+        ///    &quot;attributes&quot;: {
+        ///      &quot;first-name&quot;: &quot;John&quot;,
+        ///      &quot;last-name&quot;: &quot;Smith&quot;,
+        ///      &quot;age&quot;: 34,
+        ///      &quot;number-of-legs&quot;: 2
+        ///    }
+        ///  }, {
+        ///    &quot;type&quot;: &quot;person&quot;,
+        ///    &quot;attributes&quot;: {
+        ///      &quot;first-name&quot;: &quot;Smith&quot;,
+        ///      &quot;last-name&quot;: &quot;John&quot;,
+        ///      &quot;age&quot;: 33,
+        ///      &quot;number-of-legs&quot;: 2
+        ///    }
+        ///  }]
+        ///}.
+        /// </summary>
+        internal static string PeopleResourceString {
+            get {
+                return ResourceManager.GetString("PeopleResourceString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
         ///  &quot;data&quot;: {
         ///    &quot;type&quot;: &quot;person&quot;,
         ///    &quot;attributes&quot;: {

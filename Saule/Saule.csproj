@@ -62,11 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiResource.cs" />
+    <Compile Include="Http\ContentTypeConstraint.cs" />
     <Compile Include="Http\HandlesQueryAttribute.cs" />
     <Compile Include="Http\JsonApiAttribute.cs" />
     <Compile Include="Http\JsonApiProcessor.cs" />
     <Compile Include="Http\JsonApiQueryValueProvider.cs" />
     <Compile Include="Http\JsonApiQueryValueProviderFactory.cs" />
+    <Compile Include="Http\BulkExtRouteAttributeAttribute.cs" />
     <Compile Include="JsonApiSerializerOfT.cs" />
     <Compile Include="Queries\Fieldset\FieldsetContext.cs" />
     <Compile Include="Queries\Fieldset\FieldsetProperty.cs" />
