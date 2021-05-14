@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,6 +8,7 @@ using Saule.Queries;
 using Saule.Queries.Fieldset;
 using Saule.Queries.Including;
 using Saule.Queries.Pagination;
+using Saule.Resources;
 
 namespace Saule.Serialization
 {
@@ -16,17 +18,18 @@ namespace Saule.Serialization
         private readonly PaginationContext _paginationContext;
         private readonly IncludeContext _includeContext;
         private readonly FieldsetContext _fieldsetContext;
-        private readonly ApiResource _resource;
+        private readonly ApiResource _topResource;
+        private readonly IApiResourceProvider _apiResourceProvider;
         private readonly object _value;
         private readonly IPropertyNameConverter _propertyNameConverter;
         private readonly IUrlPathBuilder _urlBuilder;
         private readonly ResourceGraphPathSet _includedGraphPaths;
+        private readonly Dictionary<ApiResource, JsonSerializer> _sourceSerializers;
         private JsonSerializer _serializer;
-        private JsonSerializer _sourceSerializer;
 
         public ResourceSerializer(
             object value,
-            ApiResource type,
+            IApiResourceProvider apiResourceProvider,
             Uri baseUrl,
             IUrlPathBuilder urlBuilder,
             PaginationContext paginationContext,
@@ -36,13 +39,15 @@ namespace Saule.Serialization
         {
             _propertyNameConverter = propertyNameConverter ?? new DefaultPropertyNameConverter();
             _urlBuilder = urlBuilder;
-            _resource = type;
+            _apiResourceProvider = apiResourceProvider;
             _value = value;
             _baseUrl = baseUrl;
             _paginationContext = paginationContext;
             _includeContext = includeContext;
             _fieldsetContext = fieldsetContext;
             _includedGraphPaths = IncludedGraphPathsFromContext(includeContext);
+            _sourceSerializers = new Dictionary<ApiResource, JsonSerializer>();
+            _topResource = apiResourceProvider.Resolve(value);
         }
 
         public JObject Serialize()
@@ -55,15 +60,12 @@ namespace Saule.Serialization
             serializer.ContractResolver = new JsonApiContractResolver(_propertyNameConverter);
             _serializer = serializer;
 
-            _sourceSerializer = JsonApiSerializer.GetJsonSerializer(_serializer.Converters);
-            _sourceSerializer.ContractResolver = new SourceContractResolver(_propertyNameConverter, _resource);
-
             if (_value == null)
             {
                 return SerializeNull();
             }
 
-            var graph = new ResourceGraph(_value, _resource, _includedGraphPaths);
+            var graph = new ResourceGraph(_value, _apiResourceProvider, _includedGraphPaths);
             var dataSection = SerializeData(graph);
             var includesSection = SerializeIncludes(graph);
             var metaSection = SerializeMetadata();
@@ -111,7 +113,7 @@ namespace Saule.Serialization
                 valueType = valueType.GetGenericTypeParameterOfCollection() ?? valueType;
             }
 
-            var metaObject = _resource.GetMetadata(_value, valueType, isCollection);
+            var metaObject = _topResource.GetMetadata(_value, valueType, isCollection);
 
             if (metaObject is JToken)
             {
@@ -141,11 +143,11 @@ namespace Saule.Serialization
             var result = new JObject();
 
             // to preserve back compatibility if Self is enabled, then we also render it. Or if TopSelf is enabled
-            if (_resource.LinkType.HasFlag(LinkType.TopSelf) || _resource.LinkType.HasFlag(LinkType.Self))
+            if (_topResource.LinkType.HasFlag(LinkType.TopSelf) || _topResource.LinkType.HasFlag(LinkType.Self))
             {
                 if (id != null && !_baseUrl.AbsolutePath.EndsWith(id, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_resource, id));
+                    AddUrl(result, "self", _urlBuilder.BuildCanonicalPath(_topResource, id));
                 }
                 else
                 {
@@ -292,8 +294,10 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node)
         {
+            var serializer = GetSourceSerializer(node.Resource);
+
             // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)))
@@ -313,8 +317,10 @@ namespace Saule.Serialization
 
         private JObject SerializeAttributes(ResourceGraphNode node, FieldsetProperty fieldset)
         {
+            var serializer = GetSourceSerializer(node.Resource);
+
             // The source serializer uses a SourceContractResolver to ensure that we only serialize the properties needed
-            var serializedSourceObject = JObject.FromObject(node.SourceObject, _sourceSerializer);
+            var serializedSourceObject = JObject.FromObject(node.SourceObject, serializer);
             var attributeHash = node.Resource.Attributes
                 .Where(a =>
                     node.SourceObject.IncludesProperty(_propertyNameConverter.ToModelPropertyName(a.InternalName)) && fieldset.Fields.Contains(a.InternalName.ToComparablePropertyName()))
@@ -418,7 +424,8 @@ namespace Saule.Serialization
 
                 foreach (var sourceObject in (IEnumerable)relationship.SourceObject ?? new JArray())
                 {
-                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(sourceObject, relationship.Relationship.RelatedResource)));
+                    var resource = _apiResourceProvider.ResolveRelationship(sourceObject, relationship.Relationship.RelatedResource);
+                    content.Add(JObject.FromObject(new ResourceGraphNodeKey(sourceObject, resource)));
                 }
 
                 return content;
@@ -438,6 +445,21 @@ namespace Saule.Serialization
             @object.Add(name, new Uri(start, path.EnsureEndsWith("/")));
 
             return @object;
+        }
+
+        private JsonSerializer GetSourceSerializer(ApiResource resource)
+        {
+            JsonSerializer serializer;
+            if (_sourceSerializers.TryGetValue(resource, out serializer))
+            {
+                return serializer;
+            }
+
+            serializer = JsonApiSerializer.GetJsonSerializer(_serializer.Converters);
+            serializer.ContractResolver = new SourceContractResolver(_propertyNameConverter, resource);
+
+            _sourceSerializers.Add(resource, serializer);
+            return serializer;
         }
     }
 }
