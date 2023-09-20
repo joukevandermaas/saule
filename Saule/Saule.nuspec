@@ -6,7 +6,7 @@
     <title>Saule for Json Api</title>
     <authors>Jouke van der Maas</authors>
     <owners>Jouke van der Maas</owners>
-    <licenseUrl>https://github.com/joukevandermaas/saule/blob/master/LICENSE</licenseUrl>
+    <license>https://github.com/joukevandermaas/saule/blob/master/LICENSE</license>
     <projectUrl>https://github.com/joukevandermaas/saule/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Json api library for ASP.Net Web API 2. This is custom package for MyGet based on original Saule</description>
